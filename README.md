@@ -1,7 +1,7 @@
 <div align="center">
   <h1>exoterik_OS</h1>
   <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
-  <img src="exOS.png" alt="exoterik_OS banner" width="400">
+  <img src="exOS.png" alt="exoterik_OS banner" width="666">
 </div>
 
 <div align="center">
