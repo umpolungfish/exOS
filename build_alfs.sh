@@ -45,7 +45,7 @@ declare -a FILE_NAMES=()
 declare -a FILE_SIZES=()
 declare -a FILE_STARTS=()
 
-NEXT_DATA_SECTOR=$DATA_START
+NEXT_DATA_SECTOR=0  # relative to DATA_START_SECTOR
 
 for f in "$PROG_DIR"/*.aleph; do
     [ -f "$f" ] || continue
@@ -62,7 +62,8 @@ for f in "$PROG_DIR"/*.aleph; do
     NEXT_DATA_SECTOR=$((NEXT_DATA_SECTOR + SECTORS))
 done
 
-TOTAL_SECTORS=$((NEXT_DATA_SECTOR))
+# dd creates the full ALFS disk: superblock(1) + directory(16) + data(NEXT_DATA_SECTOR)
+TOTAL_SECTORS=$((DATA_START + NEXT_DATA_SECTOR))
 TOTAL_BYTES=$((TOTAL_SECTORS * SECTOR_SIZE))
 
 echo "  Total sectors: $TOTAL_SECTORS ($TOTAL_BYTES bytes)"
@@ -124,7 +125,7 @@ done
 for i in $(seq 0 $((FILE_COUNT - 1))); do
     START="${FILE_STARTS[$i]}"
     FILEPATH="$PROG_DIR/${FILE_NAMES[$i]}"
-    DATA_OFFSET=$((START * SECTOR_SIZE))
+    DATA_OFFSET=$(( (DATA_START + START) * SECTOR_SIZE ))
 
     dd if="$FILEPATH" of="$OUTPUT" bs=1 seek=$DATA_OFFSET conv=notrunc 2>/dev/null
 done
