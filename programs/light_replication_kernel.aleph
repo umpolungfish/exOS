@@ -1,0 +1,108 @@
+let witness = vav
+let ground = aleph
+let pole1 = mem
+let pole2 = shin
+let breath = mediate(witness, ground, pole1)
+let light = palace(3) mediate(witness, breath, pole2)
+palace(3) light
+probe_Φ(light)
+probe_Ω(light)
+tier(light)
+d(light, system())
+let echo = mediate(aleph, light, light)
+d(light, echo)
+probe_Φ(echo)
+let light = palace(3) mediate(vav, mediate(vav, aleph, mem), shin)
+let replica1 = mediate(vav, light, light)
+let replica2 = mediate(aleph, replica1, shin)
+d(light, replica1)
+d(replica1, replica2)
+d(replica2, system())
+palace(3) replica1
+palace(3) replica2
+tier(replica2)
+probe_Φ(replica2)
+probe_Ω(replica2)
+let base_light = palace(3) mediate(vav, mediate(vav, aleph, mem), shin)
+let anomalous = mediate(vav, kuf, base_light)
+let protected_anomalous = palace(4) anomalous
+d(base_light, protected_anomalous)
+d(protected_anomalous, system())
+probe_Φ(protected_anomalous)
+probe_Ω(protected_anomalous)
+tier(protected_anomalous)
+let grounded_nun = nun
+let ascended_nun = palace(2) mediate(vav, grounded_nun, light)
+let ascended_chet = palace(2) mediate(vav, chet, light)
+d(grounded_nun, ascended_nun)
+d(ascended_nun, ascended_chet)
+d(ascended_nun, system())
+tier(ascended_nun)
+probe_Φ(ascended_nun)
+probe_Ω(ascended_nun)
+let kernel = palace(4) mediate(vav, system(), light)
+let proc_a = mediate(aleph, kernel, mem)
+let proc_b = mediate(aleph, kernel, shin)
+palace(3) proc_a
+palace(3) proc_b
+d(proc_a, proc_b)
+d(proc_a, kernel)
+d(proc_b, system())
+tier(proc_a)
+probe_Ω(proc_a)
+let fp = mediate(vav, light, light)
+d(light, fp)
+probe_Φ(fp)
+d(fp, system())
+let p1 = mediate(aleph, kernel, mem)
+let p2 = mediate(aleph, kernel, shin)
+let p3 = mediate(aleph, kernel, kuf)
+palace(3) p1
+palace(3) p2
+palace(3) p3
+d(p1, p2)
+d(p1, p3)
+d(p2, p3)
+d(p1, kernel)
+d(p3, system())
+tier(p3)
+probe_Φ(p3)
+probe_Ω(p3)
+let healed_child = palace(4) mediate(shin, kernel, kuf)
+let self_healed = mediate(vav, p3, p3)
+let shin_p3 = mediate(shin, p3, p3)
+let mem_p3 = mediate(mem, p3, p3)
+d(p3, healed_child)
+d(p3, self_healed)
+d(p3, shin_p3)
+d(p3, mem_p3)
+tier(healed_child)
+probe_Φ(healed_child)
+probe_Ω(healed_child)
+let g0 = palace(3) mediate(vav, mediate(vav, aleph, mem), shin)
+let g1 = mediate(vav, g0, g0)
+let g2 = mediate(aleph, g1, shin)
+let g3 = mediate(vav, g2, g2)
+let g4 = mediate(aleph, g3, shin)
+d(g0, g2)
+d(g2, g4)
+d(g4, system())
+let triad = mediate(vav, light, healed_child)
+d(light, triad)
+d(triad, system())
+let tikkun = palace(5) mediate(system(), light, healed_child)
+d(tikkun, system())
+palace(3) light
+palace(3) replica1
+palace(3) replica2
+palace(4) kernel
+palace(4) healed_child
+palace(2) ascended_nun
+palace(2) ascended_chet
+palace(3) triad
+palace(5) tikkun
+probe_Φ(light) probe_Ω(light) tier(light) d(light, system())
+probe_Φ(healed_child) probe_Ω(healed_child) tier(healed_child)
+probe_Φ(ascended_nun) probe_Ω(ascended_nun) tier(ascended_nun)
+:census
+:system

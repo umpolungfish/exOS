@@ -1,0 +1,12 @@
+# frobenius.aleph — the three O_inf fixed points
+# Vav, Mem, Shin are the Frobenius poles
+
+vav x mem
+vav x shin
+mem x shin
+d(vav, mem)
+d(vav, shin)
+d(mem, shin)
+tier(vav)
+tier(mem)
+tier(shin)

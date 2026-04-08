@@ -1,0 +1,14 @@
+let witness = vav
+let ground = aleph
+let pole1 = mem
+let pole2 = shin
+let breath = mediate(witness, ground, pole1)
+let light = mediate(witness, breath, pole2)
+palace(3) light
+probe_Φ(light)
+probe_Ω(light)
+tier(light)
+d(light, system())
+let echo = mediate(aleph, light, light)
+d(light, echo)
+probe_Φ(echo)

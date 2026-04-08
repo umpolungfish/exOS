@@ -1,0 +1,4 @@
+[bootloader]
+kernel-stack-size = 0x20000
+map-physical-memory = true
+map-page-table-recursively = false

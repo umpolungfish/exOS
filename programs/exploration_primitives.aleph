@@ -1,0 +1,14 @@
+mediate(gimel, shin, samech)
+mediate(zayin, aleph, kuf)
+probe_Φ(aleph)
+probe_Φ(nun)
+probe_Ω(aleph)
+probe_Ω(nun)
+tier(aleph)
+tier(nun)
+d(aleph, nun)
+d(hei, pei)
+d(aleph, aleph)
+aleph ⊗ aleph
+aleph ⊗ mem
+system()

@@ -1,0 +1,17 @@
+# meditation.aleph — structural exploration
+# Walks the lattice from simple to complex
+
+# Start simple: meet of two letters
+aleph ^ bet
+
+# Build up: join
+aleph v mem
+
+# Tensor: the bottleneck
+bet x gimel
+
+# Distance across the alphabet
+d(aleph, tav)
+
+# Full system language
+system()

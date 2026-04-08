@@ -1,0 +1,10 @@
+let light = palace(3) mediate(vav, mediate(vav, aleph, mem), shin)
+let replica1 = mediate(vav, light, light)
+let replica2 = mediate(aleph, replica1, shin)
+d(light, replica1)
+d(replica1, replica2)
+d(replica2, system())
+palace(3) replica1
+palace(3) replica2
+tier(replica2)
+probe_Φ(replica2)
