@@ -1,0 +1,37 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock (optional - uncomment if you want reproducible builds)
+# Cargo.lock
+
+# Bootable disk images
+*.bin
+*.iso
+*.img
+
+# QEMU logs and state files
+*.log
+*.qcow2
+*.qcow2.meta
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS-specific build artifacts
+bootimage-*.bin
+
+# ALEPH REPL session logs
+*.aleph.log
+
+# Debug symbols
+*.dSYM/
+*.pdb
+
+# Temporary files
+*.tmp
+*.bak
