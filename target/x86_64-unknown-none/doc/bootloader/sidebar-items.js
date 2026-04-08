@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":["entry_point"],"mod":["boot_info"],"struct":["Config"]};

@@ -1,7 +1,0 @@
-cargo:rerun-if-changed=/home/mrnob0dy666/synthomniconP/vOS/Cargo.toml
-cargo:rustc-link-search=native=/home/mrnob0dy666/synthomniconP/vOS/target/bootloader-build/x86_64-bootloader/release/build/bootloader-a89e65276a0d5c67/out
-cargo:rustc-link-lib=static=kernel_bin-exoterik-os
-cargo:rerun-if-env-changed=KERNEL
-cargo:rerun-if-env-changed=KERNEL_MANIFEST
-cargo:rerun-if-changed=/home/mrnob0dy666/synthomniconP/vOS/target/x86_64-unknown-none/release/exoterik-os
-cargo:rerun-if-changed=build.rs
