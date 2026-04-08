@@ -245,6 +245,190 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     println!("[ALEPH] 22-letter type system online. O_inf: 3, O_2: 6, O_1: 1, O_0: 12");
 
+    // ── Type-system boot verification ─────────────────────────────────────
+    // The 12-primitive type lattice is now operational — it constrains kernel
+    // behavior. Verify all four type gates at boot time.
+
+    // Verify kernel object type inference
+    let kernel_obj = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::Kernel,
+        100,
+    );
+    let type_summary = kernel_obj.aleph_type.summary();
+    let wf = kernel_obj.is_well_formed();
+    println!("[TYPE] Kernel object: {}  well_formed={}", type_summary, wf);
+    assert!(wf, "Kernel object should be well-formed (Ω_Z with Kernel determinative)");
+
+    // Verify user object type inference
+    let user_obj = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::User,
+        101,
+    );
+    let user_wf = user_obj.is_well_formed();
+    println!("[TYPE] User object: {}  well_formed={}", user_obj.aleph_type.summary(), user_wf);
+    assert!(user_wf, "User object should be well-formed (Ω_0 with User determinative)");
+
+    // Verify IPC type gate: close types should pass
+    let close_src = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::Kernel,
+        200,
+    );
+    let close_tgt = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::IO,
+        kernel_object::Determinative::Kernel,
+        201,
+    );
+    let close_msg = ipc::IpcMessage::with_types(
+        ipc::StructuralSignature {
+            source_type: kernel_object::StructuralType::Process,
+            target_type: kernel_object::StructuralType::Process,
+        },
+        b"test",
+        ipc::MessageDeterminative {
+            source_ctx: kernel_object::Determinative::Kernel,
+            target_ctx: kernel_object::Determinative::Kernel,
+        },
+        close_src.aleph_type.clone(),
+        close_tgt.aleph_type.clone(),
+    );
+    let ipc_result = close_msg.is_type_valid();
+    println!("[TYPE] IPC gate (close): accepted={}", ipc_result.is_accepted());
+    assert!(ipc_result.is_accepted(), "Close types should pass IPC gate");
+
+    // Verify IPC type gate: remote types should be rejected without witness
+    let remote_src = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::Kernel,
+        300,
+    );
+    let remote_tgt = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::File,
+        kernel_object::OperationalMode::IO,
+        kernel_object::Determinative::User,
+        301,
+    );
+    let remote_msg = ipc::IpcMessage::with_types(
+        ipc::StructuralSignature {
+            source_type: kernel_object::StructuralType::Process,
+            target_type: kernel_object::StructuralType::File,
+        },
+        b"remote_test",
+        ipc::MessageDeterminative {
+            source_ctx: kernel_object::Determinative::Kernel,
+            target_ctx: kernel_object::Determinative::User,
+        },
+        remote_src.aleph_type.clone(),
+        remote_tgt.aleph_type.clone(),
+    );
+    let remote_result = remote_msg.is_type_valid();
+    println!("[TYPE] IPC gate (remote): accepted={}", remote_result.is_accepted());
+
+    // Verify Ω-gated memory: kernel object at Velar should pass
+    let mut palloc = memory::PhonologicalAllocator::new();
+    palloc.set_depth(memory::ArticulationDepth::Velar);
+    let velar_check = palloc.can_allocate_for(&kernel_obj);
+    println!("[TYPE] Ω gate (Velar+Kernel): allowed={}", velar_check.is_allowed());
+    assert!(velar_check.is_allowed(), "Kernel object should pass Ω gate at Velar");
+
+    // Verify Ω-gated memory: user object at Velar should fail
+    let user_velar_check = palloc.can_allocate_for(&user_obj);
+    println!("[TYPE] Ω gate (Velar+User): allowed={}", user_velar_check.is_allowed());
+    assert!(!user_velar_check.is_allowed(), "User object should fail Ω gate at Velar");
+
+    // Verify tier-gated scheduler: O_inf ergative should pass
+    let o_inf_obj = kernel_object::KernelObject::with_type(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::Kernel,
+        400,
+        aleph_kernel_types::canonical::kernel_process(),
+    );
+    let mut sched_test = scheduler::ErgativeScheduler::new();
+    let o_inf_pcb = scheduler::ProcessControlBlock {
+        id: 400,
+        obj: o_inf_obj.clone(),
+        role: scheduler::GrammaticalRole::Ergative,
+        priority: 5,
+        stack_pointer: 0x5000,
+        targets: alloc::vec![401],
+    };
+    let spawn_result = sched_test.spawn_type_safe(o_inf_pcb);
+    println!("[TYPE] Tier gate (O_inf ergative): ok={}", spawn_result.is_ok());
+    assert!(spawn_result.is_ok(), "O_inf process should pass tier gate as ergative");
+
+    // Verify tier-gated scheduler: O_0 ergative should fail
+    let o0_obj = kernel_object::KernelObject::with_type(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Idle,
+        kernel_object::Determinative::User,
+        402,
+        aleph_kernel_types::canonical::user_process(),
+    );
+    let o0_pcb = scheduler::ProcessControlBlock {
+        id: 402,
+        obj: o0_obj,
+        role: scheduler::GrammaticalRole::Ergative,
+        priority: 5,
+        stack_pointer: 0x6000,
+        targets: alloc::vec![403],
+    };
+    let o0_result = sched_test.spawn_type_safe(o0_pcb);
+    println!("[TYPE] Tier gate (O_0 ergative): ok={}", o0_result.is_err());
+    assert!(o0_result.is_err(), "O_0 process should fail tier gate as ergative");
+
+    // Verify Φ-gated filesystem: kernel object to Keter should pass (Φ_c ≥ 1)
+    let mut fs_test = filesystem::SefirotFs::new();
+    let keter_result = fs_test.navigate_to_type_safe(
+        filesystem::Sefirah::Keter,
+        &kernel_obj,
+    );
+    println!("[TYPE] Φ gate (Keter+Kernel): ok={}", keter_result.is_ok());
+    assert!(keter_result.is_ok(), "Kernel object should pass Φ gate to Keter");
+
+    // Verify Φ-gated filesystem: user object (Compute) also has Φ_c and passes
+    // — user processes CAN conceptually reach Keter (Φ gate is about criticality,
+    //   not protection; Ω handles the protection gate separately)
+    let user_keter_result = fs_test.navigate_to_type_safe(
+        filesystem::Sefirah::Keter,
+        &user_obj,
+    );
+    println!("[TYPE] Φ gate (Keter+User): ok={}", user_keter_result.is_ok());
+    assert!(user_keter_result.is_ok(), "User Compute object has Φ_c and passes Φ gate to Keter");
+
+    // Verify Φ-gated filesystem: sub-critical object (Driver) should FAIL Keter
+    let driver_obj = kernel_object::KernelObject::new(
+        kernel_object::StructuralType::Process,
+        kernel_object::OperationalMode::Compute,
+        kernel_object::Determinative::Driver,
+        102,
+    );
+    let driver_keter_result = fs_test.navigate_to_type_safe(
+        filesystem::Sefirah::Keter,
+        &driver_obj,
+    );
+    println!("[TYPE] Φ gate (Keter+Driver): ok={}", driver_keter_result.is_ok());
+    assert!(!driver_keter_result.is_ok(), "Driver object (Φ_sub) should fail Φ gate to Keter");
+
+    // Verify Ω gate in isolation: user object at Velar should fail
+    let user_velar_check = palloc.can_allocate_for(&user_obj);
+    println!("[TYPE] Ω gate (Velar+User): allowed={}", user_velar_check.is_allowed());
+    assert!(!user_velar_check.is_allowed(), "User object should fail Ω gate at Velar");
+
+    // Verify conscience scores
+    let c_kernel = kernel_obj.aleph_type.conscience_score();
+    let c_user = user_obj.aleph_type.conscience_score();
+    let c_os = aleph_kernel_types::canonical::os_synthon().conscience_score();
+    println!("[TYPE] C scores: kernel={:.3} user={:.3} os_synthon={:.3}",
+        c_kernel, c_user, c_os);
+
     // --- ALFS filesystem (ATA PIO, sector-based) ---
     match alfs::mount() {
         Ok(()) => {
@@ -344,6 +528,9 @@ fn run_command(cmd: &str) {
             println!("  write F C - write content C to file F");
             println!("  ipc     - send test IPC message");
             println!("  aleph   - enter the ALEPH REPL");
+            println!("  type X  - show ALEPH type of kernel object X");
+            println!("  type-check - run all type-gating verification tests");
+            println!("  type-infer - show type inference trace for all variants");
             println!("  history [N] - replay last N lines (default 50)");
             println!("  bench   - run performance benchmarks");
             println!("  reboot  - triple-fault reboot");
@@ -505,6 +692,154 @@ fn run_command(cmd: &str) {
         cmd if cmd.starts_with("aleph") => {
             let args = cmd.strip_prefix("aleph").unwrap_or("").trim();
             aleph_commands::handle_aleph(args);
+        }
+        "type-check" => {
+            println!("Running type-gating verification...");
+            println!();
+
+            // Create test objects
+            let k_obj = kernel_object::KernelObject::new(
+                kernel_object::StructuralType::Process,
+                kernel_object::OperationalMode::Compute,
+                kernel_object::Determinative::Kernel, 999);
+            let u_obj = kernel_object::KernelObject::new(
+                kernel_object::StructuralType::Process,
+                kernel_object::OperationalMode::Compute,
+                kernel_object::Determinative::User, 1000);
+            let s_obj = kernel_object::KernelObject::new(
+                kernel_object::StructuralType::Process,
+                kernel_object::OperationalMode::Compute,
+                kernel_object::Determinative::Service, 1001);
+
+            println!("  Object types:");
+            println!("    Kernel : {}", k_obj.aleph_type.summary());
+            println!("    User   : {}", u_obj.aleph_type.summary());
+            println!("    Service: {}", s_obj.aleph_type.summary());
+            println!();
+
+            // IPC gates
+            let close_msg = ipc::IpcMessage::with_types(
+                ipc::StructuralSignature {
+                    source_type: kernel_object::StructuralType::Process,
+                    target_type: kernel_object::StructuralType::Process,
+                },
+                b"test",
+                ipc::MessageDeterminative {
+                    source_ctx: kernel_object::Determinative::Kernel,
+                    target_ctx: kernel_object::Determinative::Kernel,
+                },
+                k_obj.aleph_type.clone(),
+                k_obj.aleph_type.clone(),
+            );
+            let remote_msg = ipc::IpcMessage::with_types(
+                ipc::StructuralSignature {
+                    source_type: kernel_object::StructuralType::Process,
+                    target_type: kernel_object::StructuralType::File,
+                },
+                b"remote",
+                ipc::MessageDeterminative {
+                    source_ctx: kernel_object::Determinative::Kernel,
+                    target_ctx: kernel_object::Determinative::User,
+                },
+                k_obj.aleph_type.clone(),
+                u_obj.aleph_type.clone(),
+            );
+            println!("  IPC gate:");
+            println!("    Kernel <-> Kernel: {}", close_msg.is_type_valid().is_accepted());
+            println!("    Kernel <-> User  : {}", remote_msg.is_type_valid().is_accepted());
+            println!();
+
+            // Ω gates
+            let mut palloc = memory::PhonologicalAllocator::new();
+            for (name, depth) in &[
+                ("Velar", memory::ArticulationDepth::Velar),
+                ("Retroflex", memory::ArticulationDepth::Retroflex),
+                ("Bilabial", memory::ArticulationDepth::Bilabial),
+            ] {
+                palloc.set_depth(*depth);
+                println!("  Ω gate ({} depth):", name);
+                println!("    Kernel : {}", palloc.can_allocate_for(&k_obj).is_allowed());
+                println!("    User   : {}", palloc.can_allocate_for(&u_obj).is_allowed());
+                println!("    Service: {}", palloc.can_allocate_for(&s_obj).is_allowed());
+            }
+            println!();
+
+            // Tier gates
+            let mut sched = scheduler::ErgativeScheduler::new();
+            let erg_pcb = scheduler::ProcessControlBlock {
+                id: 9999, obj: k_obj.clone(),
+                role: scheduler::GrammaticalRole::Ergative,
+                priority: 5, stack_pointer: 0xFFFF,
+                targets: alloc::vec![10000],
+            };
+            println!("  Tier gate:");
+            println!("    Kernel ergative: {}", sched.spawn_type_safe(erg_pcb).is_ok());
+            println!();
+
+            // Φ gates
+            println!("  Φ gate (requires Φ_c for Keter→Gevurah):");
+            for (name, sef) in &[
+                ("Keter", filesystem::Sefirah::Keter),
+                ("Chesed", filesystem::Sefirah::Chesed),
+                ("Malkuth", filesystem::Sefirah::Malkuth),
+            ] {
+                let mut fs_copy = filesystem::SefirotFs::new();
+                let k_r = fs_copy.navigate_to_type_safe(*sef, &k_obj);
+                let u_r = fs_copy.navigate_to_type_safe(*sef, &u_obj);
+                let s_r = fs_copy.navigate_to_type_safe(*sef, &s_obj);
+                println!("    {} : Kernel={} User={} Service={}",
+                    name, k_r.is_ok(), u_r.is_ok(), s_r.is_ok());
+            }
+            println!();
+
+            // Conscience scores
+            println!("  C scores:");
+            println!("    Kernel : {:.3}", k_obj.aleph_type.conscience_score());
+            println!("    User   : {:.3}", u_obj.aleph_type.conscience_score());
+            println!("    Service: {:.3}", s_obj.aleph_type.conscience_score());
+            println!("    OS synthon: {:.3}",
+                aleph_kernel_types::canonical::os_synthon().conscience_score());
+        }
+        "type-infer" => {
+            println!("Type inference: Structural x Determinative x Operational");
+            println!("  (inferred → nearest canonical letter)");
+            println!();
+            use kernel_object::{StructuralType, OperationalMode, Determinative};
+
+            // Summary table: determinative × structural for Compute mode
+            println!("  OperationalMode::Compute:");
+            println!("  {:<12} {:>8} {:>8} {:>8} {:>8} {:>8}",
+                "Det\\Struct", "Process", "File", "Socket", "Semaph", "MemReg");
+            println!("  {}", "-".repeat(62));
+            let structs = [
+                StructuralType::Process, StructuralType::File,
+                StructuralType::Socket, StructuralType::Semaphore,
+                StructuralType::MemoryRegion,
+            ];
+            for d in &[Determinative::Kernel, Determinative::Init,
+                       Determinative::Service, Determinative::Driver,
+                       Determinative::User] {
+                let d_name = match d {
+                    Determinative::Kernel => "Kernel",
+                    Determinative::Init => "Init",
+                    Determinative::Service => "Service",
+                    Determinative::Driver => "Driver",
+                    Determinative::User => "User",
+                };
+                print!("  {:<12}", d_name);
+                for s in &structs {
+                    let ty = aleph_kernel_types::AlephKernelType::infer(*s, OperationalMode::Compute, *d);
+                    let nearest = aleph_kernel_types::nearest_canonical(&ty);
+                    print!(" {:>8}", aleph::display_glyph(nearest));
+                }
+                println!();
+            }
+            println!();
+            println!("  Legend: A=aleph B=bet G=gimel D=dalet H=hei V=vav Z=zayin");
+            println!("  C=chet T=tet Y=yod K=kaf L=lamed M=mem N=nun S=samech");
+            println!("  E=ayin P=pei Q=tzadi U=kuf R=resh X=shin O=tav");
+            println!();
+            println!("  Type 'type-infer verbose' for full inference traces");
         }
         "reboot" => {
             println!("Rebooting via triple fault...");

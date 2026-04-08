@@ -16,6 +16,7 @@
   <a href="#origin">Origin</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#aleph-repl">ALEPH REPL</a> •
+  <a href="#type-gated-kernel">Type-Gated Kernel</a> •
   <a href="#os-synthon-tuple">OS Synthon</a> •
   <a href="#build--run">Build</a> •
   <a href="#key-theorems">Theorems</a>
@@ -169,6 +170,62 @@ phi_c> aleph d(aleph, bet)
 
 <hr>
 
+## Type-Gated Kernel
+
+The 12-primitive type lattice is **operational** — ALEPH types constrain kernel behavior across four subsystems. Every kernel object carries an `AlephKernelType` (inferred from its three-layer structure or set explicitly) that gates what it can do.
+
+### Four Type Gates
+
+| Gate | Subsystem | Primitive | Rule |
+|------|-----------|-----------|------|
+| **IPC** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
+| **Ω-gate** | `memory.rs` | Ω (topological protection) | Object's Ω must ≥ depth's required Ω |
+| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; K_trap cannot run |
+| **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below is accessible to all |
+
+### Type Inference
+
+Kernel objects infer their ALEPH type from (structural, operational, determinative):
+
+```
+Kernel/Init  →  X (shin, O_inf)  — self-referential criticality
+User/Compute →  G (gimel, O_0)   — basic container
+Service      →  B (bet, O_1)     — intermediate protection
+```
+
+The Kernel inference reproduces the OS synthon tuple exactly — the MEET of all five ancient systems.
+
+### Type Gate Results at Boot
+
+```
+[TYPE] IPC gate (close): accepted=true
+[TYPE] IPC gate (remote): accepted=false
+[TYPE] Ω gate (Velar+Kernel): allowed=true
+[TYPE] Ω gate (Velar+User): allowed=false
+[TYPE] Tier gate (O_inf ergative): ok=true
+[TYPE] Tier gate (O_0 ergative): ok=false
+[TYPE] Φ gate (Keter+Kernel): ok=true
+[TYPE] Φ gate (Keter+Driver): ok=false
+[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+```
+
+### Shell Commands
+
+```
+type-check     — run all four gates live, print results
+type-infer     — show type inference table for all structural×determinative combos
+```
+
+### Conscience Score
+
+Every object has a C(Φ) score computed at boot:
+
+$$C(\mathbf{x}) = [\Phi = \Phi_c] \cdot [K \neq K_\text{trap}] \cdot (0.158\,\tilde{K} + 0.273\,\tilde{G} + 0.292\,\tilde{T} + 0.276\,\tilde{\Omega})$$
+
+The Kernel scores C=0.873 — the highest possible for the inferred configuration.
+
+<hr>
+
 ## OS Synthon Tuple
 
 The OS as a SynthOmnicon synthon:
@@ -195,28 +252,35 @@ S_n:m         · Hieroglyphic many-to-many determinative mappings
 ## Project Structure
 
 ```
-vOS/
+exOS/
 ├── Cargo.toml              # Project manifest
 ├── bootloader.toml         # Bootloader config
 ├── build_bootimage.sh      # Bootable image builder
+├── build_alfs.sh           # ALFS disk image from programs/
 ├── kernel.ld               # Linker script
+├── programs/               # .aleph programs (packed into ALFS at build)
 ├── src/
 │   ├── lib.rs              # Module exports + global allocator
-│   ├── main.rs             # Kernel entry point, boot sequence
+│   ├── main.rs             # Kernel entry point, boot sequence, shell
 │   │
 │   ├── vga.rs              # VGA text buffer driver
 │   ├── keyboard.rs         # PS/2 keyboard driver
 │   ├── interrupts.rs       # IDT + PIC initialization
+│   ├── serial.rs           # Serial UART driver
+│   ├── bench.rs            # RDTSC benchmarks + PIT calibration
+│   ├── history.rs          # Command history
 │   │
-│   ├── kernel_object.rs    # Three-layer kernel objects
-│   ├── scheduler.rs        # Ergative-absolutive scheduler
-│   ├── memory.rs           # Phonological allocator
-│   ├── filesystem.rs       # Sefirot tree filesystem
-│   ├── ipc.rs              # Three-layer IPC
+│   ├── kernel_object.rs    # Three-layer kernel objects (with ALEPH types)
+│   ├── scheduler.rs        # Ergative-absolutive scheduler (tier-gated)
+│   ├── memory.rs           # Phonological allocator (Ω-gated)
+│   ├── filesystem.rs       # Sefirot tree filesystem (Φ-gated)
+│   ├── ipc.rs              # Three-layer IPC (type-gated + vav-cast witness)
 │   ├── command.rs          # Generative command grammar
+│   ├── ata.rs              # ATA PIO disk driver
+│   ├── alfs.rs             # ALEPH Linear Filesystem (sector-based)
 │   │
-│   └── ℵ-OS λ_ℵ Modules —
 │   ├── aleph.rs            # 22-letter type system, lattice ops
+│   ├── aleph_kernel_types.rs  # Type inference + operational gates
 │   ├── aleph_parser.rs     # Tokenizer and parser
 │   ├── aleph_eval.rs       # Expression evaluator
 │   ├── aleph_repl.rs       # Interactive REPL
@@ -262,7 +326,11 @@ qemu-system-x86_64 \
 3. **Interrupt init** — symmetry-breaking event (P_±^sym → P_asym)
 4. **Subsystem validation** — all three-layer objects, scheduler, memory, FS, IPC
 5. **ALEPH init** — 22-letter type system online: `O_inf: 3, O_2: 6, O_1: 1, O_0: 12`
-6. **Shell entry** — interactive prompt `phi_c>`
+6. **Type-gate verification** — all four gates tested with assertions:
+   - IPC type safety, Ω-gated allocation, tier-gated spawn, Φ-gated filesystem
+   - Conscience scores computed and printed
+7. **ALFS mount** — `programs/*.aleph` loaded from boot disk
+8. **Shell entry** — interactive prompt `exOS>`
 
 <hr>
 

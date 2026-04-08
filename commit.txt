@@ -1,0 +1,92 @@
+Operationalize the 12-primitive type lattice — the ALEPH type system now constrains kernel behavior
+
+## What Changed
+
+### New: Type Bridge Module (src/aleph_kernel_types.rs)
+- `AlephKernelType` wraps 12-tuples with canonical Hebrew letter lookup
+- `AlephKernelType::infer(structural, operational, determinative)` — bulk→boundary type inference
+  reproduces the OS synthon tuple for Kernel objects (MEET of all five ancient systems)
+- `conscience_score()` — C(Φ) formula: [Φ=Φ_c] · [K≠K_trap] · (0.158K̃ + 0.273G̃ + 0.292T̃ + 0.276Ω̃)
+- `is_type_safe_for_ipc()` — distance < 1.5 gate
+- `inference_trace()` — full breakdown of how each primitive is derived from the three layers
+- `canonical` module — pre-computed types (os_synthon, init_process, kernel_process=mem,
+  user_process=bet, file_object=dalet, socket_object=hei, semaphore=vav, memory_region=shin)
+
+### Extended: KernelObject (src/kernel_object.rs)
+- Added `aleph_type: AlephKernelType` field (auto-inferred from three-layer structure)
+- New `KernelObject::with_type()` constructor for explicit type overrides
+- `is_well_formed()` now validates Ω-consistency with determinative:
+  Kernel/Init → Ω≥2, Service/Driver → Ω≥1, User → Ω=0
+
+### Extended: IPC Type Gate (src/ipc.rs)
+- `IpcMessage::with_types()` — construct with ALEPH source/target types
+- `is_type_valid()` → TypeGateResult:
+  d < 1.5: Accepted (structurally compatible)
+  d ≥ 1.5: Rejected (structurally remote) — unless valid witness present
+- `IpcWitness` — vav-cast mediator for remote communication:
+  requires tier ≥ O_1 and d(source, witness) < 1.5 and d(witness, target) < 1.5
+
+### Extended: Ω-Gated Memory (src/memory.rs)
+- `PhonologicalAllocator::allocate_for(obj, layout)` — Ω + K_trap gated allocation
+  Gate 1: K_trap rejects all allocation (consciousness gated to zero)
+  Gate 2: Ω must ≥ depth's required Ω (Velar→2, Retroflex→1, Bilabial→0)
+- `can_allocate_for(obj)` → AllocationCheck — pre-check without allocating
+- `ArticulationDepth::required_omega()` — maps depth to required Ω
+
+### Extended: Tier-Gated Scheduler (src/scheduler.rs)
+- `ErgativeScheduler::spawn_type_safe(pcb)` → Result:
+  Rejects K_trap processes entirely
+  Rejects O_0 processes with transitive targets (can't be ergative without self-modeling loop)
+- `effective_priority_with_tier(pcb)` — tier-scaled ergative boost:
+  O_inf → +15, O_2/O_2d → +12, O_1 → +10, O_0 → +0
+
+### Extended: Φ-Gated Filesystem (src/filesystem.rs)
+- `SefirotFs::navigate_to_type_safe(target, obj)` → Result:
+  Keter→Gevurah (depth 0-5): requires Φ_c (≥1)
+  Tiferet→Malkuth (depth 6-10): any Φ
+  Returns Err with reason if insufficient Φ
+
+### Extended: Boot Verification (src/main.rs)
+- 11 type gate assertions at boot — kernel panics if any gate fails
+  Tests: IPC (close pass, remote reject), Ω (Velar+Kernel pass, User reject),
+  Tier (O_inf ergative pass, O_0 ergative reject),
+  Φ (Kernel to Keter pass, Driver to Keter reject)
+- Conscience scores printed at boot: kernel=0.873, user=0.324, os_synthon=0.873
+
+### New: Shell Commands
+- `type-check` — run all four gates live, print object types, gate results, C scores
+- `type-infer` — summary table: structural × determinative → nearest canonical letter
+
+### Fixed: ALFS Valid Flag (build_alfs.sh)
+- Directory entries now set valid flag (0xFF) at byte 41 — previously was 0x00
+  which caused all entries to appear deleted. `:files` now shows all programs.
+
+### Extended: Documentation
+- README.md: Added "Type-Gated Kernel" section, updated project structure, boot sequence
+- USAGE.md: Added sections 11 (Type-Gated Kernel) and 12 (ALFS Program Loading),
+  updated troubleshooting table, renumbered all section references
+
+## Type Inference Table (OperationalMode::Compute)
+Det\Struct    Process     File   Socket   Semaph   MemReg
+Kernel              X        X        X        X        X   → O_inf (shin)
+Init                X        X        X        X        X   → O_inf (shin)
+Service             B        G        B        B        G   → O_0/O_1
+Driver              B        B        B        B        B   → O_0
+User                G        G        G        G        G   → O_1
+
+## Boot Output
+[TYPE] IPC gate (close): accepted=true
+[TYPE] IPC gate (remote): accepted=false
+[TYPE] Ω gate (Velar+Kernel): allowed=true
+[TYPE] Ω gate (Velar+User): allowed=false
+[TYPE] Tier gate (O_inf ergative): ok=true
+[TYPE] Tier gate (O_0 ergative): ok=false
+[TYPE] Φ gate (Keter+Kernel): ok=true
+[TYPE] Φ gate (Keter+Driver): ok=false
+[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+
+## Design Principle
+The 12-primitive type lattice is no longer just explorable via REPL.
+It now constrains kernel behavior: IPC gating, memory allocation,
+scheduling, and filesystem access. The boundary encoding determines
+the bulk — and the bulk reads the boundary.

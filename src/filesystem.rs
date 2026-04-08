@@ -39,6 +39,7 @@ use alloc::string::ToString;
 use core::sync::atomic::{AtomicU32, Ordering};
 
 use crate::alfs;
+use crate::kernel_object::KernelObject;
 
 // ── Sefirot levels ───────────────────────────────────────────────────────────
 
@@ -224,6 +225,44 @@ impl SefirotFs {
         self.current = target;
         self.cwd = None; // Reset to root of new Sefirah
         chain
+    }
+
+    /// Navigate to a target Sefirah, gated by the object's Φ (criticality) level.
+    ///
+    /// Higher Sefirot (closer to Keter, the source) require higher criticality.
+    /// This encodes the Kabbalistic principle that proximity to the divine source
+    /// requires a self-modeling loop capable of sustaining that proximity.
+    ///
+    /// Φ requirements by Sefirot depth:
+    ///
+    /// | Sefirot          | Depth | Required Φ | Rationale                        |
+    /// |------------------|-------|------------|----------------------------------|
+    /// | Keter, Chokhmah, Binah | 0-2 | Φ_c (1)     | Supernal triad — self-modeling loop required |
+    /// | Daat, Chesed, Gevurah  | 3-5 | Φ_c (1)     | Middle pillars — self-modeling loop required |
+    /// | Tiferet → Malkuth      | 6-10| Φ_sub (0)   | Manifest layers — accessible to all |
+    ///
+    /// Note: Φ_c (ordinal 1) is the highest criticality value instantiated
+    /// in the canonical 22-letter system. Φ_c_complex (2) is a meta-critical
+    /// state in the type theory but is not used by any canonical Hebrew letter.
+    /// Therefore, the supernal triad gates on Φ_c, not Φ_c_complex.
+    pub fn navigate_to_type_safe(
+        &mut self,
+        target: Sefirah,
+        obj: &KernelObject,
+    ) -> Result<Vec<Sefirah>, &'static str> {
+        let phi = obj.aleph_type.phi();
+        let target_depth = target as u8;
+
+        let required_phi = match target_depth {
+            0..=5 => 1,  // Keter through Gevurah — Φ_c minimum
+            _ => 0,      // Tiferet through Malkuth — any Φ
+        };
+
+        if phi < required_phi {
+            return Err("insufficient Φ for this Sefirot depth");
+        }
+
+        Ok(self.navigate_to(target))
     }
 
     /// Get the current Sefirah

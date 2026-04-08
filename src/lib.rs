@@ -27,6 +27,12 @@ pub mod aleph_eval;
 pub mod aleph_repl;
 pub mod aleph_commands;
 
+// ── Type-System Bridge ───────────────────────────────────────────────────────
+// Operationalizes the 12-primitive type lattice: makes ALEPH types constrain
+// kernel object behavior (IPC, memory, scheduling, filesystem).
+
+pub mod aleph_kernel_types;
+
 /// Global allocator — initialized by the kernel entry point
 #[global_allocator]
 pub static ALLOCATOR: linked_list_allocator::LockedHeap =

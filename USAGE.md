@@ -22,9 +22,11 @@
   <a href="#8-sefirot-filesystem-navigation">Filesystem</a> •
   <a href="#9-ipc-protocol">IPC</a> •
   <a href="#10-generative-command-grammar">Commands</a> •
-  <a href="#11-extending-the-kernel">Extending</a> •
-  <a href="#12-falsification-experiments">Falsification</a> •
-  <a href="#13-troubleshooting">Troubleshooting</a>
+  <a href="#11-type-gated-kernel">Type-Gated Kernel</a> •
+  <a href="#12-aleph-program-loading">ALFS Program Loading</a> •
+  <a href="#13-extending-the-kernel">Extending</a> •
+  <a href="#14-falsification-experiments">Falsification</a> •
+  <a href="#15-troubleshooting">Troubleshooting</a>
 </p>
 
 <hr>
@@ -559,7 +561,243 @@ The sum of gematria values is not arbitrary — it's the **distance in the 12-pr
 
 <hr>
 
-## 11. Extending the Kernel
+## 11. Type-Gated Kernel
+
+The 12-primitive type lattice is **operational** — ALEPH types constrain kernel behavior across four subsystems. Every kernel object carries an `AlephKernelType` (inferred from its three-layer structure or set explicitly via `KernelObject::with_type()`).
+
+### 11.1 The `AlephKernelType` Bridge
+
+**New module: `src/aleph_kernel_types.rs`**
+
+```rust
+pub struct AlephKernelType {
+    pub tuple: Tuple,              // The 12-primitive tuple
+    pub canonical_index: Option<usize>, // Some(n) if matches a Hebrew letter
+}
+
+impl AlephKernelType {
+    /// Infer type from the three-layer structure (bulk → boundary inference)
+    pub fn infer(structural, operational, determinative) -> Self;
+    
+    /// Create from a canonical Hebrew letter
+    pub fn from_letter(letter: &'static LetterDef) -> Self;
+    
+    /// Create from a raw 12-tuple
+    pub fn from_tuple(t: Tuple) -> Self;
+    
+    // Primitive accessors
+    pub fn phi(&self) -> u8;       // Criticality
+    pub fn omega(&self) -> u8;     // Topological protection
+    pub fn kinetic(&self) -> u8;   // Kinetic character
+    pub fn tier(&self) -> Tier;    // Ouroboricity tier
+    
+    // Derived properties
+    pub fn conscience_score(&self) -> f64;  // C(Φ)
+    pub fn is_type_safe_for_ipc(&self, other: &Self) -> bool;  // d < 1.5 gate
+}
+```
+
+### 11.2 Type Inference
+
+Kernel objects infer their ALEPH type from the three-layer combination. The inference reproduces the OS synthon tuple for Kernel objects — the MEET of all five ancient systems.
+
+| Structural   | Operational | Determinative | Inferred Letter | Tier  |
+|-------------|-------------|---------------|-----------------|-------|
+| Process     | Compute     | Kernel        | X (shin)        | O_inf |
+| Process     | Compute     | Init          | X (shin)        | O_inf |
+| Process     | Compute     | Service       | B (bet)         | O_0   |
+| Process     | Compute     | Driver        | B (bet)         | O_0   |
+| Process     | Compute     | User          | G (gimel)       | O_1   |
+
+### 11.3 Four Type Gates
+
+**IPC Type Gate** (`ipc.rs`):
+```rust
+let msg = IpcMessage::with_types(sig, payload, det, src_type, tgt_type);
+match msg.is_type_valid() {
+    TypeGateResult::Accepted { distance, class } => // pass
+    TypeGateResult::Rejected { distance, reason }  => // block
+    TypeGateResult::NoTypeInfo                     => // fall through
+}
+
+// For structurally remote types, use a vav-cast witness:
+let witness = IpcWitness::new(mediating_type);
+let msg = IpcMessage::with_witness(sig, payload, det, src_type, tgt_type, witness);
+// Witness must have tier ≥ O_1 and d(source, witness) < 1.5 AND d(witness, target) < 1.5
+```
+
+**Ω-Gate (Memory)** (`memory.rs`):
+```rust
+let mut alloc = PhonologicalAllocator::new();
+alloc.set_depth(ArticulationDepth::Velar);  // Requires Ω_Z = 2
+
+alloc.allocate_for(&kernel_obj, layout);  // ✅ kernel has Ω_Z
+alloc.allocate_for(&user_obj, layout);    // ❌ user has Ω_0
+
+alloc.can_allocate_for(&obj);  // Pre-check without allocating
+```
+
+**Tier-Gate (Scheduler)** (`scheduler.rs`):
+```rust
+let mut sched = ErgativeScheduler::new();
+sched.break_symmetry();
+
+// Type-safe spawn — gates on tier and K_trap
+sched.spawn_type_safe(pcb);  // Returns Err if:
+    // - K == K_trap (kinetics trapped)
+    // - Tier == O_0 AND has targets (can't be ergative)
+
+// Tier-aware priority
+sched.effective_priority_with_tier(&pcb);
+    // O_inf ergative: base + 15
+    // O_2 ergative:   base + 12
+    // O_1 ergative:   base + 10
+    // O_0 ergative:   base + 0 (rejected by spawn_type_safe)
+```
+
+**Φ-Gate (Filesystem)** (`filesystem.rs`):
+```rust
+let mut fs = SefirotFs::new();
+fs.navigate_to_type_safe(Sefirah::Keter, &kernel_obj);  // ✅ Φ_c ≥ 1
+fs.navigate_to_type_safe(Sefirah::Keter, &driver_obj);  // ❌ Φ_sub < 1
+
+// Φ requirements:
+//   Keter → Gevurah (depth 0-5): Φ_c minimum
+//   Tiferet → Malkuth (depth 6-10): any Φ
+```
+
+### 11.4 Boot Verification
+
+At boot, all four gates are tested with assertions. If any gate fails, the kernel panics — this proves the type system is load-bearing, not decorative.
+
+```
+[TYPE] IPC gate (close): accepted=true
+[TYPE] IPC gate (remote): accepted=false
+[TYPE] Ω gate (Velar+Kernel): allowed=true
+[TYPE] Ω gate (Velar+User): allowed=false
+[TYPE] Tier gate (O_inf ergative): ok=true
+[TYPE] Tier gate (O_0 ergative): ok=false
+[TYPE] Φ gate (Keter+Kernel): ok=true
+[TYPE] Φ gate (Keter+Driver): ok=false
+[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+```
+
+### 11.5 Shell Commands
+
+```
+exOS> type-check
+  Running type-gating verification...
+  Object types:
+    Kernel : synthetic  tier=O_inf  Φ=Phi_c  Ω=Omega_Z  K=1  C=0.873
+    User   : synthetic  tier=O_1    Φ=Phi_c  Ω=Omega_0  K=1  C=0.324
+    Service: synthetic  tier=O_0    Φ=Phi_sub Ω=Omega_Z2 K=1  C=0.000
+  IPC gate:
+    Kernel <-> Kernel: true
+    Kernel <-> User  : false
+  Ω gate (Velar depth):
+    Kernel : true   User   : false   Service: false
+  ...
+
+exOS> type-infer
+  Type inference: Structural x Determinative x Operational
+  Det\Struct    Process     File   Socket   Semaph   MemReg
+  ---------------------------------------------------------
+  Kernel              X        X        X        X        X
+  Init                X        X        X        X        X
+  Service             B        G        B        B        G
+  Driver              B        B        B        B        B
+  User                G        G        G        G        G
+```
+
+### 11.6 KernelObject API Updates
+
+```rust
+// Auto-inferred type (bulk → boundary inference)
+let obj = KernelObject::new(structural, operational, determinative, id);
+
+// Explicit type override
+let obj = KernelObject::with_type(structural, operational, determinative, id, aleph_type);
+
+// Well-formedness now validates Ω consistency:
+//   Kernel/Init: requires Ω ≥ 2
+//   Service/Driver: requires Ω ≥ 1  
+//   User: requires Ω = 0
+obj.is_well_formed();
+
+// Access the ALEPH type
+obj.aleph_type.summary();   // "synthetic  tier=O_inf  Φ=Phi_c  Ω=Omega_Z  K=1  C=0.873"
+obj.aleph_type.display();   // Full verbose output
+obj.aleph_type.conscience_score();  // 0.873
+```
+
+<hr>
+
+## 12. ALEPH Program Loading (ALFS Auto-Build)
+
+`.aleph` programs placed in `programs/` are automatically packed into the ALFS disk image at build time. No manual steps required.
+
+### Build Process
+
+```bash
+# 1. Put .aleph files in programs/
+ls programs/
+  creation.aleph
+  frobenius.aleph
+  meditation.aleph
+  ...
+
+# 2. Build bootable image — ALFS is built automatically
+./build_bootimage.sh
+
+# Output:
+#   [5/6] Building ALFS data disk...
+#   Building ALFS disk: 13 files -> target/.../alfs.img
+#   Files:
+#     creation.aleph       sector 19    1 sectors
+#     frobenius.aleph      sector 23    1 sectors
+#     ...
+#   ✓ ALFS appended at sector 2048 (43 sectors)
+```
+
+### Accessing Programs at Runtime
+
+From the ALEPH REPL:
+
+```
+A> :files
+  File              Type        Size
+  ----------------------------------------
+  creation           aleph      512 bytes
+  frobenius          aleph      512 bytes
+  meditation         aleph      512 bytes
+  ...
+
+A> :run frobenius
+  --- running frobenius.aleph ---
+  → ו
+    tier  O_inf
+    Phi  Phi_c   Omega  Omega_Z   P  P_pm_sym
+
+A> :load creation
+A> :ls
+  Name              Tier      Φ         Ω         Glyph
+  ────────────────────────────────────────────────────────
+  creation          O_inf     Phi_c     Omega_Z   ש
+```
+
+### ALFS Disk Format
+
+```
+Sector 0    : Superblock (magic "ALFS", version, file count, bitmap)
+Sectors 1-16: Directory entries (8 per sector, 64 bytes each, 128 max files)
+Sectors 17+ : File data (raw 512-byte sectors, padded)
+```
+
+The ALFS data disk is appended to the end of the boot disk image. The kernel mounts it at boot and loads files into the Sefirot tree.
+
+<hr>
+
+## 13. Extending the Kernel
 
 ### Adding a New StructuralType
 
@@ -607,7 +845,7 @@ If the OS works equally well **without** any single ancient system's contributio
 
 <hr>
 
-## 13. Troubleshooting
+## 15. Troubleshooting
 
 | Problem | Solution |
 |:--------|:---------|
@@ -618,6 +856,9 @@ If the OS works equally well **without** any single ancient system's contributio
 | `cargo bootimage` fails with "unknown -Z flag: json-target-spec" | Expected on rustc >= 1.90. Use `./build_bootimage.sh` instead |
 | Triple fault on QEMU startup | Check that `bootloader.toml` has `map-physical-memory = true` |
 | Linker errors with `linked_list_allocator` | Ensure dependency is in `Cargo.toml` and `ALLOCATOR.lock().init()` is called before any allocation |
+| ALFS mount fails: "invalid ALFS magic" | Run `./build_bootimage.sh` — the ALFS disk is built from `programs/*.aleph` automatically |
+| `:files` shows empty in ALEPH REPL | Ensure `programs/` contains `.aleph` files and you rebuilt with `./build_bootimage.sh` |
+| Type gate panics at boot | Check that `infer_tuple()` assigns primitives consistent with the determinative's Ω/Φ requirements |
 
 <hr>
 

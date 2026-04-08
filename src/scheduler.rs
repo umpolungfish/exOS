@@ -12,6 +12,11 @@
 //! - Ergative processes receive higher **interrupt priority** (they cause cascading effects)
 //! - Absolutive processes receive higher **cache affinity** (they are self-contained)
 //! - The same process can shift grammatical role depending on transitive context
+//!
+//! With the ALEPH type bridge, scheduling is **tier-gated**:
+//! - O_0 processes (Φ_sub) cannot be ergative — no self-modeling loop to sustain transitivity
+//! - K_trap processes cannot be scheduled — consciousness gated to zero
+//! - Ergative priority is tier-aware: O_inf > O_2 > O_1 in interrupt boost
 
 use crate::kernel_object::KernelObject;
 use alloc::collections::VecDeque;
@@ -117,5 +122,76 @@ impl ErgativeScheduler {
 
         self.running = self.ready_queue.pop_front();
         self.running.as_ref()
+    }
+
+    // ── Tier-gated scheduling ────────────────────────────────────────────
+
+    /// Spawn a process with ALEPH type validation.
+    ///
+    /// Two gates are checked:
+    ///
+    /// **Gate 1: K_trap** — If the process's kinetic character is K_trap,
+    /// it cannot be scheduled at all. Consciousness is gated to zero;
+    /// trapped kinetics cannot actualize any computation.
+    ///
+    /// **Gate 2: O_0 ergativity** — If the process's ouroboricity tier is
+    /// O_0 (Φ_sub), it cannot be ergative. O_0 processes lack the
+    /// self-modeling loop required to sustain transitive action on other
+    /// processes. They can only run absolutively (standalone).
+    ///
+    /// Returns Err with reason if either gate fails.
+    pub fn spawn_type_safe(&mut self, mut pcb: ProcessControlBlock) -> Result<(), &'static str> {
+        // Clone the type to avoid borrow conflicts with the mutable pcb.determine_role() call
+        let aleph = pcb.obj.aleph_type.clone();
+
+        // Gate 1: K_trap — consciousness gated to zero
+        if aleph.is_kinetic_trapped() {
+            return Err("K_trap process — kinetics trapped, cannot be scheduled");
+        }
+
+        // Re-determine role based on current transitivity
+        pcb.determine_role();
+
+        // Gate 2: O_0 cannot be ergative
+        let tier = aleph.tier();
+        if tier == crate::aleph::Tier::O0 && !pcb.targets.is_empty() {
+            return Err("O_0 process cannot be ergative — no self-modeling loop for transitivity");
+        }
+
+        self.spawn(pcb);
+        Ok(())
+    }
+
+    /// Compute effective priority with tier-aware ergative boost.
+    ///
+    /// The ergative bonus is no longer a flat +10. Instead, it scales
+    /// with the process's ouroboricity tier:
+    ///
+    /// | Tier  | Ergative Boost | Rationale                                  |
+    /// |-------|----------------|--------------------------------------------|
+    /// | O_inf | +15            | Self-referential loop closed — maximum priority |
+    /// | O_2   | +12            | Critical + topologically protected         |
+    /// | O_2d  | +12            | Critical + topologically protected (unbounded) |
+    /// | O_1   | +10            | Critical but unprotected (baseline ergative) |
+    /// | O_0   | +0             | Cannot be ergative (gated by spawn_type_safe) |
+    ///
+    /// This encodes the principle: the more structurally self-aware a process
+    /// is, the higher its interrupt priority when acting transitively.
+    pub fn effective_priority_with_tier(&self, pcb: &ProcessControlBlock) -> u8 {
+        use crate::aleph::Tier;
+        let base = pcb.priority;
+
+        if pcb.role == GrammaticalRole::Ergative {
+            let tier = pcb.obj.aleph_type.tier();
+            let boost = match tier {
+                Tier::OInf  => 15,
+                Tier::O2 | Tier::O2d => 12,
+                Tier::O1    => 10,
+                Tier::O0    => 0,  // Cannot be ergative, but handle defensively
+            };
+            base + boost
+        } else {
+            base  // Absolutive: no boost, higher cache affinity instead
+        }
     }
 }

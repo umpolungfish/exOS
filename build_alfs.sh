@@ -113,8 +113,10 @@ for i in $(seq 0 $((FILE_COUNT - 1))); do
         printf "\\x$(printf '%02x' $(((COUNT >> 24) & 0xFF)))"
         # file_type: 1 (aleph program)
         printf '\x01'
-        # reserved: 23 bytes
-        dd if=/dev/zero bs=1 count=23 2>/dev/null
+        # valid flag: 0xFF (entry is active)
+        printf '\xFF'
+        # reserved: 22 bytes
+        dd if=/dev/zero bs=1 count=22 2>/dev/null
     } | dd of="$OUTPUT" bs=1 seek=$ENTRY_OFFSET conv=notrunc 2>/dev/null
 done
 
