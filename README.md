@@ -1,6 +1,6 @@
 <div align="center">
   <h1>exoterik_OS</h1>
-  <p><b>A holographic operating system derived from five ancient writing systems</b></p>
+  <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="400">
 </div>
 
