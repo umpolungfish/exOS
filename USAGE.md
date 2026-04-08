@@ -238,7 +238,7 @@ pub struct ErgativeScheduler {
 
 impl ErgativeScheduler {
     pub fn new() -> Self;
-    pub fn break_symmetry(&mut self);     // δχ becomes nonzero
+    pub fn break_symmetry(&mut self);
     pub fn is_symmetric(&self) -> bool;    // false after break_symmetry
     pub fn spawn(&mut self, pcb: ProcessControlBlock);
     pub fn schedule_next(&mut self) -> Option<&ProcessControlBlock>;
@@ -422,7 +422,7 @@ let pcb_erg = ProcessControlBlock {
 
 sched.spawn(pcb_abs);
 sched.spawn(pcb_erg);
-sched.break_symmetry();  // δχ becomes nonzero
+sched.break_symmetry();
 
 // Schedule in priority order (ergative first due to +10 boost)
 let next = sched.schedule_next();

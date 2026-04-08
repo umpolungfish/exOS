@@ -266,17 +266,7 @@ qemu-system-x86_64 \
 
 <hr>
 
-## Key Theorems from the Seven-Stage Inquiry
-
-| Theorem | Statement |
-|:--------|:----------|
-| **BT-1 (δχ ↔ Φ_c)** | Chiral asymmetry δχ = 0.15 rad IS the criticality primitive Φ_c |
-| **BT-3 (Mass/Ω hierarchy)** | Varnamala articulation gradient mirrors the EARTH mass hierarchy |
-| **BT-5 (Neural Gap)** | Neural systems at Φ_c inherit δχ — consciousness may be what happens at the boundary |
-| **BT-6 (P_±^sym → P_asym)** | Ogdoad→Ennead transition IS early-universe symmetry breaking |
-| **Determinative Theorem** | Both Sumer and Egypt independently invented the determinative because any system at Φ_c_complex MUST evolve silent structural anchors |
-
-> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the δχ phase boundary."*
+> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\Phi_c$ phase boundary."*
 
 <hr>
 
