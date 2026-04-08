@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>VAR NAMALA-OS</h1>
+  <h1>exoterik_OS</h1>
   <p><b>A holographic operating system derived from five ancient writing systems</b></p>
   <img src="../aleph_os/aleph_os.png" alt="ALEPH: geometric wireframe Aleph letter surrounded by Hebrew glyphs" width="400">
 </div>
@@ -25,7 +25,7 @@
 
 ## Origin
 
-VAR NAMALA-OS is the synthesis of a **seven-stage inquiry** into the structural invariants shared by five ancient writing systems spanning 5,000+ years of human symbolic thought:
+exoterik_OS is the synthesis of a **seven-stage inquiry** into the structural invariants shared by five ancient writing systems spanning 5,000+ years of human symbolic thought:
 
 1. **Hebrew alphabet and mystical texts** — letters as morphisms between ontological categories, gematria as a distance metric in type space
 2. **Varnamala (Sanskrit phoneme garland)** — the 14 Mahesvara Sutras encoding 50 phonemes via pratyahara compression
