@@ -1,7 +1,7 @@
 <div align="center">
   <h1>exoterik_OS</h1>
   <p><b>A holographic operating system derived from five ancient writing systems</b></p>
-  <img src="../aleph_os/aleph_os.png" alt="ALEPH: geometric wireframe Aleph letter surrounded by Hebrew glyphs" width="400">
+  <img src="exOS.png" alt="exoterik_OS banner" width="400">
 </div>
 
 <div align="center">

@@ -1,26 +1,33 @@
-# USAGE.md — VAR NAMALA-OS Φ_c Kernel
+<div align="center">
+  <h1>USAGE — exoterik_OS Φ_c Kernel</h1>
+  <p><b>Installation, build, runtime configuration, subsystem API reference, extension guide, and falsification experiments</b></p>
+  <img src="exOS.png" alt="exoterik_OS banner" width="400">
+</div>
 
-> **Installation, build, runtime configuration, subsystem API reference, extension guide, and falsification experiments.**
+<div align="center">
+  <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
+  <img src="https://img.shields.io/badge/TARGET-x86__64--unknown--none-orange" alt="Target">
+  <img src="https://img.shields.io/badge/ENGINE-SynthOmnicon%20v0.4.27-purple" alt="Engine">
+  <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
+</div>
 
----
+<p align="center">
+  <a href="#1-build-and-installation">Build</a> •
+  <a href="#2-running-the-kernel">Running</a> •
+  <a href="#3-boot-sequence-walkthrough">Boot Sequence</a> •
+  <a href="#4-subsystem-api-reference">API Reference</a> •
+  <a href="#5-the-three-layer-object-model">Object Model</a> •
+  <a href="#6-ergative-scheduler-usage">Scheduler</a> •
+  <a href="#7-phonological-memory-management">Memory</a> •
+  <a href="#8-sefirot-filesystem-navigation">Filesystem</a> •
+  <a href="#9-ipc-protocol">IPC</a> •
+  <a href="#10-generative-command-grammar">Commands</a> •
+  <a href="#11-extending-the-kernel">Extending</a> •
+  <a href="#12-falsification-experiments">Falsification</a> •
+  <a href="#13-troubleshooting">Troubleshooting</a>
+</p>
 
-## Table of Contents
-
-1. [Build and Installation](#1-build-and-installation)
-2. [Running the Kernel](#2-running-the-kernel)
-3. [Boot Sequence Walkthrough](#3-boot-sequence-walkthrough)
-4. [Subsystem API Reference](#4-subsystem-api-reference)
-5. [The Three-Layer Object Model](#5-the-three-layer-object-model)
-6. [Ergative Scheduler Usage](#6-ergative-scheduler-usage)
-7. [Phonological Memory Management](#7-phonological-memory-management)
-8. [Sefirot Filesystem Navigation](#8-sefirot-filesystem-navigation)
-9. [IPC Protocol](#9-ipc-protocol)
-10. [Generative Command Grammar](#10-generative-command-grammar)
-11. [Extending the Kernel](#11-extending-the-kernel)
-12. [Falsification Experiments](#12-falsification-experiments)
-13. [Troubleshooting](#13-troubleshooting)
-
----
+<hr>
 
 ## 1. Build and Installation
 
@@ -80,7 +87,7 @@ map-page-table-recursively = true
 
 The `map-physical-memory = true` directive tells the bootloader to create an identity mapping of all physical memory at the offset stored in `BootInfo::physical_memory_offset`.
 
----
+<hr>
 
 ## 2. Running the Kernel
 
@@ -107,7 +114,7 @@ qemu-system-x86_64 \
 
 On successful boot, the VGA display will show:
 
-```
+```text
 [VAR NAMALA-OS] Φ_c Kernel booting...
 P_±_sym → P_asym symmetry break initiated.
 [INIT] Three-layer objects: all structural/operational/determinative variants exercised
@@ -126,7 +133,7 @@ The system then enters the idle loop (`HLT` instruction), where it awaits interr
 
 The `-serial stdio` flag redirects VGA output to stdout for logging. In a production build, the VGA driver can be complemented with a serial port logger.
 
----
+<hr>
 
 ## 3. Boot Sequence Walkthrough
 
@@ -173,7 +180,7 @@ The ergative scheduler is created in P_±^sym state, receives a process, then `b
 
 Each subsystem is exercised through its full API surface — all articulation depths, all Sefirot layers, IPC well-formedness, command gematria computation.
 
----
+<hr>
 
 ## 4. Subsystem API Reference
 
@@ -373,7 +380,7 @@ pub struct CommandContext {
 }
 ```
 
----
+<hr>
 
 ## 5. The Three-Layer Object Model
 
@@ -383,15 +390,16 @@ The core architectural invariant. Every kernel object carries three simultaneous
 
 In Unix-like systems, a process is defined by its operational behavior (what it does). Type information is either absent or bolted on (cgroups, namespaces, SELinux labels). These are **afterthoughts** — added to fix security gaps that arise from the missing determinative layer.
 
-In VAR NAMALA-OS, the determinative is **constitutive**. It is not metadata added to an object; it is one of the three dimensions that make the object what it is. A process with `Determinative::Kernel` and the same operational behavior as one with `Determinative::User` is a **different kind of object** — not just a differently labeled one.
+In exoterik_OS, the determinative is **constitutive**. It is not metadata added to an object; it is one of the three dimensions that make the object what it is. A process with `Determinative::Kernel` and the same operational behavior as one with `Determinative::User` is a **different kind of object** — not just a differently labeled one.
 
-This is exactly how Egyptian hieroglyphs work: the duck glyph means "son" with a paternal determinative, "food" with a culinary determinative. The payload is the same; the meaning is determined by the silent, unpronounced context.
+> [!NOTE]
+> This is exactly how Egyptian hieroglyphs work: the duck glyph means "son" with a paternal determinative, "food" with a culinary determinative. The payload is the same; the meaning is determined by the silent, unpronounced context.
 
 ### Well-Formedness
 
 Every `KernelObject` and `IpcMessage` has an `is_well_formed()` method. This checks that the determinative is consistent with the structural type. In the current implementation, this is a basic consistency check. In production, this becomes a **type-checking gate** that rejects objects with mismatched layers before they can cause security violations.
 
----
+<hr>
 
 ## 6. Ergative Scheduler Usage
 
@@ -433,7 +441,7 @@ let next = sched.schedule_next();
 
 The `determine_role()` method automatically sets the grammatical role based on whether the process has targets. This is the Basque grammar principle: the same entity is encoded differently depending on whether it acts alone or acts on something.
 
----
+<hr>
 
 ## 7. Phonological Memory Management
 
@@ -459,7 +467,7 @@ let ptr = allocator.allocate(layout);
 
 The articulation depth enum is `PartialOrd`/`Ord`, so depths can be compared: `Velar < Palatal < Retroflex < Dental < Bilabial`. This ordering encodes the structural story: deeper = more occluded = more protected = slower. Shallower = more open = less protected = faster.
 
----
+<hr>
 
 ## 8. Sefirot Filesystem Navigation
 
@@ -490,9 +498,10 @@ let resolved = path.resolve();
 // "/boot/sys/lib/kernel_config"
 ```
 
-Navigation is by **transformation chain** — you specify HOW you want to arrive at a file (which Sefirot you traverse), not just WHERE it is. This is the Kabbalistic principle that paths between sephirot have defined transformation roles (the 22 letter-paths of the Tree of Life).
+> [!TIP]
+> Navigation is by **transformation chain** — you specify HOW you want to arrive at a file (which Sefirot you traverse), not just WHERE it is. This is the Kabbalistic principle that paths between sephirot have defined transformation roles (the 22 letter-paths of the Tree of Life).
 
----
+<hr>
 
 ## 9. IPC Protocol
 
@@ -518,7 +527,7 @@ A message without a determinative cannot be constructed — the `IpcMessage::new
 
 The `is_well_formed()` method performs deeper validation: the determinative must be consistent with the structural type. A `StructuralType::Socket` with `Determinative::Init` might be flagged as inconsistent in production.
 
----
+<hr>
 
 ## 10. Generative Command Grammar
 
@@ -548,7 +557,7 @@ assert_eq!(ctx.priority, 4); // Four primitives
 
 The sum of gematria values is not arbitrary — it's the **distance in the 12-primitive space** of this command. Commands with similar gematria values are structurally close (same type family); commands with very different values inhabit different regimes. This is the Sefer Yetzirah principle: the alphabet is a type-indexed lattice, and gematria is the metric.
 
----
+<hr>
 
 ## 11. Extending the Kernel
 
@@ -567,9 +576,10 @@ The sum of gematria values is not arbitrary — it's the **distance in the 12-pr
 
 ### Adding a New Sefirah Layer
 
-The current system has exactly ten Sefirot, matching the Kabbalistic tree. Adding an eleventh would break the correspondence. Instead, consider adding **sub-layers** within existing Sefirot (e.g., `Sefirah::Chokhmah` might have `Wisdom::Raw` and `Wisdom::Processed` sub-variants).
+> [!WARNING]
+> The current system has exactly ten Sefirot, matching the Kabbalistic tree. Adding an eleventh would break the correspondence. Instead, consider adding **sub-layers** within existing Sefirot (e.g., `Sefirah::Chokhmah` might have `Wisdom::Raw` and `Wisdom::Processed` sub-variants).
 
----
+<hr>
 
 ## 12. Falsification Experiments
 
@@ -595,46 +605,26 @@ Shuffle the Sefirot layer order. If filesystem navigation becomes less intuitive
 
 If the OS works equally well **without** any single ancient system's contribution, the derivation is analogical. If removing any contribution measurably degrades a specific subsystem, the derivation is structural.
 
----
+<hr>
 
 ## 13. Troubleshooting
 
-### `error[E0658]: the extern "x86-interrupt" ABI is experimental`
+| Problem | Solution |
+|:--------|:---------|
+| `error[E0658]: the extern "x86-interrupt" ABI is experimental` | Ensure `#![feature(abi_x86_interrupt)]` is present in both `lib.rs` and `main.rs` |
+| `error[E0433]: failed to resolve: use of unresolved module or unlinked crate alloc` | Add `extern crate alloc;` to any binary crate (`main.rs`) that uses `alloc::vec!` or `alloc::string::String` |
+| `error: non-ASCII character in byte string literal` | Use UTF-8 escape sequences: `b"\xCE\xA6"` instead of `b"Φ"` |
+| Boot hangs after "Kernel fully online" | Expected behavior — the kernel enters an idle loop (`HLT`) after init. The scheduler would dispatch real processes in production |
+| `cargo bootimage` fails with "unknown -Z flag: json-target-spec" | Expected on rustc >= 1.90. Use `./build_bootimage.sh` instead |
+| Triple fault on QEMU startup | Check that `bootloader.toml` has `map-physical-memory = true` |
+| Linker errors with `linked_list_allocator` | Ensure dependency is in `Cargo.toml` and `ALLOCATOR.lock().init()` is called before any allocation |
 
-Ensure `#![feature(abi_x86_interrupt)]` is present in both `lib.rs` and `main.rs`. This feature is required for the x86-interrupt calling convention used by the IDT handlers.
-
-### `error[E0433]: failed to resolve: use of unresolved module or unlinked crate alloc`
-
-Add `extern crate alloc;` to any binary crate (`main.rs`) that uses `alloc::vec!` or `alloc::string::String`. The `alloc` crate must be explicitly linked in `no_std` environments.
-
-### `error: non-ASCII character in byte string literal`
-
-Use UTF-8 escape sequences for non-ASCII characters in `&[u8]` byte strings: `b"\xCE\xA6"` instead of `b"Φ"`.
-
-### Boot hangs after "Kernel fully online"
-
-This is expected behavior. The kernel enters an idle loop (`HLT` instruction) after initialization. In production, the scheduler would dispatch real processes that generate interrupts and break the idle loop.
-
-### `cargo bootimage` fails with "unknown -Z flag: json-target-spec"
-
-This is expected. The `cargo bootimage` CLI is broken on rustc >= 1.90. Use `./build_bootimage.sh` instead, which replicates the same steps manually.
-
-### Triple fault on QEMU startup
-
-Check that the `bootloader.toml` has `map-physical-memory = true`. The kernel relies on the physical memory offset being available in the `BootInfo` structure.
-
-### Linker errors with `linked_list_allocator`
-
-Ensure the `linked_list_allocator` dependency is declared in `Cargo.toml` and that `ALLOCATOR.lock().init(heap_start, heap_size)` is called before any allocation occurs. The heap must be initialized before the first `alloc()` call.
-
----
+<hr>
 
 ## Appendix A: The 12-Primitive Synopsis
 
-For reference, the OS synthon and its justifications:
-
 | Primitive | Value | Source |
-|-----------|-------|--------|
+|:----------|:------|:-------|
 | **D** (Dimensionality) | `D_triangle` | Basque ergative three-way, Hebrew triangular paths |
 | **T** (Topology) | `T_box` | Hieroglyphic contained system with three internal layers |
 | **R** (Relational) | `R_dagger` | Hebrew letter-transformative, reversible across contexts |
@@ -650,7 +640,7 @@ For reference, the OS synthon and its justifications:
 
 **Ouroboricity:** O_inf — Φ_c AND P_pm_sym. The highest tier. Self-referential loop perfectly closed.
 
----
+<hr>
 
 ## Appendix B: The Seven Stages
 
@@ -664,3 +654,13 @@ For the full derivation, see the stage documents in the project root:
 6. `20260407_120858_STAGE_5_—_BASQUE.txt` — Ergative-absolutive grammar
 7. `20260407_121017_STAGE_6_—_DISTILLATION.txt` — Shared invariants (MEET/JOIN)
 8. `20260407_121206_STAGE_7_—_SYNTHESIS.txt` — The OS specification
+
+<hr>
+
+> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the Φ_c phase boundary."*
+
+<hr>
+
+## License
+
+This project is part of the SynthOmnicon research program.
