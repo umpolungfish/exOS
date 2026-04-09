@@ -136,32 +136,54 @@ pub fn resolve_letter(input: &str) -> Option<&'static LetterDef> {
     letter_by_name(input)
 }
 
-/// Get the display glyph for a letter — ASCII transliteration for VGA text mode.
+/// Hebrew font code points, one per letter (matching LETTERS order = HEBREW_FONT order).
+/// Each is a single byte in [0xE0, 0xF5] — handled by the framebuffer renderer.
+/// SAFETY: these are intentionally non-UTF-8 single bytes; only used in
+/// write_byte paths that treat each byte as a raw code point, not as text.
+static HEBREW_GLYPH_BYTES: [[u8; 1]; 22] = [
+    [0xE0], [0xE1], [0xE2], [0xE3], [0xE4], [0xE5],
+    [0xE6], [0xE7], [0xE8], [0xE9], [0xEA], [0xEB],
+    [0xEC], [0xED], [0xEE], [0xEF], [0xF0], [0xF1],
+    [0xF2], [0xF3], [0xF4], [0xF5],
+];
+
+/// Get the display glyph for a letter.
+///
+/// In framebuffer mode: returns the Hebrew bitmap code point (0xE0–0xF5),
+/// which `render_char` maps to `HEBREW_FONT`.
+/// In VGA text mode: returns the ASCII transliteration.
 pub fn display_glyph(l: &LetterDef) -> &'static str {
-    match l.name {
-        "aleph"  => "A",
-        "bet"    => "B",
-        "gimel"  => "G",
-        "dalet"  => "D",
-        "hei"    => "H",
-        "vav"    => "V",
-        "zayin"  => "Z",
-        "chet"   => "C",
-        "tet"    => "T",
-        "yod"    => "Y",
-        "kaf"    => "K",
-        "lamed"  => "L",
-        "mem"    => "M",
-        "nun"    => "N",
-        "samech" => "S",
-        "ayin"   => "E",
-        "pei"    => "P",
-        "tzadi"  => "Q",
-        "kuf"    => "U",
-        "resh"   => "R",
-        "shin"   => "X",
-        "tav"    => "O",
-        _        => "?",
+    if crate::vga::get_display_mode() == crate::vga::DisplayMode::Framebuffer {
+        let idx = LETTERS.iter().position(|x| x.name == l.name).unwrap_or(0);
+        // SAFETY: write_byte_fb treats each byte as a raw code point,
+        // not as UTF-8 text. The byte 0xE0+idx is a valid HEBREW_FONT index.
+        unsafe { core::str::from_utf8_unchecked(&HEBREW_GLYPH_BYTES[idx]) }
+    } else {
+        match l.name {
+            "aleph"  => "A",
+            "bet"    => "B",
+            "gimel"  => "G",
+            "dalet"  => "D",
+            "hei"    => "H",
+            "vav"    => "V",
+            "zayin"  => "Z",
+            "chet"   => "C",
+            "tet"    => "T",
+            "yod"    => "Y",
+            "kaf"    => "K",
+            "lamed"  => "L",
+            "mem"    => "M",
+            "nun"    => "N",
+            "samech" => "S",
+            "ayin"   => "E",
+            "pei"    => "P",
+            "tzadi"  => "Q",
+            "kuf"    => "U",
+            "resh"   => "R",
+            "shin"   => "X",
+            "tav"    => "O",
+            _        => "?",
+        }
     }
 }
 
@@ -267,6 +289,20 @@ pub fn conflict_set(a: &Tuple, b: &Tuple) -> Vec<usize> {
     set
 }
 
+/// Find the canonical letter nearest to a given tuple (by weighted distance).
+pub fn nearest_letter(t: &Tuple) -> &'static LetterDef {
+    let mut best_idx = 0usize;
+    let mut best_dist = u32::MAX;
+    for (i, l) in LETTERS.iter().enumerate() {
+        let d = distance_scaled(&l.t, t);
+        if d < best_dist {
+            best_dist = d;
+            best_idx = i;
+        }
+    }
+    &LETTERS[best_idx]
+}
+
 /// Veracity class name from distance.
 pub fn veracity_class(d: f64) -> &'static str {
     if d == 0.0 { "transparent" }
@@ -307,12 +343,13 @@ pub fn tier_census() -> [u8; 5] {
 // ── Formatting helpers for REPL output ───────────────────────────────────────
 
 /// Format a letter's tier, Phi, Omega, P for display.
+/// Returns the text portion (no glyph byte — caller writes that separately).
 pub fn format_letter(l: &LetterDef) -> String {
     let tier = compute_tier(&l.t);
     let phi_n = PHI_NAMES.get(l.t[8] as usize).copied().unwrap_or("?");
     let om_n  = OMEGA_NAMES.get(l.t[11] as usize).copied().unwrap_or("?");
     let p_n   = P_NAMES.get(l.t[3] as usize).copied().unwrap_or("?");
-    format!("  -> {}\n    tier  {}\n    Phi  {}   Omega  {}   P  {}\n",
+    format!("  ->  {}\n    tier  {}\n    Phi  {}   Omega  {}   P  {}\n",
         display_glyph(l), tier_name(tier), phi_n, om_n, p_n)
 }
 

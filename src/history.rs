@@ -70,6 +70,13 @@ impl History {
     pub fn line_count(&self) -> usize { self.count }
 }
 
+impl core::fmt::Write for History {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.feed(s);
+        Ok(())
+    }
+}
+
 lazy_static! {
     pub static ref HISTORY: Mutex<History> = Mutex::new(History::new());
 }

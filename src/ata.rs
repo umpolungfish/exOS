@@ -24,12 +24,21 @@ const ATA_CMD_WRITE: u8 = 0x30;
 
 const SECTOR_SIZE: usize = 512;
 
-/// Read one 512-byte sector from the primary master disk.
+/// Drive selector: 0 = primary master, 1 = primary slave.
+pub static mut ATA_DRIVE: u8 = 0;
+
+/// Base drive selector byte (0xE0 = drive 0, 0xF0 = drive 1).
+#[inline]
+fn drive_select(lba: u32) -> u8 {
+    let drv = unsafe { ATA_DRIVE };
+    0xE0 | ((drv & 1) << 4) | ((lba >> 24) & 0x0F) as u8
+}
+
+/// Read one 512-byte sector from the configured ATA drive.
 /// Returns the sector contents, or None on error.
 pub fn read_sector(lba: u32) -> Option<[u8; SECTOR_SIZE]> {
     unsafe {
-        // Select drive 0 with LBA mode
-        let drive_byte = 0xE0 | ((lba >> 24) & 0x0F) as u8;
+        let drive_byte = drive_select(lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         // Wait for drive to be ready
@@ -70,8 +79,7 @@ pub fn read_sectors(start_lba: u32, count: usize, out: &mut [u8]) -> Option<()> 
     }
 
     unsafe {
-        // Select drive 0 with LBA mode
-        let drive_byte = 0xE0 | ((start_lba >> 24) & 0x0F) as u8;
+        let drive_byte = drive_select(start_lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }
@@ -100,12 +108,11 @@ pub fn read_sectors(start_lba: u32, count: usize, out: &mut [u8]) -> Option<()> 
     Some(())
 }
 
-/// Write one 512-byte sector to the primary master disk.
+/// Write one 512-byte sector to the configured ATA drive.
 /// Returns None on error.
 pub fn write_sector(lba: u32, data: &[u8; SECTOR_SIZE]) -> Option<()> {
     unsafe {
-        // Select drive 0 with LBA mode
-        let drive_byte = 0xE0 | ((lba >> 24) & 0x0F) as u8;
+        let drive_byte = drive_select(lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }
@@ -144,8 +151,7 @@ pub fn write_sectors(start_lba: u32, count: usize, data: &[u8]) -> Option<()> {
     }
 
     unsafe {
-        // Select drive 0 with LBA mode
-        let drive_byte = 0xE0 | ((start_lba >> 24) & 0x0F) as u8;
+        let drive_byte = drive_select(start_lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }

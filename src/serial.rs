@@ -35,6 +35,12 @@ pub fn write_byte(b: u8) {
     unsafe { Port::<u8>::new(COM1).write(b); }
 }
 
+/// Write a single byte to serial without newline translation.
+pub fn write_byte_to_serial(b: u8) {
+    while !tx_ready() {}
+    unsafe { Port::<u8>::new(COM1).write(b); }
+}
+
 pub fn write_str(s: &str) {
     for b in s.bytes() {
         if b == b'\n' { write_byte(b'\r'); }

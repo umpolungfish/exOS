@@ -4,39 +4,85 @@
 
 extern crate alloc;
 
-use bootloader::{entry_point, BootInfo};
+use bootloader_api::{entry_point, BootInfo, config::{BootloaderConfig, Mapping}};
 use core::panic::PanicInfo;
 use exoterik_os::*;
 use exoterik_os::ALLOCATOR;
 
-entry_point!(kernel_main);
+/// Bootloader configuration with physical memory mapping and framebuffer enabled.
+const BOOTLOADER_CONFIG: BootloaderConfig = {
+    let mut config = BootloaderConfig::new_default();
+    config.mappings.physical_memory = Some(Mapping::Dynamic);
+    config.mappings.framebuffer = Mapping::Dynamic;
+    config.kernel_stack_size = 0x20000;
+    config
+};
+
+entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
 
 /// Kernel boot: P_±_sym → P_asym symmetry breaking
 ///
 /// The system boots in perfect symmetry (no process distinguished, all resources pooled).
 /// The first scheduled interrupt is the symmetry-breaking event (δχ becomes nonzero).
 /// From that moment the system is P_asym and the ergative process model activates.
-fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    vga::init();
+fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     serial::init();
 
-    // Initialize the heap using the physical memory mapping.
-    // Bootloader 0.9 with map_physical_memory maps all physical memory at
-    // physical_memory_offset. We find the largest usable region and place
-    // the heap there.
-    let phys_offset = boot_info.physical_memory_offset;
+    // ── Heap initialization — MUST happen before any println! ──
+    // _print previously called args.to_string() which heap-allocates.
+    // Without the heap ready, that cascades: OOM → panic → println → OOM → …
+    // → stack overflow → double fault → triple fault → CPU reset → QEMU exits.
+    // We borrow boot_info immutably here; the mutable framebuffer borrow comes after.
+    {
+        let phys_offset_opt = boot_info.physical_memory_offset.as_ref().copied();
+        let heap_phys = boot_info.memory_regions
+            .iter()
+            .find(|r| {
+                let len = r.end.saturating_sub(r.start);
+                matches!(r.kind, bootloader_api::info::MemoryRegionKind::Usable)
+                    && len >= 4 * 1024 * 1024
+            })
+            .map(|r| r.start + 0x100_0000) // 16MB into the region, past bootloader data
+            .unwrap_or(0x100_0000);
 
-    // Place the heap at physical 16MB, accessed via the physical_memory_offset mapping.
-    // 16MB is safely above the bootloader (< 1MB), kernel (~4MB physical), and page tables.
-    // QEMU's default 128MB gives plenty of room for a 4MB heap here.
-    let heap_phys: u64 = 0x100_0000; // 16MB physical
-    let heap_start = (phys_offset + heap_phys) as *mut u8;
-    let heap_size: usize = 4 * 1024 * 1024; // 4MB
-    unsafe {
-        ALLOCATOR.lock().init(heap_start, heap_size);
+        if let Some(phys_offset) = phys_offset_opt {
+            let heap_start = (phys_offset + heap_phys) as *mut u8;
+            let heap_size: usize = 4 * 1024 * 1024; // 4MB
+            unsafe { ALLOCATOR.lock().init(heap_start, heap_size); }
+            serial::write_str("[BOOT] Heap: initialized (4MB)\r\n");
+        } else {
+            serial::write_str("[BOOT] WARNING: physical_memory_offset not mapped — heap unavailable\r\n");
+        }
+    } // immutable borrow of boot_info released here
+
+    // ── UEFI Framebuffer initialization ──
+    // Heap is now ready; println! is safe to call.
+    if let Some(fb) = boot_info.framebuffer.as_mut() {
+        let fb_info = fb.info();
+        let fb_width = fb_info.width as u64;
+        let fb_height = fb_info.height as u64;
+        let fb_pitch = (fb_info.stride * fb_info.bytes_per_pixel) as u64;
+        let fb_bpp = (fb_info.bytes_per_pixel * 8) as u8;
+
+        unsafe {
+            crate::framebuffer::init_hw(
+                fb.buffer_mut().as_mut_ptr() as u64,
+                fb_width,
+                fb_height,
+                fb_pitch,
+                fb_bpp,
+            );
+        }
+
+        // Switch to framebuffer mode — all print!/println! now render pixels.
+        vga::init_framebuffer();
+
+        println!("[BOOT] UEFI GOP Framebuffer: {}x{} @ {}bpp (stride={}, format={:?})",
+            fb_width, fb_height, fb_bpp, fb_info.stride, fb_info.pixel_format);
+    } else {
+        println!("[BOOT] WARNING: No framebuffer found. Falling back to VGA text mode.");
+        vga::init();
     }
-
-    println!("[BOOT] phys_offset=0x{:x}, heap=0x{:x}+4M", phys_offset, heap_phys);
 
     // Initialize interrupt table — this is the symmetry-breaking event
     // Before this: P_±_sym (all resources pooled, nothing distinguished)
@@ -432,16 +478,18 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // --- ALFS filesystem (ATA PIO, sector-based) ---
     match alfs::mount() {
         Ok(()) => {
+            programs::seed_alfs();
             println!("[FS] {} - files: {}", alfs::info(), alfs::list().len());
-            // Initialize Sefirot filesystem from ALFS
             match filesystem::init() {
-                Ok(count) => println!("[SEFIROT] {} files loaded into Sefirot tree", count),
+                Ok(count) => println!("[SEFIROT] {} files loaded from disk", count),
                 Err(e) => println!("[SEFIROT] Init failed: {}", e),
             }
         }
-        Err(e) => println!("[FS] ALFS mount failed: {} (running without disk)", e),
+        Err(e) => println!("[FS] ALFS: {} (no disk — using in-memory FS)", e),
     }
-    println!("[exoterikOS] Phi_c Kernel fully online.");
+    // Always populate built-in seed files (skipped if already present from ALFS)
+    filesystem::populate_defaults();
+    println!("[exoterikOS] Phi_c Kernel fully online. Type 'help' for commands.");
     shell_main();
 }
 
@@ -481,7 +529,7 @@ fn handle_key(key: u8, line_buf: &mut alloc::vec::Vec<u8>) {
 }
 
 fn shell_main() -> ! {
-    println!("exoterikOS shell. Type 'help' for commands.");
+    println!("exoterikOS shell. Type 'help' for commands, 'history 50' to scroll back.");
     let mut line_buf = alloc::vec::Vec::<u8>::new();
     print_prompt();
 

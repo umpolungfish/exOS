@@ -625,3 +625,40 @@ pub fn init() -> Result<usize, &'static str> {
     unsafe { GLOBAL_FS = Some(filesystem); }
     Ok(count)
 }
+
+/// Populate the global filesystem with built-in seed files.
+/// Called at boot so `ls` and `cat` work immediately without a disk.
+pub fn populate_defaults() {
+    let fs = self::fs();
+
+    // Keter — kernel root / boot config
+    fs.navigate_to(Sefirah::Keter);
+    fs.create("README", FileType::Regular,
+        b"Keter: kernel root.\nThis Sefirah holds boot configuration and kernel identity.\n");
+
+    // Chokhmah — system binaries / .aleph programs
+    fs.navigate_to(Sefirah::Chokhmah);
+    fs.create("hello.aleph", FileType::AlephProg,
+        b"# Greeting: tensor aleph x shin (source ^ fire)\naleph x shin\n");
+    fs.create("census.aleph", FileType::AlephProg,
+        b"# Tier census of the 22-letter system\n:census\n");
+    fs.create("distance.aleph", FileType::AlephProg,
+        b"# Structural distance between mem and shin\nd(mem, shin)\n");
+
+    // Binah — system libraries
+    fs.navigate_to(Sefirah::Binah);
+    fs.create("types.txt", FileType::Regular,
+        b"12-primitive type lattice:\n  D_holo  T_net   R_lr    P_pm\n  F_hbar  K_mod   G_aleph Gamma\n  Phi_c   H_inf   n_n     Omega\n");
+
+    // Hod — logs
+    fs.navigate_to(Sefirah::Hod);
+    fs.create("boot.log", FileType::Log,
+        b"exoterikOS boot log\n[OK] Serial\n[OK] Heap\n[OK] Framebuffer\n[OK] IDT\n[OK] Shell\n");
+
+    // Malkuth — user data (default CWD)
+    fs.navigate_to(Sefirah::Malkuth);
+    fs.create("welcome.txt", FileType::Regular,
+        b"Welcome to exoterikOS!\n\nCommands: help, ls, cd <sefirah>, cat <file>, write <file> <content>\n         aleph, type-check, history N, bench\n\nType 'history 50' to scroll back through output.\n");
+    fs.create("notes.txt", FileType::Regular,
+        b"Your notes go here.\nUse: write notes.txt <content>\n");
+}

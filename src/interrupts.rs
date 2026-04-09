@@ -3,7 +3,7 @@
 //! IRQ remapping: PIC1 → vectors 0x20-0x27, PIC2 → 0x28-0x2F.
 //! Only IRQ1 (keyboard, vector 0x21) is unmasked.
 
-use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 use x86_64::instructions::port::Port;
 use core::sync::atomic::{AtomicU64, Ordering};
 
@@ -70,6 +70,9 @@ pub fn init() {
     unsafe {
         let idt = &mut *core::ptr::addr_of_mut!(IDT);
         idt.breakpoint.set_handler_fn(breakpoint_handler);
+        idt.page_fault.set_handler_fn(page_fault_handler);
+        idt.general_protection_fault.set_handler_fn(gpf_handler);
+        idt.double_fault.set_handler_fn(double_fault_handler);
         // IRQ0 timer — needed to avoid spurious interrupt panic
         idt[0x20].set_handler_fn(timer_handler);
         // IRQ1 keyboard
@@ -85,6 +88,25 @@ pub fn init() {
 // ── Handlers ──────────────────────────────────────────────────────────────────
 extern "x86-interrupt" fn breakpoint_handler(_sf: InterruptStackFrame) {
     crate::println!("[INT] Breakpoint");
+}
+
+extern "x86-interrupt" fn page_fault_handler(sf: InterruptStackFrame, ec: PageFaultErrorCode) {
+    let cr2 = x86_64::registers::control::Cr2::read();
+    crate::serial::write_str("[FAULT] Page fault\r\n");
+    crate::println!("[FAULT] Page fault at {:#x} (err={:?})\n{:#?}", cr2, ec, sf);
+    loop { x86_64::instructions::hlt(); }
+}
+
+extern "x86-interrupt" fn gpf_handler(sf: InterruptStackFrame, ec: u64) {
+    crate::serial::write_str("[FAULT] General protection fault\r\n");
+    crate::println!("[FAULT] General protection fault (err=0x{:x})\n{:#?}", ec, sf);
+    loop { x86_64::instructions::hlt(); }
+}
+
+extern "x86-interrupt" fn double_fault_handler(sf: InterruptStackFrame, _ec: u64) -> ! {
+    crate::serial::write_str("[FAULT] Double fault!\r\n");
+    crate::println!("[FAULT] Double fault!\n{:#?}", sf);
+    loop { x86_64::instructions::hlt(); }
 }
 
 extern "x86-interrupt" fn timer_handler(_sf: InterruptStackFrame) {

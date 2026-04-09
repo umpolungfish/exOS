@@ -33,9 +33,8 @@ use crate::ata;
 const SUPERBLOCK_MAGIC: [u8; 4] = *b"ALFS";
 const SUPERBLOCK_VERSION: u16 = 1;
 
-/// ALFS superblock offset in sectors (1MB = 2048 sectors of 512 bytes).
-/// The boot disk has the kernel in the first 1MB; ALFS is appended after.
-pub const ALFS_OFFSET_SECTORS: u32 = 2048;
+/// ALFS superblock offset within the data disk (sector 0 of alfs.img).
+pub const ALFS_OFFSET_SECTORS: u32 = 0;
 
 const DIR_START_SECTOR: u32 = 1;
 pub const DATA_START_SECTOR: u32 = 17;  // 16 sectors reserved for directory
@@ -145,6 +144,9 @@ pub fn mount() -> Result<(), &'static str> {
             return Err("already mounted");
         }
 
+        // Switch to drive 1 (primary slave = data disk) before any I/O
+        ata::ATA_DRIVE = 1;
+
         // Read superblock (at ALFS_OFFSET_SECTORS + 0)
         let superblock = ata::read_sector(ALFS_OFFSET_SECTORS)
             .ok_or("failed to read superblock")?;
@@ -166,12 +168,12 @@ pub fn mount() -> Result<(), &'static str> {
             superblock[8], superblock[9], superblock[10], superblock[11],
         ]);
 
-        // Load sector bitmap from superblock (bytes 16..144 = 128 bytes = 1024 bits)
+        // Load sector bitmap from superblock bytes 16..144 into SECTOR_BITMAP[0..]
         let bitmap_bytes = (MAX_DATA_SECTORS + 7) / 8;
-        let copy_len = bitmap_bytes.min(superblock.len() - 16).min(128);
-        let bitmap_slice = &mut SECTOR_BITMAP as *mut _ as *mut u8;
+        let copy_len = bitmap_bytes.min(128);
+        let bitmap_slice = &raw mut SECTOR_BITMAP as *mut u8;
         for i in 0..copy_len {
-            bitmap_slice.add(16 + i).write_volatile(superblock[16 + i]);
+            bitmap_slice.add(i).write_volatile(superblock[16 + i]);
         }
 
         FILE_COUNT = file_count;

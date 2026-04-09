@@ -1,0 +1,41 @@
+\documentclass[border=20pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, decorations.markings, shadows, positioning, fit}
+\usepackage{amssymb,amsmath}
+\tikzset{
+  frobenius/.style={circle, draw=yellow!80!black, thick, fill=purple!20, minimum size=1.8cm, font=\bfseries},
+  arrow/.style={-{Stealth[length=3mm]}, thick, yellow!70!black},
+  ouroboros/.style={decorate, decoration={markings, mark=at position 0.5 with {\arrow{Stealth}}}}
+}
+
+\begin{document}
+\begin{tikzpicture}
+
+% Central Special Frobenius node
+\node[frobenius, label=above:{\Large $\mathbf{P}_{\pm}^{\text{sym}}$}] (sym) {Special Frobenius\\$\mu \circ \delta = \text{id}$};
+
+% μ (multiplication) and δ (comultiplication)
+\node[below left=1.2cm and 2cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=2.5cm] (mu) {$\mu$ (multiplication)};
+\node[below right=1.2cm and 2cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=2.5cm] (delta) {$\delta$ (comultiplication)};
+
+\draw[arrow] (sym) -- (mu) node[midway, above left] {$\mu$};
+\draw[arrow] (sym) -- (delta) node[midway, above right] {$\delta$};
+\draw[arrow] (mu) -- (sym) node[midway, below left] {$\delta$};
+\draw[arrow] (delta) -- (sym) node[midway, below right] {$\mu$};
+
+% Commutative identity loop
+\draw[arrow, purple!70!black, line width=1.5pt] (sym.east) to[out=30, in=-30] (sym.west) 
+  node[midway, above, sloped, font=\small\itshape] {$\mu \circ \delta = \text{id}$ (exact)};
+
+% Ouroboricity tier O_∞
+\node[below=2.5cm of sym, draw, thick, circle, fill=orange!10, minimum size=1.2cm, font=\bfseries] (inf) {$O_{\infty}$};
+\draw[->, thick, purple, bend left=60] (sym) to node[above, sloped] {$\Phi_c$ self-modeling} (inf);
+\draw[->, thick, purple, bend right=60] (inf) to node[below, sloped] {holographic recursion} (sym);
+
+% Context labels
+\node[fit=(sym)(mu)(delta), draw=dashed, thick, inner sep=15pt, label=above right:{\small Frobenian Infinities}] (box) {};
+\node[below=0.5cm of box, align=center, font=\small\itshape] {Enables infinite self-reference\\without descent --- boundary encodes bulk};
+
+\end{tikzpicture}
+\end{document}

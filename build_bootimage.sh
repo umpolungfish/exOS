@@ -1,118 +1,95 @@
 #!/usr/bin/env bash
 #
-# build_bootimage.sh — creates a bootable disk image for exoterikOS
-#
-# cargo bootimage is broken on rustc >= 1.90 (the -Z json-target-spec
-# flag was removed). This script replicates what bootimage does manually.
+# build_bootimage.sh — builds exoterikOS UEFI boot image
 #
 set -euo pipefail
 cd "$(dirname "$0")"
 
-KERNEL_NAME="exoterik-os"
 PROFILE="release"
 TARGET="x86_64-unknown-none"
+KERNEL_NAME="exoterik-os"
 OUT_DIR="target/${TARGET}/${PROFILE}"
-KERNEL="${OUT_DIR}/${KERNEL_NAME}"
-BOOTIMAGE="${OUT_DIR}/bootimage-${KERNEL_NAME}.bin"
-BOOTLOADER_TARGET="x86_64-bootloader.json"
-BOOT_BUILD_DIR="target/bootloader-build"
+KERNEL_ELF="${OUT_DIR}/${KERNEL_NAME}"
+BOOT_DIR="target/uefi-boot"
+ESP_DIR="${BOOT_DIR}/esp"
+EFI_DIR="${ESP_DIR}/EFI/BOOT"
+BOOTX64="${EFI_DIR}/BOOTX64.EFI"
 
-echo "═══ Φ_c exoterikOS Bootimage Builder ═══"
+echo "═══ Φ_c exoterikOS UEFI Bootimage Builder ═══"
 echo ""
 
-# ── 1: Build kernel ─────────────────────────────
-echo "[1/4] Building kernel ELF..."
-cargo build --profile "$PROFILE" 2>&1 | grep -E 'Compiling|Finished|error' || true
-[ ! -f "$KERNEL" ] && { echo "ERROR: $KERNEL not found"; exit 1; }
-echo "  ✓ $(stat -c%s "$KERNEL") bytes"
+# ── 1: Build kernel ELF ─────────────────────────────
+echo "[1/3] Building kernel ELF..."
+cargo build --profile "$PROFILE" --target "$TARGET" 2>&1 | grep -E 'Compiling|Finished|error' || true
+[ ! -f "$KERNEL_ELF" ] && { echo "ERROR: $KERNEL_ELF not found"; exit 1; }
+echo "  ✓ $(stat -c%s "$KERNEL_ELF") bytes"
 
-# ── 2: Create JSON target ───────────────────────
-echo "[2/4] Creating bootloader target spec..."
-cat > "$BOOTLOADER_TARGET" << 'SPEC'
-{
-    "llvm-target": "x86_64-unknown-none-gnu",
-    "data-layout": "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128",
-    "linker-flavor": "ld.lld",
-    "linker": "rust-lld",
-    "pre-link-args": {"ld.lld": ["--script=linker.ld","--gc-sections"]},
-    "target-endian": "little",
-    "target-pointer-width": 64,
-    "target-c-int-width": 32,
-    "arch": "x86_64",
-    "os": "none",
-    "features": "-mmx,-sse,+soft-float",
-    "disable-redzone": true,
-    "panic-strategy": "abort",
-    "executables": true,
-    "relocation-model": "static",
-    "rustc-abi": "x86-softfloat"
-}
-SPEC
-echo "  ✓ $BOOTLOADER_TARGET"
+# ── 2: Build bootloader binary with kernel embedded ──
+echo "[2/3] Building UEFI bootloader (embeds kernel)..."
 
-# ── 3: Build bootloader binary (embeds kernel) ──
-echo "[3/4] Building bootloader (embeds kernel)..."
-
+# Find the bootloader source
 BL_SRC=""
-for f in ~/.cargo/registry/src/*/bootloader-0.9.*/Cargo.toml; do
+for f in ~/.cargo/registry/src/*/bootloader-x86_64-uefi-0.11.*/Cargo.toml; do
     [ -f "$f" ] && { BL_SRC="$(dirname "$f")"; break; }
 done
-[ -z "$BL_SRC" ] && { echo "ERROR: bootloader 0.9.x not found"; exit 1; }
+[ -z "$BL_SRC" ] && { echo "ERROR: bootloader-x86_64-uefi not found. Run: cargo build --release first."; exit 1; }
 
-rm -rf "$BOOT_BUILD_DIR"
+rm -rf "${BOOT_DIR}/bootloader-build"
+mkdir -p "${BOOT_DIR}/bootloader-build"
 
-KERNEL="$(pwd)/$KERNEL" \
+# The bootloader must be built with x86_64-unknown-uefi target (not x86_64-unknown-none)
+# because it uses #[cfg(target_os = "uefi")] for its panic handler and UEFI entry point.
+KERNEL="$(pwd)/$KERNEL_ELF" \
 KERNEL_MANIFEST="$(pwd)/Cargo.toml" \
 KERNEL_DIRECTORY="$(pwd)" \
-CARGO_TARGET_DIR="$(pwd)/$BOOT_BUILD_DIR" \
 cargo build \
     --manifest-path "$BL_SRC/Cargo.toml" \
-    --features "binary,map_physical_memory" \
-    --target "$(pwd)/$BOOTLOADER_TARGET" \
-    --target-dir "$(pwd)/$BOOT_BUILD_DIR" \
-    --release 2>&1 | grep -E 'Compiling|Finished|error' || true
+    --release \
+    --target x86_64-unknown-uefi \
+    --target-dir "$(pwd)/${BOOT_DIR}/bootloader-build" \
+    2>&1 | grep -E 'Compiling|Finished|error' || true
 
-# Cargo strips the .json extension when naming the output directory
-BOOT_BIN="$BOOT_BUILD_DIR/${BOOTLOADER_TARGET%.json}/${PROFILE}/bootloader"
-[ ! -f "$BOOT_BIN" ] && { echo "ERROR: $BOOT_BIN not found"; exit 1; }
-echo "  ✓ $(stat -c%s "$BOOT_BIN") bytes"
+BOOT_ELF="${BOOT_DIR}/bootloader-build/x86_64-unknown-uefi/release/bootloader-x86_64-uefi.efi"
+[ ! -f "$BOOT_ELF" ] && { echo "ERROR: $BOOT_ELF not found"; exit 1; }
+echo "  ✓ $(stat -c%s "$BOOT_ELF") bytes"
 
-cp "$BOOT_BIN" "$BOOTIMAGE"
+# ── 3: Create EFI system partition structure ─────────
+echo "[3/3] Creating EFI boot image..."
+mkdir -p "$EFI_DIR"
 
-# ── 4: Convert ELF to raw disk image ──────────────
-echo "[4/5] Converting ELF to bootable disk image..."
+# Copy the .efi file directly (it's already a UEFI executable)
+cp "$BOOT_ELF" "$BOOTX64"
+echo "  ✓ EFI binary: $(stat -c%s "$BOOTX64") bytes"
 
-DISKIMAGE="${OUT_DIR}/bootimage-${KERNEL_NAME}.img"
+# Copy the kernel ELF — bootloader looks for "kernel-x86_64" by default
+cp "$KERNEL_ELF" "${ESP_DIR}/kernel-x86_64"
+echo "  ✓ Kernel ELF: $(stat -c%s "${ESP_DIR}/kernel-x86_64") bytes (as kernel-x86_64)"
 
-# Convert ELF to flat binary — objcopy extracts all LOAD segments in order,
-# producing the raw MBR+stage2+kernel image that QEMU boots directly.
-LLVM_OBJCOPY="$(rustup which llvm-objcopy 2>/dev/null || find ~/.rustup/toolchains/nightly-*/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-objcopy 2>/dev/null | head -1)"
-"$LLVM_OBJCOPY" -I elf64-x86-64 -O binary "$BOOT_BIN" "$DISKIMAGE"
-# Pad to 1MB for QEMU compatibility
-dd if=/dev/zero bs=1 count=0 seek=$((1024*1024)) of="$DISKIMAGE" 2>/dev/null
-echo "  ✓ $(stat -c%s "$DISKIMAGE") bytes (flat binary disk image)"
+# Create a FAT32 disk image with the EFI system partition
+IMG="${OUT_DIR}/bootimage-${KERNEL_NAME}.img"
+dd if=/dev/zero of="$IMG" bs=1M count=64 2>/dev/null
+mkfs.vfat -F 32 "$IMG" >/dev/null 2>&1 || {
+    echo "WARNING: mkfs.vfat failed, creating raw image instead"
+    cp "$BOOTX64" "${OUT_DIR}/bootimage-${KERNEL_NAME}.efi"
+    echo "  ✓ EFI binary (standalone): ${OUT_DIR}/bootimage-${KERNEL_NAME}.efi"
+}
 
-# ── 5: Build ALFS data disk ──────────────────────
-echo "[5/6] Building ALFS data disk..."
-ALFS_IMG="${OUT_DIR}/alfs.img"
-if [ -d "programs" ] && ls programs/*.aleph 1>/dev/null 2>&1; then
-    bash build_alfs.sh programs "$ALFS_IMG"
-    # Append ALFS image to the end of the boot disk
-    cat "$ALFS_IMG" >> "$DISKIMAGE"
-    ALFS_SECTORS=$(( $(stat -c%s "$ALFS_IMG") / 512 ))
-    DISK_SECTORS=$(( $(stat -c%s "$DISKIMAGE") / 512 ))
-    echo "  ✓ ALFS appended at sector $((DISK_SECTORS - ALFS_SECTORS)) (${ALFS_SECTORS} sectors)"
-else
-    echo "  (skipped — no programs/ directory or no .aleph files)"
-    # Create empty ALFS image so the kernel knows there's no filesystem
-    rm -f "$ALFS_IMG"
+# Copy files into the FAT image using mcopy
+if command -v mcopy &>/dev/null; then
+    mcopy -i "$IMG" -s "$ESP_DIR/EFI" "::EFI" 2>/dev/null || true
+    mcopy -i "$IMG" -o "${ESP_DIR}/kernel-x86_64" "::" 2>/dev/null || true
+    echo "  ✓ Files copied to disk image"
 fi
 
-# ── 6: Report ────────────────────────────────────
-echo "[6/6] Done."
 echo ""
-echo "Bootable image: $DISKIMAGE"
+echo "═══ Build Complete ═══"
+echo ""
+echo "Kernel ELF:      $KERNEL_ELF"
+echo "Bootloader ELF:  $BOOT_ELF"
+echo "EFI binary:      $BOOTX64"
+echo "Disk image:      $IMG"
 echo ""
 echo "Run:"
-echo "  qemu-system-x86_64 -drive format=raw,file=$(pwd)/$DISKIMAGE -display curses -no-reboot"
+echo "  ./run.sh          # graphical mode with UEFI framebuffer"
+echo "  ./run.sh --serial # serial-only mode"
 echo ""

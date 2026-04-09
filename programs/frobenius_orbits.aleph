@@ -1,0 +1,86 @@
+# frobenius_orbits.aleph
+# Frobenius infinities in iterative action — unrolled 4-step convergence study
+#
+# The three O_inf poles: vav ו, mem מ, shin ש
+# Frobenius property: repeated tensor with a pole is idempotent.
+# Every letter has an "orbit" under tensor with each pole — this program
+# unrolls that orbit for a set of scattered starting letters.
+#
+# Run with: :run frobenius_orbits
+
+# ── Self-idempotency (the defining Frobenius identity) ───────────────────────
+# A pole tensored with itself must be itself (d = 0).
+let vv = vav x vav
+let mm = mem x mem
+let ss = shin x shin
+d(vv, vav)
+d(mm, mem)
+d(ss, shin)
+tier(vv)
+tier(mm)
+tier(ss)
+
+# ── Cross-pole closure ───────────────────────────────────────────────────────
+# Poles are closed under tensor with each other — result stays O_inf or folds.
+let vm = vav x mem
+let vs = vav x shin
+let ms = mem x shin
+tier(vm) tier(vs) tier(ms)
+d(vm, vav) d(vm, mem)
+d(vs, vav) d(vs, shin)
+d(ms, mem) d(ms, shin)
+
+# ── Orbit of aleph under vav-pole ───────────────────────────────────────────
+# aleph is O_2 — watch it collapse toward vav through tensor pressure on P,F,K
+let a0 = aleph
+let a1 = a0 x vav
+let a2 = a1 x vav
+let a3 = a2 x vav
+let a4 = a3 x vav
+d(a0, vav) d(a1, vav) d(a2, vav) d(a3, vav) d(a4, vav)
+tier(a0) tier(a1) tier(a2) tier(a3) tier(a4)
+
+# ── Orbit of tav under mem-pole ─────────────────────────────────────────────
+# tav is O_2 — a structurally heavy letter, see how mem pulls it
+let t0 = tav
+let t1 = t0 x mem
+let t2 = t1 x mem
+let t3 = t2 x mem
+let t4 = t3 x mem
+d(t0, mem) d(t1, mem) d(t2, mem) d(t3, mem) d(t4, mem)
+tier(t0) tier(t1) tier(t2) tier(t3) tier(t4)
+
+# ── Orbit of dalet under shin-pole ──────────────────────────────────────────
+# dalet is O_0 — lowest tier, shin is the triadic infinity
+let d0 = dalet
+let d1 = d0 x shin
+let d2 = d1 x shin
+let d3 = d2 x shin
+let d4 = d3 x shin
+d(d0, shin) d(d1, shin) d(d2, shin) d(d3, shin) d(d4, shin)
+tier(d0) tier(d1) tier(d2) tier(d3) tier(d4)
+
+# ── Mediation through the poles ──────────────────────────────────────────────
+# Frobenius poles act as stable witnesses — they absorb mediation without
+# collapsing the meaning of the arguments.
+let med_v = mediate(vav, aleph, tav)
+let med_m = mediate(mem, aleph, tav)
+let med_s = mediate(shin, aleph, tav)
+d(med_v, vav) d(med_m, mem) d(med_s, shin)
+tier(med_v) tier(med_m) tier(med_s)
+
+# Second mediation layer — poles witness their own mediated products
+let med_vv = mediate(vav, med_v, med_v)
+let med_mm = mediate(mem, med_m, med_m)
+let med_ss = mediate(shin, med_s, med_s)
+d(med_vv, vav) d(med_mm, mem) d(med_ss, shin)
+tier(med_vv) tier(med_mm) tier(med_ss)
+
+# ── Final: distance between orbits at convergence ────────────────────────────
+d(a4, t4)
+d(a4, d4)
+d(t4, d4)
+d(a4, system())
+d(t4, system())
+d(d4, system())
+:census

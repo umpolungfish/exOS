@@ -122,7 +122,9 @@ impl AlephRepl {
         w.write_string("  :ls                     list session bindings\n");
         w.write_string("  :history                show command history\n");
         w.write_string("  :clear                  clear screen\n");
+        w.write_string("  :scroll [N]             replay last N lines of output (default 40)\n");
         w.write_string("  :files                  list ALFS files\n");
+        w.write_string("  :orbit N letter pole    convergence orbit under repeated tensor\n");
         w.write_string("  :save name              save last result as name.aleph\n");
         w.write_string("  :save name expr         save expression as name.aleph\n");
         w.write_string("  :load name              load and bind an .aleph file\n");
@@ -210,6 +212,119 @@ impl AlephRepl {
             let size = f.sector_count * 512;
             w.write_string(&format!("  {:<18} {:<10} {} bytes\n", f.name, type_str, size));
         }
+    }
+
+    /// :orbit N letter pole
+    /// Iteratively apply tensor(state, pole) N times, printing state and distance each step.
+    /// Shows how a letter converges toward a Frobenius infinity under repeated tensor pressure.
+    fn print_orbit(&self, args: &str) {
+        // Parse: "N letter pole"  e.g. "8 aleph vav"
+        let mut parts = args.splitn(3, ' ');
+        let n: usize = match parts.next().and_then(|s| s.parse().ok()) {
+            Some(n) => n,
+            None => {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string("  Usage: :orbit N letter pole\n");
+                w.write_string("  e.g.   :orbit 8 aleph vav\n");
+                return;
+            }
+        };
+        let letter_name = match parts.next() {
+            Some(s) => s,
+            None => {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string("  Usage: :orbit N letter pole\n");
+                return;
+            }
+        };
+        let pole_name = match parts.next() {
+            Some(s) => s,
+            None => {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string("  Usage: :orbit N letter pole\n");
+                w.write_string("  pole must be vav, mem, or shin (the O_inf letters)\n");
+                return;
+            }
+        };
+
+        let start = match aleph::resolve_letter(letter_name) {
+            Some(l) => l,
+            None => {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string(&format!("  [ERROR] Unknown letter: '{}'\n", letter_name));
+                return;
+            }
+        };
+        let pole = match aleph::resolve_letter(pole_name) {
+            Some(l) => l,
+            None => {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string(&format!("  [ERROR] Unknown pole: '{}'\n", pole_name));
+                return;
+            }
+        };
+
+        let mut w = WRITER.lock();
+        w.color_code = vga::ColorCode::new(Color::LightCyan, Color::Black);
+        w.write_string(&format!("  Orbit of {} under x{} ({} steps)\n",
+            aleph::display_glyph(start), aleph::display_glyph(pole), n));
+        w.write_string("  step  nearest        tier     d(state,pole)  delta\n");
+        w.write_string("  --------------------------------------------------------\n");
+
+        let mut state = start.t;
+        let mut prev_dist = aleph::distance(&state, &pole.t);
+
+        // step 0 — initial state
+        let nearest0 = aleph::nearest_letter(&state);
+        let tier0 = aleph::tier_name(aleph::compute_tier(&state));
+        w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+        w.write_string(&format!("     0  {:<15}{:<9}{:.4}\n",
+            &format!("{} ({})", aleph::display_glyph(nearest0), nearest0.name),
+            tier0, prev_dist));
+
+        for step in 1..=n {
+            state = aleph::tensor(&state, &pole.t);
+            let dist = aleph::distance(&state, &pole.t);
+            let delta = dist - prev_dist;
+            let nearest = aleph::nearest_letter(&state);
+            let tier = aleph::tier_name(aleph::compute_tier(&state));
+
+            // Color: converging = green, stable = cyan, diverging = red
+            w.color_code = if delta < -0.001 {
+                vga::ColorCode::new(Color::LightGreen, Color::Black)
+            } else if delta.abs() <= 0.001 {
+                vga::ColorCode::new(Color::LightCyan, Color::Black)
+            } else {
+                vga::ColorCode::new(Color::LightRed, Color::Black)
+            };
+
+            let delta_str = if delta.abs() < 0.0001 {
+                "  (fixed)".to_string()
+            } else {
+                format!("  {:+.4}", delta)
+            };
+
+            w.write_string(&format!("  {:>4}  {:<15}{:<9}{:.4}{}\n",
+                step,
+                &format!("{} ({})", aleph::display_glyph(nearest), nearest.name),
+                tier, dist, delta_str));
+
+            prev_dist = dist;
+
+            // Early exit if fully converged
+            if dist < 0.01 {
+                w.color_code = vga::ColorCode::new(Color::Yellow, Color::Black);
+                w.write_string(&format!("  -- converged at step {} --\n", step));
+                break;
+            }
+        }
+        w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+        w.write_string("\n");
     }
 
     /// Print command history (:history).
@@ -389,17 +504,18 @@ impl AlephRepl {
 
         let filename = if name.ends_with(".aleph") { name.clone() } else { format!("{}.aleph", name) };
 
-        // Write to Sefirot filesystem
-        let fs = crate::filesystem::fs();
-        let sefirah_before = fs.current();
-        // Navigate to Chokhmah for .aleph files
-        fs.navigate_to(crate::filesystem::Sefirah::Chokhmah);
-        fs.write(&filename, content.as_bytes());
-        fs.navigate_to(sefirah_before);
-
         let mut w = WRITER.lock();
         w.color_code = vga::ColorCode::new(Color::White, Color::Black);
-        w.write_string(&format!("  Saved '{}' ({} bytes) in Chokhmah (/sys/bin)\n", filename, content.len()));
+        match crate::alfs::write_file(&filename, content.as_bytes(), crate::alfs::TYPE_ALEPH) {
+            Ok(sectors) => {
+                w.write_string(&format!("  Saved '{}' ({} bytes, {} sectors)\n",
+                    filename, content.len(), sectors));
+            }
+            Err(e) => {
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string(&format!("  [ERROR] Save failed: {}\n", e));
+            }
+        }
     }
 
     /// Find the best-matching letter for a tuple (used for :system).
@@ -505,6 +621,14 @@ impl AlephRepl {
             self.print_files();
             return;
         }
+        if src == ":scroll" || src == ":page" || src.starts_with(":scroll ") || src.starts_with(":page ") {
+            // Replay kernel output history — allows scrolling back through past output.
+            let n: usize = src.split_whitespace().nth(1)
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(40);
+            crate::history::replay(n);
+            return;
+        }
         if src.starts_with(":save ") {
             let rest = src[6..].trim();
             self.save_file(rest);
@@ -518,6 +642,10 @@ impl AlephRepl {
         if src.starts_with(":run ") {
             let name = src[5..].trim();
             self.run_file(name);
+            return;
+        }
+        if src.starts_with(":orbit ") {
+            self.print_orbit(src[7..].trim());
             return;
         }
 

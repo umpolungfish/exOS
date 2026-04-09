@@ -8,7 +8,16 @@
       "Bash(cat *)",
       "Bash(mkdir *)",
       "Bash(chmod *)",
-      "Bash(bash *)"
+      "Bash(bash *)",
+      "Bash(rm *)",
+      "Bash(find *)",
+      "Bash(timeout *)",
+      "Bash(true)",
+      "Bash(pdflatex *)",
+      "Bash(do *)",
+      "Bash(done)",
+      "Bash(fc-list *)",
+      "Bash(xelatex *)"
     ]
   },
   "$version": 3

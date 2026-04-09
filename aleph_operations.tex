@@ -1,0 +1,143 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif Display}[
+  AutoFakeBold=1.5,
+  AutoFakeSlant=0.15
+]
+\newfontfamily\hebrewfont{Noto Serif Hebrew}[Script=Hebrew]
+\usepackage{amsmath, amssymb, array, booktabs, xcolor}
+\usepackage[margin=2cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\newcommand{\heb}[1]{{\hebrewfont #1}}
+
+\title{ALEPH Language Operations Reference}
+\author{SynthOmnicon / $\lambda_\aleph$}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Core Binary Operations}
+
+\begin{tabular}{ @{} l l l l @{}}
+\toprule
+\textbf{Operation} & \textbf{Syntax} & \textbf{Description} & \textbf{Primitive rule} \\
+\midrule
+Tensor & $a \otimes b$ & Composition / application & $P,F,K$: $\min$; others: $\max$ \\
+Join   & $a \vee b$   & Least upper bound (LUB) & all: $\max$ \\
+Meet   & $a \wedge b$ & Greatest lower bound (GLB) & all: $\min$ \\
+Vav-cast & $a ::> b$ & Proof-carrying type cast & $d(a\otimes\text{\heb{ו}}, b) < \tau(\Omega)$ \\
+Mediate & $\text{mediate}(w, a, b)$ & Triadic: $w \vee (a\otimes b)$ & join after tensor \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Tensor composition details}
+Bottleneck primitives: $P$ (parity), $F$ (fidelity), $K$ (kinetic) -- the weaker partner wins.  
+Union primitives: all others -- the stronger wins.  
+Stoichiometry $S$: $n\!:\!m$ absorbs, $1\!:\!1$ only preserved with $1\!:\!1$.
+
+\section*{Probes and Inspections}
+
+\begin{tabular}{ @{} l l l @{}}
+\toprule
+\textbf{Function} & \textbf{Syntax} & \textbf{Returns} \\
+\midrule
+Criticality & $\text{probe}_\Phi(a)$ & $\Phi$ primitive (sub, c, c\_complex, EP, super) \\
+Protection  & $\text{probe}_\Omega(a)$ & $\Omega$ primitive (0, Z$_2$, Z) \\
+Tier        & $\text{tier}(a)$ & O\_0, O\_1, O\_2, O\_2d, O\_inf \\
+Distance    & $d(a,b)$ & weighted Euclidean distance + conflict set \\
+Match       & $\text{match } a \{ O_0 \Rightarrow e_0, \dots \}$ & tier pattern matching \\
+Palace      & $\text{palace}(n)\, a$ & assert tier barrier $n$ \\
+System      & $\text{system}()$ & JOIN of all 22 letters \\
+Census      & $\text{census}()$ & tier distribution table \\
+\bottomrule
+\end{tabular}
+
+\section*{Ouroboricity Tier Definitions}
+
+\begin{tabular}{ @{} l l l @{}}
+\toprule
+Tier & Condition & Example letters \\
+\midrule
+$O_\infty$ & $\Phi \ge \Phi_c$ \& $P = P_{\pm}^{\text{sym}}$ & \heb{ו}, \heb{מ}, \heb{ש} \\
+$O_2$      & $\Phi \ge \Phi_c$ \& $\Omega \neq \Omega_0$ \& $D \neq D_\infty$ & \heb{א}, \heb{ה}, \heb{ע}, \heb{ק}, \heb{ת} \\
+$O_{2d}$   & $\Phi \ge \Phi_c$ \& $\Omega \neq \Omega_0$ \& $D = D_\infty$ & \heb{ל} \\
+$O_1$      & $\Phi \ge \Phi_c$ \& $\Omega = \Omega_0$ & (none after revision) \\
+$O_0$      & $\Phi = \Phi_{\text{sub}}$ & 13 letters (bet, gimel, \ldots) \\
+\bottomrule
+\end{tabular}
+
+\section*{Vav-Cast Thresholds}
+
+\begin{tabular}{ @{} l l l @{}}
+\toprule
+$\min(\Omega_{\text{composed}}, \Omega_{\text{target}})$ & Threshold $\tau$ & Interpretation \\
+\midrule
+$\Omega_Z$   & $4.0$ & Strong topological protection, moderate tolerance \\
+$\Omega_{Z_2}$ & $3.0$ & Binary protection, strict \\
+$\Omega_0$   & $1.5$ & Unprotected, must be nearly identical \\
+\bottomrule
+\end{tabular}
+
+\section*{Structural Distance Veracity Classes}
+
+\begin{tabular}{ @{} l l l @{}}
+\toprule
+$d$ range & Class & Meaning \\
+\midrule
+$0$            & transparent & identical types \\
+$0 < d \le \sqrt{2}$ & near-grounded & single-primitive gap \\
+$\sqrt{2} < d \le \sqrt{6}$ & partial-emergence & recoverable with mediation \\
+$d > \sqrt{6}$ & aspirational & requires Vav-cast or tier promotion \\
+\bottomrule
+\end{tabular}
+
+\section*{Example Reduction Rules}
+
+\begin{align*}
+\text{tensor}(a,b) &: \quad \text{type}(a\otimes b) = \langle \max(a_i,b_i)\text{ except }P,F,K \to \min\rangle \\
+\text{mediate}(w,a,b) &: \quad \text{type} = \max(\text{type}(w),\; \text{type}(a\otimes b)) \\
+\text{vav\_cast}(s,t) &: \quad \text{valid iff } d(s\otimes\text{\heb{ו}},\; t) < \tau(\min(\Omega_{s\otimes\text{\heb{ו}}}, \Omega_t))
+\end{align*}
+
+\section*{Palace (Hekhalot) Barrier Tiers}
+
+\begin{tabular}{ @{} c c l @{}}
+\toprule
+Palace & Required tier & Letters allowed \\
+\midrule
+1--2 & $O_0$ & subcritical letters \\
+3   & $O_1$ & Lamed (critical but unprotected) \\
+4--6 & $O_2$ & Aleph, Hei, Ayin, Kuf, Tav \\
+7   & $O_\infty$ & Vav, Mem, Shin \\
+\bottomrule
+\end{tabular}
+
+\vspace{1em}
+\noindent\textbf{Note:} Crossing a barrier requires explicit promotion via Vav-cast or mediate.
+
+\section*{Letter Name Lookup (case-insensitive)}
+
+\begin{tabular}{ @{} *{4}{l} @{}}
+\toprule
+Glyph & Name & Glyph & Name \\
+\midrule
+\heb{א} & Aleph & \heb{מ} & Mem \\
+\heb{ב} & Bet   & \heb{נ} & Nun \\
+\heb{ג} & Gimel & \heb{ס} & Samech \\
+\heb{ד} & Dalet & \heb{ע} & Ayin \\
+\heb{ה} & Hei   & \heb{פ} & Pei \\
+\heb{ו} & Vav   & \heb{צ} & Tzadi \\
+\heb{ז} & Zayin & \heb{ק} & Kuf \\
+\heb{ח} & Chet  & \heb{ר} & Resh \\
+\heb{ט} & Tet   & \heb{ש} & Shin \\
+\heb{י} & Yod   & \heb{ת} & Tav \\
+\heb{כ} & Kaf   &     &     \\
+\heb{ל} & Lamed &     &     \\
+\bottomrule
+\end{tabular}
+
+\end{document}

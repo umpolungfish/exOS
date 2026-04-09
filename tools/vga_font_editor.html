@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VGA 8×16 Hebrew Font Editor</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111; color: #0f0; font-family: 'Courier New', monospace;
+         display: flex; justify-content: center; padding: 20px; user-select: none; }
+  .container { display: flex; gap: 30px; align-items: flex-start; }
+  .letters { display: flex; flex-direction: column; gap: 2px; }
+  .letter-btn {
+    background: #222; color: #0f0; border: 1px solid #333;
+    padding: 4px 8px; cursor: pointer; font-family: monospace; font-size: 14px;
+    text-align: left; width: 160px;
+  }
+  .letter-btn:hover { background: #333; }
+  .letter-btn.active { background: #040; border-color: #0f0; }
+  .grid-section { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  canvas { border: 2px solid #0f0; cursor: crosshair; image-rendering: pixelated; }
+  .info { text-align: center; font-size: 14px; line-height: 1.6; }
+  .info .letter-preview { font-size: 48px; color: #fff; }
+  #output {
+    background: #1a1a1a; color: #0f0; border: 1px solid #333;
+    padding: 12px; width: 480px; height: 200px; font-size: 11px;
+    overflow-y: auto; white-space: pre; font-family: 'Courier New', monospace;
+  }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .controls button {
+    background: #222; color: #0f0; border: 1px solid #444;
+    padding: 6px 12px; cursor: pointer; font-family: monospace; font-size: 13px;
+  }
+  .controls button:hover { background: #333; border-color: #0f0; }
+  .controls button.danger { color: #f44; border-color: #844; }
+  .controls button.danger:hover { background: #411; }
+  #copy-status { color: #ff0; font-size: 12px; min-height: 16px; }
+  .hint { color: #888; font-size: 12px; }
+  .mirror-section { margin-top: 10px; display: flex; gap: 10px; align-items: center; }
+  .mirror-section label { color: #0f0; font-size: 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="letters" id="letters"></div>
+  <div class="grid-section">
+    <div class="info">
+      <div class="letter-preview" id="preview">א</div>
+      <div id="label">aleph (0xE0)</div>
+    </div>
+    <canvas id="grid" width="128" height="256"></canvas>
+    <div class="mirror-section">
+      <label><input type="checkbox" id="mirror-v"> Mirror V</label>
+      <label><input type="checkbox" id="mirror-h"> Mirror H</label>
+      <label><input type="checkbox" id="draw-mode"> Erase mode</label>
+    </div>
+    <div class="controls">
+      <button onclick="clearGrid()">Clear</button>
+      <button onclick="invertGrid()">Invert</button>
+      <button onclick="shiftGrid('up')">↑</button>
+      <button onclick="shiftGrid('down')">↓</button>
+      <button onclick="shiftGrid('left')">←</button>
+      <button onclick="shiftGrid('right')">→</button>
+      <button onclick="copyFromReference()">Copy ref</button>
+      <button onclick="loadReference()">Load ref</button>
+      <button class="danger" onclick="resetAll()">Reset all</button>
+    </div>
+    <button onclick="generateCode()" style="background:#040;border:2px solid #0f0;padding:8px 20px;cursor:pointer;color:#0f0;font-family:monospace;font-size:14px;">Generate Rust Code ↓</button>
+    <div id="output"></div>
+    <div id="copy-status"></div>
+    <div class="hint">Click/drag to draw pixels. Right-click to erase.</div>
+  </div>
+</div>
+
+<script>
+const LETTERS = [
+  {name:'aleph',  glyph:'א', code:0xE0},
+  {name:'bet',    glyph:'ב', code:0xE1},
+  {name:'gimel',  glyph:'ג', code:0xE2},
+  {name:'dalet',  glyph:'ד', code:0xE3},
+  {name:'hei',    glyph:'ה', code:0xE4},
+  {name:'vav',    glyph:'ו', code:0xE5},
+  {name:'zayin',  glyph:'ז', code:0xE6},
+  {name:'chet',   glyph:'ח', code:0xE7},
+  {name:'tet',    glyph:'ט', code:0xE8},
+  {name:'yod',    glyph:'י', code:0xE9},
+  {name:'kaf',    glyph:'כ', code:0xEA},
+  {name:'lamed',  glyph:'ל', code:0xEB},
+  {name:'mem',    glyph:'מ', code:0xEC},
+  {name:'nun',    glyph:'נ', code:0xED},
+  {name:'samech', glyph:'ס', code:0xEE},
+  {name:'ayin',   glyph:'ע', code:0xEF},
+  {name:'pei',    glyph:'פ', code:0xF0},
+  {name:'tzadi',  glyph:'צ', code:0xF1},
+  {name:'kuf',    glyph:'ק', code:0xF2},
+  {name:'resh',   glyph:'ר', code:0xF3},
+  {name:'shin',   glyph:'ש', code:0xF4},
+  {name:'tav',    glyph:'ת', code:0xF5},
+];
+
+// Font data: 22 letters × 16 bytes
+const W = 8, H = 16;
+let fontData = LETTERS.map(() => new Uint8Array(H)); // each byte = one row
+let currentLetter = 0;
+let painting = false;
+let paintValue = 1; // 1 = draw, 0 = erase
+
+// Reference patterns (crude approximations of Hebrew letters in 8x16)
+// These give a starting point that can be refined
+const REFERENCES = {};
+// We'll build references as simple ASCII art patterns
+function buildReferences() {
+  // Helper: create pattern from array of column indices for each row
+  const fromCols = (cols) => {
+    let pat = new Uint8Array(H);
+    for (let y = 0; y < H; y++) {
+      let row = 0;
+      for (let x of (cols[y] || [])) { row |= (1 << (7 - x)); }
+      pat[y] = row;
+    }
+    return pat;
+  };
+
+  // Each letter: array of column indices [0..7] for each row [0..15]
+  // These are rough approximations - user should refine them
+  // Aleph: diagonal strokes with center bar
+  REFERENCES['aleph'] = fromCols({
+    1: [1], 2:[2], 3:[3], 4:[3], 5:[4], 6:[4,5,6],
+    7:[1,2,3,4,5,6], 8:[4,5], 9:[5], 10:[5], 11:[6], 12:[6,7]
+  });
+  // Bet: house shape
+  REFERENCES['bet'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1], 3:[1], 4:[1], 5:[1,2,3,4,5,6], 6:[1], 7:[1], 8:[1,7],
+    9:[1,7], 10:[1,2,3,4,5,6,7], 12:[1], 13:[1]
+  });
+  // Gimel: hook shape
+  REFERENCES['gimel'] = fromCols({
+    1:[1,2,3,4,5,6], 2:[1], 3:[1], 4:[1], 5:[1,2,3,4,5], 6:[1], 7:[1], 8:[1,7],
+    9:[1,7], 10:[1], 11:[1], 12:[1], 13:[1,2,3]
+  });
+  // Dalet: door shape (right side only at bottom)
+  REFERENCES['dalet'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1], 3:[1], 4:[1], 5:[1], 6:[1], 7:[1], 8:[1],
+    9:[1], 10:[1,2,3,4,5,6,7], 11:[7], 12:[7], 13:[7]
+  });
+  // Hei: like dalet but gap in bottom bar
+  REFERENCES['hei'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1], 3:[1], 4:[1], 5:[1], 6:[1,2,3,4,5], 7:[1],
+    8:[1,2,3,4,5,6,7], 10:[1], 11:[1], 12:[1,2,3], 13:[1]
+  });
+  // Vav: hook/link
+  REFERENCES['vav'] = fromCols({
+    1:[2,3,4,5,6,7], 2:[4], 3:[4], 4:[4], 5:[4], 6:[4], 7:[4], 8:[4],
+    9:[4], 10:[4], 11:[4], 12:[4], 13:[4,5,6], 14:[4]
+  });
+  // Zayin: crown/sword
+  REFERENCES['zayin'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[5], 3:[3], 4:[1], 5:[1,2,3,4,5], 6:[1], 7:[1],
+    8:[1,2,3,4,5], 10:[1], 11:[1], 12:[1], 13:[1,2,3,4,5]
+  });
+  // Chet: fence (two verticals, connected at top)
+  REFERENCES['chet'] = fromCols({
+    1:[1,7], 2:[1,7], 3:[1,2,3,4,5,6,7], 4:[1], 5:[1], 6:[1], 7:[1], 8:[1],
+    9:[1], 10:[1], 11:[1], 12:[1], 13:[1], 14:[1,2,3,4,5,6,7]
+  });
+  // Tet: enclosed circle-ish
+  REFERENCES['tet'] = fromCols({
+    1:[2,3,4,5,6,7], 2:[1,7], 3:[1,7], 4:[1,7], 5:[1,7], 6:[1,7], 7:[1,7],
+    8:[1,7], 9:[1,7], 10:[1,7], 11:[1,7], 12:[1,7], 13:[1,2,3,4,5,6]
+  });
+  // Yod: small hand (tiny)
+  REFERENCES['yod'] = fromCols({
+    1:[3,4,5,6], 2:[5], 3:[5], 4:[4,5,6], 5:[6], 6:[6], 7:[6], 8:[6], 9:[6],
+    10:[6], 11:[6], 12:[6]
+  });
+  // Kaf: open palm (like bet but bottom extends left)
+  REFERENCES['kaf'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1], 3:[1], 4:[1], 5:[1,2,3,4,5], 6:[1], 7:[1], 8:[1],
+    9:[1], 10:[1], 11:[1], 12:[1], 13:[1,2,3,4,5]
+  });
+  // Lamed: tall, goes up
+  REFERENCES['lamed'] = fromCols({
+    0:[4], 1:[4], 2:[4,5,6], 3:[4], 4:[4], 5:[4], 6:[4], 7:[1,2,3,4,5],
+    8:[1], 9:[1], 10:[1], 11:[1], 12:[1], 13:[1,2,3,4,5,6]
+  });
+  // Mem: water (open at top, closed bottom)
+  REFERENCES['mem'] = fromCols({
+    1:[1], 2:[1,2,3,4,5,6,7], 3:[1], 4:[1], 5:[1], 6:[1,7], 7:[1,7], 8:[1,7],
+    9:[1,7], 10:[1,7], 11:[1,2,3,4,5,6,7], 12:[1], 13:[1]
+  });
+  // Nun: fish hook (long descender)
+  REFERENCES['nun'] = fromCols({
+    1:[2,3,4,5,6,7], 2:[4], 3:[4], 4:[4], 5:[4], 6:[4], 7:[4], 8:[4], 9:[4],
+    10:[4], 11:[4], 12:[4], 13:[4,5,6,7]
+  });
+  // Samech: fish/support (circle-ish)
+  REFERENCES['samech'] = fromCols({
+    1:[1,2,3,4,5,6], 2:[1,7], 3:[1,7], 4:[1,7], 5:[1,2,3,4,5], 6:[1], 7:[1],
+    8:[1], 9:[1], 10:[1,7], 11:[1,7], 12:[1,7], 13:[1,2,3,4,5,6]
+  });
+  // Ayin: eye
+  REFERENCES['ayin'] = fromCols({
+    1:[2,3,4,5], 2:[1,6], 3:[1,6], 4:[1,6], 5:[2,3,4,5], 6:[4], 7:[4], 8:[4],
+    9:[4], 10:[4], 11:[4], 12:[4,5], 13:[4,5]
+  });
+  // Pei: mouth (open at bottom left)
+  REFERENCES['pei'] = fromCols({
+    1:[2,3,4,5,6,7], 2:[1,7], 3:[1,7], 4:[1,7], 5:[1,7], 6:[1,7], 7:[1,7],
+    8:[1,7], 9:[1,7], 10:[1,7], 11:[1,2,3,4,5], 12:[1], 13:[1]
+  });
+  // Tzadi: hook combo
+  REFERENCES['tzadi'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1], 3:[1], 4:[1,2,3,4,5], 5:[3], 6:[3], 7:[3], 8:[3],
+    9:[3], 10:[3], 11:[3], 12:[3,4,5], 13:[3]
+  });
+  // Kuf: back of head (tall)
+  REFERENCES['kuf'] = fromCols({
+    0:[4], 1:[4], 2:[1,2,3,4,5,6], 3:[1], 4:[1], 5:[1,7], 6:[1,7], 7:[1,7],
+    8:[1,7], 9:[1,7], 10:[1,2,3,4,5,6], 11:[4], 12:[4], 13:[4]
+  });
+  // Resh: head (like dalet but rounded top)
+  REFERENCES['resh'] = fromCols({
+    1:[2,3,4,5,6,7], 2:[1,7], 3:[1,7], 4:[1,7], 5:[1,7], 6:[1,7], 7:[1,7],
+    8:[1,7], 9:[1,7], 10:[1,7], 11:[1,2,3,4,5,6,7], 12:[7], 13:[7]
+  });
+  // Shin: tooth/fire (3 prongs up)
+  REFERENCES['shin'] = fromCols({
+    1:[1,2, 4,5, 7,8>7?7:7], 2:[1, 4, 7], 3:[1, 4, 7], 4:[1, 4, 7],
+    5:[1, 4, 7], 6:[1, 4, 7], 7:[1, 4, 7], 8:[1,2,3,4,5,6,7],
+    10:[4], 11:[4], 12:[4], 13:[4,5]
+  });
+  // Fix shin properly
+  REFERENCES['shin'] = (() => {
+    let pat = new Uint8Array(H);
+    pat[1] = 0b10110001; // prongs left, center, right
+    pat[2] = 0b10010001;
+    pat[3] = 0b10010001;
+    pat[4] = 0b10010001;
+    pat[5] = 0b10010001;
+    pat[6] = 0b10010001;
+    pat[7] = 0b11111111;
+    pat[8] = 0b00010000;
+    pat[9] = 0b00010000;
+    pat[10]= 0b00010000;
+    pat[11]= 0b00010000;
+    pat[12]= 0b00011000;
+    return pat;
+  })();
+  // Tav: cross/mark (like bet with bottom bar)
+  REFERENCES['tav'] = fromCols({
+    1:[1,2,3,4,5,6,7], 2:[1,7], 3:[1,7], 4:[1,7], 5:[1,7], 6:[1,7], 7:[1,7],
+    8:[1,7], 9:[1,7], 10:[1,2,3,4,5,6,7], 11:[4], 12:[4], 13:[4], 14:[4,5,6]
+  });
+
+  return REFERENCES;
+}
+
+const REF = buildReferences();
+
+const canvas = document.getElementById('grid');
+const ctx = canvas.getContext('2d');
+const SCALE = 16; // each pixel is 16×16 on screen
+
+function drawGrid() {
+  const data = fontData[currentLetter];
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const bit = (data[y] >> (7 - x)) & 1;
+      ctx.fillStyle = bit ? '#0f0' : '#111';
+      ctx.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+    }
+  }
+  // Grid lines
+  ctx.strokeStyle = '#0a0';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x <= W; x++) {
+    ctx.beginPath(); ctx.moveTo(x * SCALE, 0); ctx.lineTo(x * SCALE, H * SCALE); ctx.stroke();
+  }
+  for (let y = 0; y <= H; y++) {
+    ctx.beginPath(); ctx.moveTo(0, y * SCALE); ctx.lineTo(W * SCALE, y * SCALE); ctx.stroke();
+  }
+  document.getElementById('preview').textContent = LETTERS[currentLetter].glyph;
+  document.getElementById('label').textContent =
+    `${LETTERS[currentLetter].name} (0x${LETTERS[currentLetter].code.toString(16).toUpperCase()})`;
+}
+
+function getPixel(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / SCALE);
+  const y = Math.floor((e.clientY - rect.top) / SCALE);
+  return {x, y};
+}
+
+function setPixel(x, y, val) {
+  if (x < 0 || x >= W || y < 0 || y >= H) return;
+  const data = fontData[currentLetter];
+  const mirrorV = document.getElementById('mirror-v').checked;
+  const mirrorH = document.getElementById('mirror-h').checked;
+
+  if (mirrorV) {
+    data[y] &= ~(1 << (7 - x));
+    data[y] |= val << (7 - x);
+    const mx = W - 1 - x;
+    data[y] &= ~(1 << (7 - mx));
+    data[y] |= val << (7 - mx);
+  } else if (mirrorH) {
+    const my = H - 1 - y;
+    data[y] &= ~(1 << (7 - x));
+    data[y] |= val << (7 - x);
+    data[my] &= ~(1 << (7 - x));
+    data[my] |= val << (7 - x);
+  } else {
+    data[y] &= ~(1 << (7 - x));
+    data[y] |= val << (7 - x);
+  }
+  drawGrid();
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  painting = true;
+  const {x, y} = getPixel(e);
+  const isErase = e.button === 2 || document.getElementById('draw-mode').checked;
+  paintValue = isErase ? 0 : 1;
+  setPixel(x, y, paintValue);
+});
+canvas.addEventListener('mousemove', (e) => {
+  if (!painting) return;
+  const {x, y} = getPixel(e);
+  setPixel(x, y, paintValue);
+});
+canvas.addEventListener('mouseup', () => painting = false);
+canvas.addEventListener('mouseleave', () => painting = false);
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+function clearGrid() {
+  fontData[currentLetter] = new Uint8Array(H);
+  drawGrid();
+}
+
+function invertGrid() {
+  for (let y = 0; y < H; y++) fontData[currentLetter][y] ^= 0xFF;
+  drawGrid();
+}
+
+function shiftGrid(dir) {
+  const d = fontData[currentLetter];
+  if (dir === 'up') {
+    for (let y = 0; y < H - 1; y++) d[y] = d[y + 1];
+    d[H - 1] = 0;
+  } else if (dir === 'down') {
+    for (let y = H - 1; y > 0; y--) d[y] = d[y - 1];
+    d[0] = 0;
+  } else if (dir === 'left') {
+    for (let y = 0; y < H; y++) d[y] = (d[y] << 1) & 0xFF;
+  } else if (dir === 'right') {
+    for (let y = 0; y < H; y++) d[y] >>= 1;
+  }
+  drawGrid();
+}
+
+function copyFromReference() {
+  const name = LETTERS[currentLetter].name;
+  if (REF[name]) {
+    fontData[currentLetter] = new Uint8Array(REF[name]);
+    drawGrid();
+    document.getElementById('copy-status').textContent = `Loaded reference for ${name}`;
+    setTimeout(() => document.getElementById('copy-status').textContent = '', 2000);
+  }
+}
+
+function loadReference() {
+  // Load from localStorage if available
+  const name = LETTERS[currentLetter].name;
+  const saved = localStorage.getItem('hebrew_font_' + name);
+  if (saved) {
+    const arr = saved.split(',').map(Number);
+    fontData[currentLetter] = new Uint8Array(arr);
+    drawGrid();
+    document.getElementById('copy-status').textContent = `Loaded saved ${name}`;
+    setTimeout(() => document.getElementById('copy-status').textContent = '', 2000);
+  }
+}
+
+function saveToStorage() {
+  const name = LETTERS[currentLetter].name;
+  localStorage.setItem('hebrew_font_' + name, Array.from(fontData[currentLetter]).join(','));
+}
+
+function resetAll() {
+  if (!confirm('Reset ALL 22 letters to blank?')) return;
+  fontData = LETTERS.map(() => new Uint8Array(H));
+  localStorage.clear();
+  drawGrid();
+  updateLetterButtons();
+}
+
+function selectLetter(i) {
+  saveToStorage(); // save current
+  currentLetter = i;
+  // Try loading from localStorage first, then reference
+  const name = LETTERS[i].name;
+  const saved = localStorage.getItem('hebrew_font_' + name);
+  if (saved) {
+    fontData[i] = new Uint8Array(saved.split(',').map(Number));
+  }
+  drawGrid();
+  updateLetterButtons();
+}
+
+function updateLetterButtons() {
+  document.querySelectorAll('.letter-btn').forEach((btn, i) => {
+    btn.className = 'letter-btn' + (i === currentLetter ? ' active' : '');
+  });
+}
+
+function generateCode() {
+  saveToStorage();
+  let code = '// Hebrew VGA font bitmaps — 8×16, code points 0xE0–0xF5\n';
+  code += '// Auto-generated by vga_font_editor.html\n\n';
+  code += 'pub const HEBREW_FONT_START: u8 = 0xE0;\n';
+  code += `pub const HEBREW_FONT: [[u8; 16]; ${LETTERS.length}] = [\n`;
+  for (let i = 0; i < LETTERS.length; i++) {
+    const l = LETTERS[i];
+    const bytes = Array.from(fontData[i]).map(b => `0x${b.toString(16).padStart(2, '0')}`);
+    code += `    // ${l.name} ${l.glyph} (VGA code 0x${l.code.toString(16).toUpperCase()})\n`;
+    code += `    [${bytes.join(', ')}],\n`;
+  }
+  code += '];\n';
+
+  document.getElementById('output').textContent = code;
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(code).then(() => {
+    document.getElementById('copy-status').textContent = '✓ Copied to clipboard!';
+  }).catch(() => {
+    document.getElementById('copy-status').textContent = 'Select the text above and copy manually.';
+  });
+  setTimeout(() => document.getElementById('copy-status').textContent = '', 3000);
+}
+
+// Build letter buttons
+const lettersDiv = document.getElementById('letters');
+LETTERS.forEach((l, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'letter-btn';
+  btn.textContent = `${l.glyph} ${l.name}`;
+  btn.onclick = () => selectLetter(i);
+  lettersDiv.appendChild(btn);
+});
+updateLetterButtons();
+drawGrid();
+</script>
+</body>
+</html>

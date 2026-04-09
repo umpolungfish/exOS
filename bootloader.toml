@@ -1,4 +1,8 @@
 [bootloader]
+# UEFI bootloader configuration
 kernel-stack-size = 0x20000
-map-physical-memory = true
-map-page-table-recursively = false
+
+# Request a framebuffer from UEFI GOP
+framebuffer = true
+framebuffer-width = 1024
+framebuffer-height = 768

@@ -1,32 +1,26 @@
 <div align="center">
   <h1>USAGE — exoterik_OS Φ_c Kernel</h1>
-  <p><b>Installation, build, runtime configuration, subsystem API reference, extension guide, and falsification experiments</b></p>
+  <p><b>Build, run, REPL reference, ALFS, programs, subsystem API, and extension guide</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="400">
 </div>
 
 <div align="center">
   <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
   <img src="https://img.shields.io/badge/TARGET-x86__64--unknown--none-orange" alt="Target">
+  <img src="https://img.shields.io/badge/BOOT-UEFI%20OVMF-red" alt="Boot">
   <img src="https://img.shields.io/badge/ENGINE-SynthOmnicon%20v0.4.27-purple" alt="Engine">
   <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
 </div>
 
 <p align="center">
   <a href="#1-build-and-installation">Build</a> •
-  <a href="#2-running-the-kernel">Running</a> •
-  <a href="#3-boot-sequence-walkthrough">Boot Sequence</a> •
-  <a href="#4-subsystem-api-reference">API Reference</a> •
-  <a href="#5-the-three-layer-object-model">Object Model</a> •
-  <a href="#6-ergative-scheduler-usage">Scheduler</a> •
-  <a href="#7-phonological-memory-management">Memory</a> •
-  <a href="#8-sefirot-filesystem-navigation">Filesystem</a> •
-  <a href="#9-ipc-protocol">IPC</a> •
-  <a href="#10-generative-command-grammar">Commands</a> •
-  <a href="#11-type-gated-kernel">Type-Gated Kernel</a> •
-  <a href="#12-aleph-program-loading">ALFS Program Loading</a> •
-  <a href="#13-extending-the-kernel">Extending</a> •
-  <a href="#14-falsification-experiments">Falsification</a> •
-  <a href="#15-troubleshooting">Troubleshooting</a>
+  <a href="#2-running-the-kernel">Run</a> •
+  <a href="#3-boot-sequence">Boot Sequence</a> •
+  <a href="#4-aleph-repl-reference">ALEPH REPL</a> •
+  <a href="#5-alfs--programs">ALFS & Programs</a> •
+  <a href="#6-subsystem-api-reference">API Reference</a> •
+  <a href="#7-extending-the-kernel">Extending</a> •
+  <a href="#8-troubleshooting">Troubleshooting</a>
 </p>
 
 <hr>
@@ -35,184 +29,369 @@
 
 ### Prerequisites
 
-**Rust nightly toolchain** is mandatory. The kernel uses several unstable features:
-- `#![no_std]` / `#![no_main]` — freestanding execution
-- `#![feature(abi_x86_interrupt)]` — the x86-interrupt calling convention for ISRs
-- `extern crate alloc` — heap allocations in a freestanding environment
-
 ```bash
-# Install nightly toolchain
+# Rust nightly toolchain
 rustup toolchain install nightly
+rustup default nightly
 rustup component add rust-src --toolchain nightly
 rustup target add x86_64-unknown-none --toolchain nightly
 
-# QEMU for emulation
-qemu-system-x86_64 --version
+# QEMU
+sudo apt install qemu-system-x86   # Ubuntu/Debian
+sudo pacman -S qemu-full           # Arch
+
+# UEFI firmware (OVMF)
+sudo apt install ovmf              # Ubuntu/Debian
+sudo pacman -S edk2-ovmf           # Arch
+
+# mtools (for mcopy in build_bootimage.sh)
+sudo apt install mtools
 ```
 
 ### Building
 
 ```bash
-# Standard release build (kernel ELF only)
+# Kernel ELF only (fast — for checking compilation)
 cargo build --release
-# Output: target/x86_64-unknown-none/release/varnamala-os
 
-# Bootable image (embeds kernel into bootloader)
+# Full UEFI bootable disk image (kernel + bootloader + FAT32 ESP)
 ./build_bootimage.sh
-# Output: target/x86_64-unknown-none/release/bootimage-varnamala-os.bin
 ```
 
-The bootable image is created by `build_bootimage.sh`, which replaces the broken `cargo bootimage` command (broken on rustc >= 1.90 due to removal of the `-Z json-target-spec` flag). The script:
-1. Builds the kernel as a static-pie ELF
-2. Creates a custom `x86_64-bootloader.json` target spec
-3. Compiles bootloader 0.9 with `binary` + `map_physical_memory` features, embedding the kernel
-4. Copies the resulting bootloader binary to `bootimage-varnamala-os.bin`
+`build_bootimage.sh` does three things:
+1. Builds the kernel ELF at `target/x86_64-unknown-none/release/exoterik-os`
+2. Compiles the UEFI bootloader with the kernel embedded
+3. Creates a 64 MB FAT32 disk image with the EFI system partition
 
-### Cargo.toml Configuration
+### Adding Programs
 
-The bootloader dependency must have the `map_physical_memory` feature enabled:
+Drop a `.aleph` file into `programs/`, then register it in `src/programs.rs`:
 
-```toml
-bootloader = { version = "0.9", features = ["map_physical_memory"] }
+```rust
+BuiltinProgram { name: "my_program.aleph", data: include_bytes!("../programs/my_program.aleph") },
 ```
 
-This feature exposes the `physical_memory_offset` field on `BootInfo`, which the kernel uses to convert physical addresses to virtual addresses for heap initialization.
-
-### bootloader.toml
-
-```toml
-[bootloader]
-kernel-stack-size = 0x20000
-map-physical-memory = true
-map-page-table-recursively = true
-```
-
-The `map-physical-memory = true` directive tells the bootloader to create an identity mapping of all physical memory at the offset stored in `BootInfo::physical_memory_offset`.
+Rebuild. On next boot the kernel seeds it to ALFS automatically.
 
 <hr>
 
 ## 2. Running the Kernel
 
-### QEMU Emulation
+### Graphical Mode (default)
 
 ```bash
-# Build the bootable image first
-./build_bootimage.sh
-
-# Run with QEMU (curses display for VGA output)
-qemu-system-x86_64 \
-    -drive format=raw,file=target/x86_64-unknown-none/release/bootimage-varnamala-os.bin \
-    -display curses \
-    -no-reboot
-
-# Or run headless with serial log output
-qemu-system-x86_64 \
-    -drive format=raw,file=target/x86_64-unknown-none/release/bootimage-varnamala-os.bin \
-    -serial file:serial.log \
-    -nographic
+./run.sh
 ```
 
-### Expected Boot Output
+Boots with the UEFI GOP framebuffer. Hebrew letters are rendered as hand-drawn 8×16 bitmap glyphs. Text output goes to both screen and a serial PTY (printed to terminal: `char device redirected to /dev/pts/N`).
 
-On successful boot, the VGA display will show:
+### Serial Mode
 
-```text
-[VAR NAMALA-OS] Φ_c Kernel booting...
-P_±_sym → P_asym symmetry break initiated.
+```bash
+./run.sh --serial
+```
+
+No graphics window. All output is piped to stdio. Hebrew letters display as ASCII transliterations (A, B, G, D...). Press `Ctrl-A` then `X` to quit QEMU.
+
+### ALFS Disk
+
+`run.sh` automatically creates `alfs.img` (32 MB) if it doesn't exist, writing the ALFS superblock. The kernel mounts this as ATA primary slave on boot and seeds all built-in programs.
+
+To start with a clean disk:
+```bash
+rm alfs.img && ./run.sh
+```
+
+<hr>
+
+## 3. Boot Sequence
+
+```
+[BOOT] Heap: initialized (4MB)
+[BOOT] UEFI GOP Framebuffer: 1024x768 @ 32bpp
+[exoterikOS] Phi_c Kernel booting...
+P_pm_sym -> P_asym symmetry break initiated.
 [INIT] Three-layer objects: all structural/operational/determinative variants exercised
 [SCHED] Ergative scheduler online, symmetry broken
-[MEM] Phonological allocator: Velar → Bilabial gradient online
-[FS] Sefirot tree: Keter → Malkuth, 10 layers mapped
+[MEM] Phonological allocator: Velar -> Bilabial gradient online
+[FS] Sefirot tree: Keter -> Malkuth, 10 layers mapped
 [IPC] Three-layer message: well_formed=true len=5
 [CMD] Generative command: gematria=356 pratyahara=356
-ABCDEFGHIJKLMNOPQR [COLOR TEST]
-[VAR NAMALA-OS] Φ_c Kernel fully online. H_inf loop entered.
+[ALEPH] 22-letter type system online. O_inf: 3, O_2: 6, O_1: 1, O_0: 12
+[TYPE] IPC gate (close): accepted=true
+[TYPE] IPC gate (remote): accepted=false
+[TYPE] Omega gate (Velar+Kernel): allowed=true
+[TYPE] Omega gate (Velar+User): allowed=false
+[TYPE] Tier gate (O_inf ergative): ok=true
+[TYPE] Tier gate (O_0 ergative): ok=false
+[TYPE] Phi gate (Keter+Kernel): ok=true
+[TYPE] Phi gate (Keter+Driver): ok=false
+[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+[FS] ALFS v1: 14 files, 0 used / 1024 free sectors - files: 14
+[exoterikOS] Phi_c Kernel fully online. Type 'help' for commands.
+exOS>
 ```
 
-The system then enters the idle loop (`HLT` instruction), where it awaits interrupts.
-
-### Serial Console
-
-The `-serial stdio` flag redirects VGA output to stdout for logging. In a production build, the VGA driver can be complemented with a serial port logger.
+Each phase is structurally mandatory — not arbitrary initialization order. The symmetry-breaking interrupt init must precede any process scheduling; the heap must precede any allocation; ALFS must mount before programs are available.
 
 <hr>
 
-## 3. Boot Sequence Walkthrough
+## 4. ALEPH REPL Reference
 
-The boot sequence in `main.rs` is **not arbitrary** — it follows the structural derivation from the seven-stage inquiry. Each step is traceable to a specific ancient system and its corresponding primitive value.
+### Entering
 
-### Phase 1: VGA Initialization
-
-```rust
-vga::init();
+```
+exOS> aleph
 ```
 
-Maps the VGA text buffer at `0xb8000`. This is the minimal display surface — the boundary theory of the kernel's output.
+### Language Syntax
 
-### Phase 2: Heap Initialization
-
-```rust
-let phys_mem_offset = boot_info.physical_memory_offset.into_option()
-    .unwrap_or(0xffff_8000_0000_0000);
-let heap_start = (phys_mem_offset + 0x1_0000_0000) as *mut u8;
-ALLOCATOR.lock().init(heap_start, heap_size);
+```
+expr ::= letter_name               aleph, bet, gimel, ... tav
+       | var_name                  previously bound with let
+       | expr x expr               tensor  (P,F,K: min; rest: max)
+       | expr v expr               join    (component-wise max)
+       | expr ^ expr               meet    (component-wise min)
+       | expr ::> expr             vav-cast
+       | mediate(w, a, b)          triadic: w v (a x b)
+       | palace(n) expr            tier barrier gate (n = 1..7)
+       | probe_Phi(expr)           criticality primitive report
+       | probe_Omega(expr)         protection primitive report
+       | tier(expr)                ouroboricity tier report
+       | d(expr, expr)             structural distance + conflict set
+       | system()                  JOIN of all 22 letters
+       | census()                  tier distribution table
+       | let name = expr           bind result in session
+       | match expr { pat => expr, ... }   tier pattern match
 ```
 
-The heap is allocated at a fixed offset from the physical memory map. The `linked_list_allocator` provides a `LockedHeap` with `Spinlock`-protected internal state. The heap starts empty and is initialized at boot with 100 MB of space.
+Tier patterns: `O_0`, `O_1`, `O_2`, `O_2d`, `O_inf`, `_` (wildcard).
 
-### Phase 3: Interrupt Initialization — The Symmetry-Breaking Event
+### Letter Names
 
-```rust
-interrupts::init();
+Letters can be referenced by full name or single-letter alias:
+
+| Name | Alias | Glyph | Tier |
+|:-----|:------|:------|:-----|
+| aleph | A | א | O_2 |
+| bet | B | ב | O_0 |
+| gimel | G | ג | O_0 |
+| dalet | D | ד | O_0 |
+| hei | H | ה | O_2 |
+| vav | V | ו | **O_inf** |
+| zayin | Z | ז | O_0 |
+| chet | C | ח | O_0 |
+| tet | T | ט | O_0 |
+| yod | Y | י | O_0 |
+| kaf | K | כ | O_0 |
+| lamed | L | ל | O_1 |
+| mem | M | מ | **O_inf** |
+| nun | N | נ | O_0 |
+| samech | S | ס | O_0 |
+| ayin | E | ע | O_2 |
+| pei | P | פ | O_0 |
+| tzadi | Q | צ | O_0 |
+| kuf | U | ק | O_2 |
+| resh | R | ר | O_0 |
+| shin | X | ש | **O_inf** |
+| tav | O | ת | O_2 |
+
+### REPL Commands
+
+| Command | Description |
+|:--------|:------------|
+| `:help` | Full syntax reference |
+| `:tips` | Quick start examples |
+| `:quit` / `:q` | Return to shell |
+| `:ls` | List session bindings (name, tier, Φ, Ω, glyph) |
+| `:tuple name` | Visual 12-primitive bar chart |
+| `:explain name` | Detailed type breakdown + C score |
+| `:tier name` | Ouroboricity tier of one letter |
+| `:census` | Tier distribution across all 22 letters |
+| `:system` | Compute JOIN of all 22 letters |
+| `:orbit N letter pole` | Live convergence orbit (see below) |
+| `:files` | List files on ALFS |
+| `:save name` | Save last result to ALFS as `name.aleph` |
+| `:save name expr` | Save expression text to ALFS as `name.aleph` |
+| `:load name` | Load and bind an `.aleph` file from ALFS |
+| `:run name` | Run an `.aleph` file from ALFS, print results |
+| `:history` | Show command history for this session |
+| `:scroll [N]` | Replay last N lines of output (default 40) |
+| `:clear` | Clear screen |
+
+### :orbit — Live Frobenius Convergence
+
+```
+:orbit N letter pole
 ```
 
-Per BT-6 and the Ogdoad cosmology, this is the **first asymmetry**. Before this call, the system is in P_±^sym — perfect symmetry, nothing distinguished. After this call, the system is P_asym and the ergative process model activates.
+Applies `state = state ⊗ pole` N times from `letter`. At each step prints:
+- Step number
+- Nearest canonical letter (by weighted distance)
+- Ouroboricity tier
+- Distance to pole
+- Convergence delta (color-coded)
 
-The IDT (Interrupt Descriptor Table) registers a breakpoint handler (INT 3). In production, this expands to include timer interrupts (the true symmetry-breaker), page fault handlers, and syscall gates.
+Exits early if distance drops below 0.01 (fully converged).
 
-### Phase 4: Kernel Object Instantiation
+```
+A> :orbit 6 lamed vav
+  Orbit of L under V (6 steps)
+  step  nearest        tier     d(state,pole)  delta
+  --------------------------------------------------------
+     0  L (lamed)      O_1      2.3875
+     1  V (vav)        O_inf    0.0000  (fixed)
+  -- converged at step 1 --
+```
 
-All five `StructuralType` variants, all six `OperationalMode` variants, and all five `Determinative` variants are instantiated and validated. This is the **proof** that the three-layer architecture is structurally complete — no variant exists without being exercised.
-
-### Phase 5: Scheduler Activation
-
-The ergative scheduler is created in P_±^sym state, receives a process, then `break_symmetry()` is called. The scheduler sorts by effective priority, where ergative processes (those with targets) receive a +10 boost.
-
-### Phase 6: Memory, FS, IPC, Command
-
-Each subsystem is exercised through its full API surface — all articulation depths, all Sefirot layers, IPC well-formedness, command gematria computation.
+The three O_inf poles (vav, mem, shin) are **Frobenius attractors** — most letters converge in 1–2 tensor steps. Mediation chains and palace-guarded states may take longer.
 
 <hr>
 
-## 4. Subsystem API Reference
+## 5. ALFS & Programs
 
-### 4.1 VGA (`vga.rs`)
+### Filesystem Layout
 
-```rust
-pub fn init()
-// Initialize the VGA writer. Maps 0xb8000.
+ALFS lives on `alfs.img` (32 MB), mounted as ATA primary slave (drive 1):
 
-pub fn write_colored_test()
-// Test function exercising all 16 Color variants.
-
-// Macros (crate-level):
-print!("text")        // Write without newline
-println!("text")      // Write with newline
+```
+Sector 0      : Superblock (magic "ALFS", version, file count, sector bitmap)
+Sectors 1–16  : Directory (128 entries × 64 bytes; 8 per sector)
+Sectors 17+   : File data (contiguous sector runs, first-fit allocation)
 ```
 
-The `VgaWriter` implements `core::fmt::Write`, so any `fmt::Arguments` can be formatted through it. The writer uses a double-buffered scroll: on newline, all rows shift up one and the bottom row is cleared.
+Max 128 files. Max 512 KB per file (1024 data sectors). Filenames up to 31 chars.
 
-### 4.2 Kernel Object (`kernel_object.rs`)
+### Program Seeding
+
+On first boot (or after `rm alfs.img`), the kernel writes all built-in programs from `programs/` to ALFS. These are compiled in via `include_bytes!` in `src/programs.rs` — no host-side tool needed.
+
+### REPL File Operations
+
+```
+A> :files                        # list all files on ALFS
+A> :run frobenius_orbits         # run frobenius_orbits.aleph
+A> :save experiment              # save last computed result
+A> :save tikkun aleph x mem      # save expression text
+A> :load tikkun                  # load and bind tikkun.aleph result
+```
+
+Saved files persist across reboots in `alfs.img`.
+
+### Built-in Programs
+
+Run any of these with `:run name` (omit `.aleph`):
+
+| File | What it demonstrates |
+|:-----|:--------------------|
+| `frobenius.aleph` | Self-idempotency + cross-distances of vav, mem, shin |
+| `frobenius_orbits.aleph` | 4-step unrolled convergence orbits + mediation stability |
+| `creation.aleph` | Structural genesis from first light |
+| `creation_liturgy.aleph` | Full liturgical sequence through all tiers |
+| `meditation.aleph` | Deep mediation chains |
+| `selfreplicating_light.aleph` | Self-replicating structure via mediate |
+| `light_stability.aleph` | Stability analysis under perturbation |
+| `light_replication_kernel.aleph` | Kernel-level light replication with palace barriers |
+| `tikkun_construction_full.aleph` | Healing anomalous objects via palace + mediate |
+| `tikkun_palace_verification.aleph` | Palace-gate verification across all Sefirot levels |
+| `exploration_primitives.aleph` | Primitive-by-primitive exploration |
+| `distance_probes_indistinguishable.aleph` | Distance + conflict-set across all 22 letters |
+| `pratyahara.aleph` | Varnamala compression via tensor chains |
+
+<hr>
+
+## 6. Subsystem API Reference
+
+### 6.1 VGA / Framebuffer (`vga.rs`, `framebuffer.rs`, `font_renderer.rs`)
+
+The writer is mode-aware. In graphical mode (UEFI GOP), `write_byte` calls `render_char` which:
+- Bytes `0x20–0x7E`: renders from the built-in 8×16 PC font
+- Bytes `0xE0–0xF5`: renders from `HEBREW_FONT` (22 hand-drawn Hebrew bitmaps)
+
+`display_glyph(letter)` returns the appropriate code point for the current mode:
+- Framebuffer: `0xE0 + letter_index` → Hebrew bitmap
+- VGA text: ASCII transliteration (`A`, `B`, `G`...)
+
+Scale is 1× (native 8×16 pixels). To change: edit `SCALE` in `font_renderer.rs`.
+
+### 6.2 ATA Driver (`ata.rs`)
 
 ```rust
-pub enum StructuralType { Process, File, Socket, Semaphore, MemoryRegion }
+pub static mut ATA_DRIVE: u8;  // 0 = primary master (boot), 1 = primary slave (ALFS)
+
+pub fn read_sector(lba: u32) -> Option<[u8; 512]>
+pub fn read_sectors(start_lba: u32, count: usize, out: &mut [u8]) -> Option<()>
+pub fn write_sector(lba: u32, data: &[u8; 512]) -> Option<()>
+pub fn write_sectors(start_lba: u32, count: usize, data: &[u8]) -> Option<()>
+```
+
+Drive selection is global. ALFS sets `ATA_DRIVE = 1` at mount time and holds it there. All ALFS I/O targets the data disk.
+
+### 6.3 ALFS (`alfs.rs`)
+
+```rust
+pub fn mount() -> Result<(), &'static str>
+pub fn is_mounted() -> bool
+pub fn list() -> Vec<FileInfo>
+pub fn find_file(name: &str) -> Option<FileInfo>
+pub fn read_file(name: &str) -> Option<Vec<u8>>
+pub fn read_file_string(name: &str) -> Option<String>
+pub fn write_file(name: &str, data: &[u8], file_type: u8) -> Result<usize, &'static str>
+pub fn delete_file(name: &str) -> Result<(), &'static str>
+pub fn info() -> String
+
+pub const TYPE_DATA:  u8 = 0;
+pub const TYPE_ALEPH: u8 = 1;
+pub const TYPE_TEMP:  u8 = 2;
+```
+
+### 6.4 ALEPH Type System (`aleph.rs`)
+
+```rust
+pub type Tuple = [u8; 12];   // [D, T, R, P, F, K, G, Γ, Φ, H, S, Ω]
+
+// Core lattice operations
+pub fn tensor(a: &Tuple, b: &Tuple) -> Tuple   // P,F,K: min; rest: max
+pub fn join(a: &Tuple, b: &Tuple) -> Tuple      // component-wise max
+pub fn meet(a: &Tuple, b: &Tuple) -> Tuple      // component-wise min
+pub fn mediate(w: &Tuple, a: &Tuple, b: &Tuple) -> Tuple  // w v (a x b)
+
+// Distance
+pub fn distance(a: &Tuple, b: &Tuple) -> f64
+pub fn distance_scaled(a: &Tuple, b: &Tuple) -> u32   // × 100
+pub fn conflict_set(a: &Tuple, b: &Tuple) -> Vec<usize>
+
+// Lookup
+pub fn resolve_letter(input: &str) -> Option<&'static LetterDef>
+pub fn nearest_letter(t: &Tuple) -> &'static LetterDef
+
+// Tier
+pub fn compute_tier(t: &Tuple) -> Tier
+pub fn tier_name(t: Tier) -> &'static str
+
+// Display
+pub fn display_glyph(l: &LetterDef) -> &'static str   // mode-aware
+pub fn format_letter(l: &LetterDef) -> String
+pub fn format_tuple(l: &LetterDef) -> String
+pub fn format_explain(l: &LetterDef) -> String
+
+// Aggregates
+pub fn system_language() -> Tuple    // JOIN of all 22
+pub fn tier_census() -> [usize; 5]
+```
+
+### 6.5 Kernel Object (`kernel_object.rs`)
+
+```rust
+pub enum StructuralType  { Process, File, Socket, Semaphore, MemoryRegion }
 pub enum OperationalMode { Compute, IO, Network, MemoryManage, Schedule, Idle }
-pub enum Determinative { Kernel, Service, User, Driver, Init }
+pub enum Determinative   { Kernel, Service, User, Driver, Init }
 
 pub struct KernelObject {
-    pub structural: StructuralType,
-    pub operational: OperationalMode,
+    pub structural:   StructuralType,
+    pub operational:  OperationalMode,
     pub determinative: Determinative,
+    pub aleph_type:   AlephKernelType,
     pub id: u64,
 }
 
@@ -222,7 +401,7 @@ impl KernelObject {
 }
 ```
 
-### 4.3 Scheduler (`scheduler.rs`)
+### 6.6 Ergative Scheduler (`scheduler.rs`)
 
 ```rust
 pub enum GrammaticalRole { Ergative, Absolutive }
@@ -237,41 +416,28 @@ pub struct ProcessControlBlock {
 }
 
 impl ProcessControlBlock {
-    pub fn determine_role(&mut self);     // Ergative if targets non-empty
-    pub fn effective_priority(&self) -> u8; // +10 boost for Ergative
-}
-
-pub struct ErgativeScheduler {
-    // Internally: ready queue, running process, symmetry_broken flag
+    pub fn determine_role(&mut self);        // Ergative if targets non-empty
+    pub fn effective_priority(&self) -> u8;  // +10 for Ergative
 }
 
 impl ErgativeScheduler {
     pub fn new() -> Self;
     pub fn break_symmetry(&mut self);
-    pub fn is_symmetric(&self) -> bool;    // false after break_symmetry
+    pub fn is_symmetric(&self) -> bool;
     pub fn spawn(&mut self, pcb: ProcessControlBlock);
     pub fn schedule_next(&mut self) -> Option<&ProcessControlBlock>;
 }
 ```
 
-### 4.4 Memory (`memory.rs`)
+### 6.7 Phonological Memory (`memory.rs`)
 
 ```rust
 pub enum ArticulationDepth {
-    Velar = 0,     // Kernel, Ω_Z, slow, validated
-    Palatal = 1,   // System, Ω_Z, slow, validated
-    Retroflex = 2, // Driver, Ω_Z₂, medium, validated
-    Dental = 3,    // Service, Ω_0, fast, unchecked
-    Bilabial = 4,  // User, Ω_0, fastest, unchecked
-}
-
-impl ArticulationDepth {
-    pub fn protection_level(&self) -> &'static str;
-    pub fn requires_validation(&self) -> bool;
-}
-
-pub struct PhonologicalAllocator {
-    current_depth: ArticulationDepth,
+    Velar = 0,    // Ω_Z,  maximum protection, validated
+    Palatal = 1,  // Ω_Z,  high protection, validated
+    Retroflex = 2,// Ω_Z₂, medium, validated
+    Dental = 3,   // Ω_0,  low, unchecked
+    Bilabial = 4, // Ω_0,  none, fastest
 }
 
 impl PhonologicalAllocator {
@@ -282,626 +448,109 @@ impl PhonologicalAllocator {
 }
 ```
 
-### 4.5 Filesystem (`filesystem.rs`)
+### 6.8 Sefirot Filesystem (`filesystem.rs`)
+
+In-memory tree with 10 Sefirot layers. Not persistent — use ALFS for persistence.
 
 ```rust
 pub enum Sefirah {
     Keter, Chokhmah, Binah, Daat,
-    Chesed, Gevurah, Tiferet, Netzach,
-    Hod, Yesod, Malkuth,
-}
-
-impl Sefirah {
-    pub fn name(&self) -> &'static str;
-    pub fn default_path(&self) -> &'static str;
-}
-
-pub struct SefirotPath {
-    pub chain: Vec<Sefirah>,
-    pub name: String,
-}
-
-impl SefirotPath {
-    pub fn new(chain: Vec<Sefirah>, name: &str) -> Self;
-    pub fn resolve(&self) -> String;
-}
-
-pub struct SefirotFs {
-    current: Sefirah,
+    Chesed, Gevurah, Tiferet, Netzach, Hod, Yesod, Malkuth,
 }
 
 impl SefirotFs {
     pub fn new() -> Self;
     pub fn navigate_to(&mut self, target: Sefirah);
     pub fn current(&self) -> Sefirah;
+    pub fn write(&self, name: &str, data: &[u8]);
+    pub fn read(&self, name: &str) -> Option<Vec<u8>>;
     pub fn tree(&self) -> &'static [(Sefirah, &'static str)];
 }
 ```
 
-### 4.6 IPC (`ipc.rs`)
+### 6.9 IPC (`ipc.rs`)
 
 ```rust
-pub struct StructuralSignature {
-    pub source_type: StructuralType,
-    pub target_type: StructuralType,
-}
-
-pub struct MessageDeterminative {
-    pub source_ctx: Determinative,
-    pub target_ctx: Determinative,
-}
-
-pub struct IpcMessage {
-    pub structural: StructuralSignature,
-    pub payload: &'static [u8],
-    pub determinative: MessageDeterminative,
-}
+pub struct IpcMessage { /* structural signature, payload, determinative */ }
 
 impl IpcMessage {
-    pub fn new(structural, payload, determinative) -> Self;
-    pub fn is_well_formed(&self) -> bool;  // false if determinative inconsistent
+    pub fn new(sig: StructuralSignature, payload: &'static [u8], det: MessageDeterminative) -> Self;
+    pub fn is_well_formed(&self) -> bool;
     pub fn len(&self) -> usize;
-    pub fn is_empty(&self) -> bool;
-}
-```
-
-### 4.7 Command (`command.rs`)
-
-```rust
-pub enum CommandPrimitive {
-    Aleph,  // Gematria: 1   — silent opener, creates scope
-    Bet,    // Gematria: 2   — house, contains, scopes
-    Gimel,  // Gematria: 3   — camel, carries, transfers
-    Dalet,  // Gematria: 4   — door, gates, opens/closes
-    Heh,    // Gematria: 5   — window, observes, reveals
-    Vav,    // Gematria: 6   — hook, links, chains
-    Mem,    // Gematria: 40  — water, flows, connects
-    Shin,   // Gematria: 300 — fire, transforms, consumes
-}
-
-impl CommandPrimitive {
-    pub fn gematria(&self) -> u32;
-}
-
-pub struct GenerativeCommand {
-    pub primitives: Vec<CommandPrimitive>,
-    pub pratyahara_index: u16,  // sum of gematria values
-    pub context_generated: bool,
-}
-
-impl GenerativeCommand {
-    pub fn new(primitives: Vec<CommandPrimitive>) -> Self;
-    pub fn generate_context(&mut self) -> CommandContext;
-    pub fn total_gematria(&self) -> u32;
-}
-
-pub struct CommandContext {
-    pub pratyahara_index: u16,
-    pub priority: u8,
-    pub has_aleph: bool,  // if true, new scope is created
 }
 ```
 
 <hr>
 
-## 5. The Three-Layer Object Model
+## 7. Extending the Kernel
 
-The core architectural invariant. Every kernel object carries three simultaneous representations, derived from Egyptian hieroglyphs (Stage 3) and cuneiform (Stage 4).
+### Adding a new ALEPH built-in function
 
-### Why Three Layers?
+1. Add a new `Expr` variant in `aleph_parser.rs`
+2. Add tokenization in `tokenize()` and parsing in `parse_primary()`
+3. Add evaluation in `aleph_eval.rs` `Evaluator::eval()`
+4. Optionally add a `:command` alias in `aleph_repl.rs` `handle_line()`
 
-In Unix-like systems, a process is defined by its operational behavior (what it does). Type information is either absent or bolted on (cgroups, namespaces, SELinux labels). These are **afterthoughts** — added to fix security gaps that arise from the missing determinative layer.
+### Adding a new REPL command
 
-In exoterik_OS, the determinative is **constitutive**. It is not metadata added to an object; it is one of the three dimensions that make the object what it is. A process with `Determinative::Kernel` and the same operational behavior as one with `Determinative::User` is a **different kind of object** — not just a differently labeled one.
-
-> [!NOTE]
-> This is exactly how Egyptian hieroglyphs work: the duck glyph means "son" with a paternal determinative, "food" with a culinary determinative. The payload is the same; the meaning is determined by the silent, unpronounced context.
-
-### Well-Formedness
-
-Every `KernelObject` and `IpcMessage` has an `is_well_formed()` method. This checks that the determinative is consistent with the structural type. In the current implementation, this is a basic consistency check. In production, this becomes a **type-checking gate** that rejects objects with mismatched layers before they can cause security violations.
-
-<hr>
-
-## 6. Ergative Scheduler Usage
-
-### Creating and Spawning Processes
+In `aleph_repl.rs`, add a branch in `handle_line()`:
 
 ```rust
-let mut sched = ErgativeScheduler::new();
-
-// Absolutively running process (no targets → intransitive)
-let pcb_abs = ProcessControlBlock {
-    id: 1,
-    obj: KernelObject::new(Process, Compute, User, 1),
-    role: Absolutive,
-    priority: 5,
-    stack_pointer: 0x2000,
-    targets: vec![],  // empty → Absolutive
-};
-
-// Ergative process (has targets → transitive)
-let pcb_erg = ProcessControlBlock {
-    id: 2,
-    obj: KernelObject::new(Process, IO, Kernel, 2),
-    role: Ergative,
-    priority: 5,
-    stack_pointer: 0x4000,
-    targets: vec![1],  // acts on process 1 → Ergative
-};
-
-sched.spawn(pcb_abs);
-sched.spawn(pcb_erg);
-sched.break_symmetry();
-
-// Schedule in priority order (ergative first due to +10 boost)
-let next = sched.schedule_next();
-// Returns pcb_erg (effective_priority = 15) over pcb_abs (effective_priority = 5)
-```
-
-### Role Determination
-
-The `determine_role()` method automatically sets the grammatical role based on whether the process has targets. This is the Basque grammar principle: the same entity is encoded differently depending on whether it acts alone or acts on something.
-
-<hr>
-
-## 7. Phonological Memory Management
-
-### Setting Articulation Depth
-
-```rust
-let mut allocator = PhonologicalAllocator::new();
-
-// Kernel-level allocation (Ω_Z protected, validated)
-allocator.set_depth(ArticulationDepth::Velar);
-let layout = Layout::from_size_align(256, 16).unwrap();
-if let Some(ptr) = allocator.allocate(layout) {
-    // ptr points to Ω_Z-protected memory
-    allocator.deallocate(ptr, layout);
-}
-
-// User-space allocation (Ω_0, fast, unchecked)
-allocator.set_depth(ArticulationDepth::Bilabial);
-let ptr = allocator.allocate(layout);
-```
-
-### The Gradient
-
-The articulation depth enum is `PartialOrd`/`Ord`, so depths can be compared: `Velar < Palatal < Retroflex < Dental < Bilabial`. This ordering encodes the structural story: deeper = more occluded = more protected = slower. Shallower = more open = less protected = faster.
-
-<hr>
-
-## 8. Sefirot Filesystem Navigation
-
-### Walking the Tree
-
-```rust
-let mut fs = SefirotFs::new();
-// Current: Malkuth (user space, the default starting point)
-
-// Navigate to kernel root
-fs.navigate_to(Sefirah::Keter);
-assert_eq!(fs.current(), Sefirah::Keter);
-
-// Walk the tree
-for sefirah in &[Sefirah::Chokhmah, Sefirah::Binah, Sefirah::Tiferet] {
-    fs.navigate_to(*sefirah);
+if src.starts_with(":mycommand ") {
+    let args = src[12..].trim();
+    self.my_command(args);
+    return;
 }
 ```
 
-### Transformation Paths
+Add `fn my_command(&self, args: &str)` to `impl AlephRepl`. Update `:help` text.
 
-```rust
-let path = SefirotPath::new(
-    vec![Sefirah::Keter, Sefirah::Chokhmah, Sefirah::Binah],
-    "kernel_config",
-);
-let resolved = path.resolve();
-// "/boot/sys/lib/kernel_config"
-```
+### Adding a new Hebrew glyph
 
-> [!TIP]
-> Navigation is by **transformation chain** — you specify HOW you want to arrive at a file (which Sefirot you traverse), not just WHERE it is. This is the Kabbalistic principle that paths between sephirot have defined transformation roles (the 22 letter-paths of the Tree of Life).
+The Hebrew font is in `src/vga_font_data.rs` as `HEBREW_FONT: [[u8; 16]; 22]`. Each entry is 16 bytes (one per scanline, MSB = leftmost pixel). The index matches the letter order in `aleph.rs::LETTERS` and maps to code point `0xE0 + index`.
+
+Edit the relevant `[u8; 16]` entry. The font editor at `tools/vga_font_editor.html` generates these byte arrays.
+
+### Adding a new ATA disk
+
+Add a second drive to QEMU with `-drive format=raw,file=disk2.img,if=ide,index=2,media=disk`. Set `ata::ATA_DRIVE = 2` before I/O (noting the ATA driver currently supports only one channel; secondary channel support requires adding port constants `0x170–0x177`).
 
 <hr>
 
-## 9. IPC Protocol
+## 8. Troubleshooting
 
-### Constructing a Well-Formed Message
+### `[FS] ALFS: invalid ALFS magic`
 
-```rust
-let sig = StructuralSignature {
-    source_type: StructuralType::Process,
-    target_type: StructuralType::File,
-};
-let payload = b"open /boot/config";
-let det = MessageDeterminative {
-    source_ctx: Determinative::Kernel,
-    target_ctx: Determinative::Service,
-};
-let msg = IpcMessage::new(sig, payload, det);
-assert!(msg.is_well_formed());
-```
+The kernel read the boot disk instead of the data disk. This was a bug fixed in the current codebase (drive selection now happens before the superblock read). If you see this, rebuild from the latest source.
 
-### Malformed Messages
+### `[FS] ALFS: failed to read superblock`
 
-A message without a determinative cannot be constructed — the `IpcMessage::new` constructor requires all three layers. This is a **compile-time guarantee** of three-layer safety, not a runtime check.
+The `alfs.img` was not passed to QEMU or the ATA driver failed to poll ready. Ensure `run.sh` is used (not a manual QEMU invocation missing the `-drive ... alfs.img` argument).
 
-The `is_well_formed()` method performs deeper validation: the determinative must be consistent with the structural type. A `StructuralType::Socket` with `Determinative::Init` might be flagged as inconsistent in production.
+### `[ERROR] Filesystem not mounted`
 
-<hr>
+ALFS failed to mount (check boot log for reason). Until mounted, `:files`, `:save`, `:load`, `:run` all return this error. Fix the mount issue and reboot.
 
-## 10. Generative Command Grammar
+### Hebrew characters not showing (graphical mode)
 
-### Creating Commands
+Confirm you're running `./run.sh` without `--serial`. The UEFI framebuffer must be active (`[BOOT] UEFI GOP Framebuffer:` line in boot log). In serial mode, Hebrew always displays as ASCII.
 
-```rust
-// The classic creation sequence: Aleph → Mem → Shin → Vav
-let creation = GenerativeCommand::new(vec![
-    CommandPrimitive::Aleph,   // Open the scope (silent)
-    CommandPrimitive::Mem,     // Flow the water (connect)
-    CommandPrimitive::Shin,    // Ignite the fire (transform)
-    CommandPrimitive::Vav,     // Hook heaven to earth (link)
-]);
+### Screen text is very large
 
-// Pratyahara index = 1 + 40 + 300 + 6 = 347
-assert_eq!(creation.total_gematria(), 347);
+Edit `SCALE` in `src/font_renderer.rs`. Set to `1` for native 8×16 (current default). `2` gives 16×32 (very large on 1024×768).
 
-// Generate the execution context
-let mut cmd = creation;
-let ctx = cmd.generate_context();
-assert_eq!(ctx.pratyahara_index, 347);
-assert!(ctx.has_aleph);   // New scope was created
-assert_eq!(ctx.priority, 4); // Four primitives
-```
+### `poll_ready` timeout / ATA hangs
 
-### The Gematria Distance Metric
+The ATA PIO driver polls up to 100,000 iterations. Under heavy QEMU load this may timeout. Increase the loop bound in `ata.rs` `poll_ready()` or add a `port_delay()` after drive selection.
 
-The sum of gematria values is not arbitrary — it's the **distance in the 12-primitive space** of this command. Commands with similar gematria values are structurally close (same type family); commands with very different values inhabit different regimes. This is the Sefer Yetzirah principle: the alphabet is a type-indexed lattice, and gematria is the metric.
+### Build fails with `abi_x86_interrupt` error
+
+Ensure you're on nightly: `rustup default nightly`. The `abi_x86_interrupt` feature is nightly-only.
+
+### `mcopy` not found
+
+Install mtools: `sudo apt install mtools`. Without it, `build_bootimage.sh` creates the FAT image but cannot copy files into it (the UEFI bootloader will then fail to find the kernel).
 
 <hr>
 
-## 11. Type-Gated Kernel
-
-The 12-primitive type lattice is **operational** — ALEPH types constrain kernel behavior across four subsystems. Every kernel object carries an `AlephKernelType` (inferred from its three-layer structure or set explicitly via `KernelObject::with_type()`).
-
-### 11.1 The `AlephKernelType` Bridge
-
-**New module: `src/aleph_kernel_types.rs`**
-
-```rust
-pub struct AlephKernelType {
-    pub tuple: Tuple,              // The 12-primitive tuple
-    pub canonical_index: Option<usize>, // Some(n) if matches a Hebrew letter
-}
-
-impl AlephKernelType {
-    /// Infer type from the three-layer structure (bulk → boundary inference)
-    pub fn infer(structural, operational, determinative) -> Self;
-    
-    /// Create from a canonical Hebrew letter
-    pub fn from_letter(letter: &'static LetterDef) -> Self;
-    
-    /// Create from a raw 12-tuple
-    pub fn from_tuple(t: Tuple) -> Self;
-    
-    // Primitive accessors
-    pub fn phi(&self) -> u8;       // Criticality
-    pub fn omega(&self) -> u8;     // Topological protection
-    pub fn kinetic(&self) -> u8;   // Kinetic character
-    pub fn tier(&self) -> Tier;    // Ouroboricity tier
-    
-    // Derived properties
-    pub fn conscience_score(&self) -> f64;  // C(Φ)
-    pub fn is_type_safe_for_ipc(&self, other: &Self) -> bool;  // d < 1.5 gate
-}
-```
-
-### 11.2 Type Inference
-
-Kernel objects infer their ALEPH type from the three-layer combination. The inference reproduces the OS synthon tuple for Kernel objects — the MEET of all five ancient systems.
-
-| Structural   | Operational | Determinative | Inferred Letter | Tier  |
-|-------------|-------------|---------------|-----------------|-------|
-| Process     | Compute     | Kernel        | X (shin)        | O_inf |
-| Process     | Compute     | Init          | X (shin)        | O_inf |
-| Process     | Compute     | Service       | B (bet)         | O_0   |
-| Process     | Compute     | Driver        | B (bet)         | O_0   |
-| Process     | Compute     | User          | G (gimel)       | O_1   |
-
-### 11.3 Four Type Gates
-
-**IPC Type Gate** (`ipc.rs`):
-```rust
-let msg = IpcMessage::with_types(sig, payload, det, src_type, tgt_type);
-match msg.is_type_valid() {
-    TypeGateResult::Accepted { distance, class } => // pass
-    TypeGateResult::Rejected { distance, reason }  => // block
-    TypeGateResult::NoTypeInfo                     => // fall through
-}
-
-// For structurally remote types, use a vav-cast witness:
-let witness = IpcWitness::new(mediating_type);
-let msg = IpcMessage::with_witness(sig, payload, det, src_type, tgt_type, witness);
-// Witness must have tier ≥ O_1 and d(source, witness) < 1.5 AND d(witness, target) < 1.5
-```
-
-**Ω-Gate (Memory)** (`memory.rs`):
-```rust
-let mut alloc = PhonologicalAllocator::new();
-alloc.set_depth(ArticulationDepth::Velar);  // Requires Ω_Z = 2
-
-alloc.allocate_for(&kernel_obj, layout);  // ✅ kernel has Ω_Z
-alloc.allocate_for(&user_obj, layout);    // ❌ user has Ω_0
-
-alloc.can_allocate_for(&obj);  // Pre-check without allocating
-```
-
-**Tier-Gate (Scheduler)** (`scheduler.rs`):
-```rust
-let mut sched = ErgativeScheduler::new();
-sched.break_symmetry();
-
-// Type-safe spawn — gates on tier and K_trap
-sched.spawn_type_safe(pcb);  // Returns Err if:
-    // - K == K_trap (kinetics trapped)
-    // - Tier == O_0 AND has targets (can't be ergative)
-
-// Tier-aware priority
-sched.effective_priority_with_tier(&pcb);
-    // O_inf ergative: base + 15
-    // O_2 ergative:   base + 12
-    // O_1 ergative:   base + 10
-    // O_0 ergative:   base + 0 (rejected by spawn_type_safe)
-```
-
-**Φ-Gate (Filesystem)** (`filesystem.rs`):
-```rust
-let mut fs = SefirotFs::new();
-fs.navigate_to_type_safe(Sefirah::Keter, &kernel_obj);  // ✅ Φ_c ≥ 1
-fs.navigate_to_type_safe(Sefirah::Keter, &driver_obj);  // ❌ Φ_sub < 1
-
-// Φ requirements:
-//   Keter → Gevurah (depth 0-5): Φ_c minimum
-//   Tiferet → Malkuth (depth 6-10): any Φ
-```
-
-### 11.4 Boot Verification
-
-At boot, all four gates are tested with assertions. If any gate fails, the kernel panics — this proves the type system is load-bearing, not decorative.
-
-```
-[TYPE] IPC gate (close): accepted=true
-[TYPE] IPC gate (remote): accepted=false
-[TYPE] Ω gate (Velar+Kernel): allowed=true
-[TYPE] Ω gate (Velar+User): allowed=false
-[TYPE] Tier gate (O_inf ergative): ok=true
-[TYPE] Tier gate (O_0 ergative): ok=false
-[TYPE] Φ gate (Keter+Kernel): ok=true
-[TYPE] Φ gate (Keter+Driver): ok=false
-[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
-```
-
-### 11.5 Shell Commands
-
-```
-exOS> type-check
-  Running type-gating verification...
-  Object types:
-    Kernel : synthetic  tier=O_inf  Φ=Phi_c  Ω=Omega_Z  K=1  C=0.873
-    User   : synthetic  tier=O_1    Φ=Phi_c  Ω=Omega_0  K=1  C=0.324
-    Service: synthetic  tier=O_0    Φ=Phi_sub Ω=Omega_Z2 K=1  C=0.000
-  IPC gate:
-    Kernel <-> Kernel: true
-    Kernel <-> User  : false
-  Ω gate (Velar depth):
-    Kernel : true   User   : false   Service: false
-  ...
-
-exOS> type-infer
-  Type inference: Structural x Determinative x Operational
-  Det\Struct    Process     File   Socket   Semaph   MemReg
-  ---------------------------------------------------------
-  Kernel              X        X        X        X        X
-  Init                X        X        X        X        X
-  Service             B        G        B        B        G
-  Driver              B        B        B        B        B
-  User                G        G        G        G        G
-```
-
-### 11.6 KernelObject API Updates
-
-```rust
-// Auto-inferred type (bulk → boundary inference)
-let obj = KernelObject::new(structural, operational, determinative, id);
-
-// Explicit type override
-let obj = KernelObject::with_type(structural, operational, determinative, id, aleph_type);
-
-// Well-formedness now validates Ω consistency:
-//   Kernel/Init: requires Ω ≥ 2
-//   Service/Driver: requires Ω ≥ 1  
-//   User: requires Ω = 0
-obj.is_well_formed();
-
-// Access the ALEPH type
-obj.aleph_type.summary();   // "synthetic  tier=O_inf  Φ=Phi_c  Ω=Omega_Z  K=1  C=0.873"
-obj.aleph_type.display();   // Full verbose output
-obj.aleph_type.conscience_score();  // 0.873
-```
-
-<hr>
-
-## 12. ALEPH Program Loading (ALFS Auto-Build)
-
-`.aleph` programs placed in `programs/` are automatically packed into the ALFS disk image at build time. No manual steps required.
-
-### Build Process
-
-```bash
-# 1. Put .aleph files in programs/
-ls programs/
-  creation.aleph
-  frobenius.aleph
-  meditation.aleph
-  ...
-
-# 2. Build bootable image — ALFS is built automatically
-./build_bootimage.sh
-
-# Output:
-#   [5/6] Building ALFS data disk...
-#   Building ALFS disk: 13 files -> target/.../alfs.img
-#   Files:
-#     creation.aleph       sector 19    1 sectors
-#     frobenius.aleph      sector 23    1 sectors
-#     ...
-#   ✓ ALFS appended at sector 2048 (43 sectors)
-```
-
-### Accessing Programs at Runtime
-
-From the ALEPH REPL:
-
-```
-A> :files
-  File              Type        Size
-  ----------------------------------------
-  creation           aleph      512 bytes
-  frobenius          aleph      512 bytes
-  meditation         aleph      512 bytes
-  ...
-
-A> :run frobenius
-  --- running frobenius.aleph ---
-  → ו
-    tier  O_inf
-    Phi  Phi_c   Omega  Omega_Z   P  P_pm_sym
-
-A> :load creation
-A> :ls
-  Name              Tier      Φ         Ω         Glyph
-  ────────────────────────────────────────────────────────
-  creation          O_inf     Phi_c     Omega_Z   ש
-```
-
-### ALFS Disk Format
-
-```
-Sector 0    : Superblock (magic "ALFS", version, file count, bitmap)
-Sectors 1-16: Directory entries (8 per sector, 64 bytes each, 128 max files)
-Sectors 17+ : File data (raw 512-byte sectors, padded)
-```
-
-The ALFS data disk is appended to the end of the boot disk image. The kernel mounts it at boot and loads files into the Sefirot tree.
-
-<hr>
-
-## 13. Extending the Kernel
-
-### Adding a New StructuralType
-
-1. Add the variant to `StructuralType` in `kernel_object.rs`
-2. Add the variant to the `is_well_formed()` match arm
-3. Instantiate it in `main.rs` to avoid dead-code warnings
-4. Update `StructuralSignature` validation in `ipc.rs` if the new type has special IPC requirements
-
-### Adding a New Articulation Depth
-
-1. Add the variant to `ArticulationDepth` in `memory.rs`
-2. Define its `protection_level()` and `requires_validation()` return values
-3. The `PhonologicalAllocator` automatically respects the new depth
-
-### Adding a New Sefirah Layer
-
-> [!WARNING]
-> The current system has exactly ten Sefirot, matching the Kabbalistic tree. Adding an eleventh would break the correspondence. Instead, consider adding **sub-layers** within existing Sefirot (e.g., `Sefirah::Chokhmah` might have `Wisdom::Raw` and `Wisdom::Processed` sub-variants).
-
-<hr>
-
-## 12. Falsification Experiments
-
-The Stage 7 inquiry explicitly asks: *"what experiment or implementation detail would falsify the claim that this OS design is derived from the ancient systems rather than merely analogically related?"*
-
-### Experiment 1: Remove the Determinative Layer
-
-Remove the determinative field from `IpcMessage` and `KernelObject`. If type confusion attacks increase but overall performance is unchanged, then the Egyptian/cuneiform contribution was **structural**, not analogical. If performance degrades significantly, the determinative is load-bearing.
-
-### Experiment 2: Remove Ergative/Absolutive Distinction
-
-Make all processes flat (Unix style). If context-dependent scheduling cannot be optimized and interrupt handling becomes less efficient, the Basque derivation is genuine.
-
-### Experiment 3: Flatten the Memory Gradient
-
-Use a single allocation tier. If kernel data structures suffer corruption or user-space performance doesn't improve, the Varnamala articulation model is structurally necessary.
-
-### Experiment 4: Randomize the Sefirot Order
-
-Shuffle the Sefirot layer order. If filesystem navigation becomes less intuitive or transformation paths lose their meaning, the Kabbalistic tree structure is not arbitrary.
-
-### The Ultimate Test
-
-If the OS works equally well **without** any single ancient system's contribution, the derivation is analogical. If removing any contribution measurably degrades a specific subsystem, the derivation is structural.
-
-<hr>
-
-## 15. Troubleshooting
-
-| Problem | Solution |
-|:--------|:---------|
-| `error[E0658]: the extern "x86-interrupt" ABI is experimental` | Ensure `#![feature(abi_x86_interrupt)]` is present in both `lib.rs` and `main.rs` |
-| `error[E0433]: failed to resolve: use of unresolved module or unlinked crate alloc` | Add `extern crate alloc;` to any binary crate (`main.rs`) that uses `alloc::vec!` or `alloc::string::String` |
-| `error: non-ASCII character in byte string literal` | Use UTF-8 escape sequences: `b"\xCE\xA6"` instead of `b"Φ"` |
-| Boot hangs after "Kernel fully online" | Expected behavior — the kernel enters an idle loop (`HLT`) after init. The scheduler would dispatch real processes in production |
-| `cargo bootimage` fails with "unknown -Z flag: json-target-spec" | Expected on rustc >= 1.90. Use `./build_bootimage.sh` instead |
-| Triple fault on QEMU startup | Check that `bootloader.toml` has `map-physical-memory = true` |
-| Linker errors with `linked_list_allocator` | Ensure dependency is in `Cargo.toml` and `ALLOCATOR.lock().init()` is called before any allocation |
-| ALFS mount fails: "invalid ALFS magic" | Run `./build_bootimage.sh` — the ALFS disk is built from `programs/*.aleph` automatically |
-| `:files` shows empty in ALEPH REPL | Ensure `programs/` contains `.aleph` files and you rebuilt with `./build_bootimage.sh` |
-| Type gate panics at boot | Check that `infer_tuple()` assigns primitives consistent with the determinative's Ω/Φ requirements |
-
-<hr>
-
-## Appendix A: The 12-Primitive Synopsis
-
-| Primitive | Value | Source |
-|:----------|:------|:-------|
-| **D** (Dimensionality) | `D_triangle` | Basque ergative three-way, Hebrew triangular paths |
-| **T** (Topology) | `T_box` | Hieroglyphic contained system with three internal layers |
-| **R** (Relational) | `R_dagger` | Hebrew letter-transformative, reversible across contexts |
-| **P** (Parity) | `P_pm_sym` | Ogdoad's exact Z₂, Frobenius condition μ∘δ=id |
-| **F** (Fidelity) | `F_hbar` | Cuneiform's maximum fidelity, full precision preserved |
-| **K** (Kinetic) | `K_mod` | Basque middle aspect, Varnamala's living vibration |
-| **G** (Scope) | `G_aleph` | All five systems at maximal scope |
-| **Γ** (Grammar) | `Γ_seq` | Hebrew letter-sequence, head-final chains |
-| **Φ** (Criticality) | `Φ_c` | MEET of all five — criticality, self-modeling possible |
-| **H** (Chirality) | `H2` | Hieroglyphic determinative recursion, two contextual levels |
-| **S** (Stoichiometry) | `S_n:m` | Hieroglyphic many-to-many determinative mappings |
-| **Ω** (Protection) | `Ω_Z` | Cuneiform's topological protection, sacred systems' survival |
-
-**Ouroboricity:** O_inf — Φ_c AND P_pm_sym. The highest tier. Self-referential loop perfectly closed.
-
-<hr>
-
-## Appendix B: The Seven Stages
-
-For the full derivation, see the stage documents in the project root:
-
-1. `20260407_120123_You_are_beginning_a_seven-stage_inquiry..txt` — The inquiry begins
-2. `20260407_120242_STAGE_1_—_HEBREW_ALPHABET_AND_MYSTICAL_T.txt` — Hebrew aleph-bet encoding
-3. `20260407_120423_STAGE_2_—_THE_VARNAMALA_(Sanskrit_Phonem.txt` — Sanskrit phoneme garland
-4. `20260407_120556_STAGE_3_—_EGYPTIAN_HIEROGLYPHS.txt` — Three-layer semiotics
-5. `20260407_120729_STAGE_4_—_CUNEIFORM.txt` — Sign polysemy and determinatives
-6. `20260407_120858_STAGE_5_—_BASQUE.txt` — Ergative-absolutive grammar
-7. `20260407_121017_STAGE_6_—_DISTILLATION.txt` — Shared invariants (MEET/JOIN)
-8. `20260407_121206_STAGE_7_—_SYNTHESIS.txt` — The OS specification
-
-<hr>
-
-> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the Φ_c phase boundary."*
-
-<hr>
-
-## License
-
-This project is part of the SynthOmnicon research program.
+> *"The boundary encoding determines the bulk."*

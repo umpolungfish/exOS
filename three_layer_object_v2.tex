@@ -1,0 +1,19 @@
+\documentclass[border=20pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, positioning, shadows}
+\usepackage{amssymb}
+
+\begin{document}
+\begin{tikzpicture}
+\node[trapezium, trapezium angle=70, draw=thick, fill=orange!10, minimum width=6cm, minimum height=4.5cm, align=center] (obj) 
+  {\textbf{Determinative Layer}\\Semantic context / C($\Phi$) / disambiguation\\[0.8cm]
+   \textbf{Operational Layer}\\Phonogram --- execution payload / scheduler role\\[0.8cm]
+   \textbf{Structural Layer}\\Logogram --- ALEPH type signature (topological)};
+
+\node[above=0.3cm of obj, font=\small\bfseries] {Kernel Object (3-layer)};
+\draw[->, thick] (obj.north) -- ++(0,1) node[above] { $\to$ ALEPH type inference};
+
+\node[right=3cm of obj, align=left, font=\small] {Malformed if\\determinative absent\\(syntactic error)};
+\end{tikzpicture}
+\end{document}
