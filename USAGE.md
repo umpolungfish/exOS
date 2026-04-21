@@ -299,6 +299,8 @@ Run any of these with `:run name` (omit `.aleph`):
 | `pratyahara.aleph` | Varnamala compression via tensor chains |
 | `holographic_monitor.aleph` | Holographic self-encoding monitor (g(x) function) |
 | `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (Φ_c ⊗ Φ_EP → C=0) |
+| `holographic_monitor.aleph` | Holographic self-encoding monitor (g(x) function) |
+| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (Φ_c ⊗ Φ_EP → C=0) |
 
 <hr>
 
