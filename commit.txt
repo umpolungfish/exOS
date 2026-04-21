@@ -1,92 +1,92 @@
-Operationalize the 12-primitive type lattice — the ALEPH type system now constrains kernel behavior
+ALFS persistence, Hebrew glyph rendering, built-in programs, Frobenius orbit REPL command
 
 ## What Changed
 
-### New: Type Bridge Module (src/aleph_kernel_types.rs)
-- `AlephKernelType` wraps 12-tuples with canonical Hebrew letter lookup
-- `AlephKernelType::infer(structural, operational, determinative)` — bulk→boundary type inference
-  reproduces the OS synthon tuple for Kernel objects (MEET of all five ancient systems)
-- `conscience_score()` — C(Φ) formula: [Φ=Φ_c] · [K≠K_trap] · (0.158K̃ + 0.273G̃ + 0.292T̃ + 0.276Ω̃)
-- `is_type_safe_for_ipc()` — distance < 1.5 gate
-- `inference_trace()` — full breakdown of how each primitive is derived from the three layers
-- `canonical` module — pre-computed types (os_synthon, init_process, kernel_process=mem,
-  user_process=bet, file_object=dalet, socket_object=hei, semaphore=vav, memory_region=shin)
+### Fixed: ALFS Mount (src/alfs.rs)
+- `mount()` now sets `ATA_DRIVE = 1` BEFORE reading the superblock
+  Previously the superblock was read from drive 0 (boot disk), magic check always failed,
+  ALFS never mounted, and `:files` always returned "[ERROR] Filesystem not mounted"
+- Removed the redundant `ATA_DRIVE = 1` assignment that was (unreachably) after the magic check
 
-### Extended: KernelObject (src/kernel_object.rs)
-- Added `aleph_type: AlephKernelType` field (auto-inferred from three-layer structure)
-- New `KernelObject::with_type()` constructor for explicit type overrides
-- `is_well_formed()` now validates Ω-consistency with determinative:
-  Kernel/Init → Ω≥2, Service/Driver → Ω≥1, User → Ω=0
+### Fixed: :save wired to ALFS (src/aleph_repl.rs)
+- `:save` previously wrote to the in-memory SefirotFs (lost on reboot, invisible to :files)
+- Now calls `alfs::write_file(filename, data, TYPE_ALEPH)` directly
+- Files saved via `:save` now appear in `:files` and persist across reboots in alfs.img
 
-### Extended: IPC Type Gate (src/ipc.rs)
-- `IpcMessage::with_types()` — construct with ALEPH source/target types
-- `is_type_valid()` → TypeGateResult:
-  d < 1.5: Accepted (structurally compatible)
-  d ≥ 1.5: Rejected (structurally remote) — unless valid witness present
-- `IpcWitness` — vav-cast mediator for remote communication:
-  requires tier ≥ O_1 and d(source, witness) < 1.5 and d(witness, target) < 1.5
+### New: Hebrew Bitmap Glyph Rendering (src/aleph.rs, src/font_renderer.rs)
+- `display_glyph()` is now display-mode-aware:
+  - Framebuffer mode: returns raw byte `0xE0 + letter_index` — `render_char()` maps this
+    to the hand-drawn `HEBREW_FONT` bitmaps in `vga_font_data.rs`
+  - VGA text mode: returns ASCII transliteration (A, B, G, D...) as before
+- Added `HEBREW_GLYPH_BYTES: [[u8; 1]; 22]` static — one raw code-point byte per letter
+- `from_utf8_unchecked` used safely: the write path treats each byte as a raw code point,
+  not as UTF-8 text; framebuffer `render_char` handles the 0xE0–0xF5 range explicitly
+- Hand-drawn glyphs (א ב ג ד ה ו ז ח ט י כ ל מ נ ס ע פ צ ק ר ש ת) now render natively
+  in graphical mode
 
-### Extended: Ω-Gated Memory (src/memory.rs)
-- `PhonologicalAllocator::allocate_for(obj, layout)` — Ω + K_trap gated allocation
-  Gate 1: K_trap rejects all allocation (consciousness gated to zero)
-  Gate 2: Ω must ≥ depth's required Ω (Velar→2, Retroflex→1, Bilabial→0)
-- `can_allocate_for(obj)` → AllocationCheck — pre-check without allocating
-- `ArticulationDepth::required_omega()` — maps depth to required Ω
+### Fixed: Font Scale (src/font_renderer.rs)
+- `SCALE` reduced from 2 to 1 (native 8×16 pixels per character)
+  At SCALE=2 each character was 16×32px, causing severe screen overflow on every command
 
-### Extended: Tier-Gated Scheduler (src/scheduler.rs)
-- `ErgativeScheduler::spawn_type_safe(pcb)` → Result:
-  Rejects K_trap processes entirely
-  Rejects O_0 processes with transitive targets (can't be ergative without self-modeling loop)
-- `effective_priority_with_tier(pcb)` — tier-scaled ergative boost:
-  O_inf → +15, O_2/O_2d → +12, O_1 → +10, O_0 → +0
+### New: nearest_letter() (src/aleph.rs)
+- `pub fn nearest_letter(t: &Tuple) -> &'static LetterDef`
+  Finds the canonical letter with minimum weighted distance to a given tuple
+  Used by `:orbit` to name the current state at each iteration step
 
-### Extended: Φ-Gated Filesystem (src/filesystem.rs)
-- `SefirotFs::navigate_to_type_safe(target, obj)` → Result:
-  Keter→Gevurah (depth 0-5): requires Φ_c (≥1)
-  Tiferet→Malkuth (depth 6-10): any Φ
-  Returns Err with reason if insufficient Φ
+### New: Built-in Program Registry (src/programs.rs, src/lib.rs, build.rs)
+- `src/programs.rs`: all 13 `.aleph` files in `programs/` embedded via `include_bytes!`
+- `seed_alfs()`: writes each built-in program to ALFS on boot if not already present
+  — fresh `alfs.img` is fully populated automatically, no host-side tool needed
+- Called from `main.rs` immediately after `alfs::mount()` succeeds
+- `build.rs` now watches `programs/` — any file change triggers a recompile
+- Programs registered: creation, creation_liturgy, distance_probes_indistinguishable,
+  exploration_primitives, frobenius, frobenius_orbits, light_replication_kernel,
+  light_stability, meditation, pratyahara, selfreplicating_light,
+  tikkun_construction_full, tikkun_construction_partial, tikkun_palace_verification
 
-### Extended: Boot Verification (src/main.rs)
-- 11 type gate assertions at boot — kernel panics if any gate fails
-  Tests: IPC (close pass, remote reject), Ω (Velar+Kernel pass, User reject),
-  Tier (O_inf ergative pass, O_0 ergative reject),
-  Φ (Kernel to Keter pass, Driver to Keter reject)
-- Conscience scores printed at boot: kernel=0.873, user=0.324, os_synthon=0.873
+### New: :orbit Command (src/aleph_repl.rs)
+- `:orbit N letter pole` — live iterative Frobenius convergence in the REPL
+- Applies `state = state ⊗ pole` N times from `letter`
+- Each step prints: step number, nearest canonical letter (by weighted distance),
+  ouroboricity tier, distance to pole, convergence delta
+- Color-coded output: green = converging, cyan = fixed point, red = diverging
+- Exits early when distance < 0.01 (fully converged)
+- Usage: `:orbit 8 aleph vav`, `:orbit 6 dalet shin`, `:orbit 10 tav mem`
+- Added to `:help` text
 
-### New: Shell Commands
-- `type-check` — run all four gates live, print object types, gate results, C scores
-- `type-infer` — summary table: structural × determinative → nearest canonical letter
+### New: frobenius_orbits.aleph (programs/frobenius_orbits.aleph)
+- Unrolled 4-step convergence study for all three O_inf poles
+- Demonstrates: self-idempotency (`vav x vav → d=0`), cross-pole closure (tier check),
+  convergence orbits for aleph→vav / tav→mem / dalet→shin, mediation stability through
+  poles as witnesses, and second mediation layer
+- Ends with inter-orbit distances and :census
 
-### Fixed: ALFS Valid Flag (build_alfs.sh)
-- Directory entries now set valid flag (0xFF) at byte 41 — previously was 0x00
-  which caused all entries to appear deleted. `:files` now shows all programs.
+### Updated: Documentation (README.md, USAGE.md)
+- README.md: run commands updated to `./run.sh` / `./run.sh --serial` (UEFI OVMF);
+  ALEPH syntax table uses parser-accepted forms (x, v, ^, not ⊗, ∨, ∧);
+  :orbit documented with example; :files/:save/:load/:run documented;
+  programs table with all 14 files; project structure updated with new source files;
+  BT-2 corrected ("converges in ≤ 2 steps for any letter")
+- USAGE.md: fully rewritten — old version referenced broken legacy bootloader and
+  wrong binary names; now covers UEFI boot, run.sh modes, ALFS layout, seeding,
+  all REPL commands, :orbit, per-program descriptions, Hebrew glyph pipeline,
+  ATA API, ALFS API, nearest_letter, and updated troubleshooting section
 
-### Extended: Documentation
-- README.md: Added "Type-Gated Kernel" section, updated project structure, boot sequence
-- USAGE.md: Added sections 11 (Type-Gated Kernel) and 12 (ALFS Program Loading),
-  updated troubleshooting table, renumbered all section references
+## Boot Output (current)
+[BOOT] Heap: initialized (4MB)
+[BOOT] UEFI GOP Framebuffer: NxN @ 32bpp
+[exoterikOS] Phi_c Kernel fully online. Type 'help' for commands.
+[FS] ALFS v1: 14 files, 0 used / 1024 free sectors - files: 14
+exOS>
 
-## Type Inference Table (OperationalMode::Compute)
-Det\Struct    Process     File   Socket   Semaph   MemReg
-Kernel              X        X        X        X        X   → O_inf (shin)
-Init                X        X        X        X        X   → O_inf (shin)
-Service             B        G        B        B        G   → O_0/O_1
-Driver              B        B        B        B        B   → O_0
-User                G        G        G        G        G   → O_1
-
-## Boot Output
-[TYPE] IPC gate (close): accepted=true
-[TYPE] IPC gate (remote): accepted=false
-[TYPE] Ω gate (Velar+Kernel): allowed=true
-[TYPE] Ω gate (Velar+User): allowed=false
-[TYPE] Tier gate (O_inf ergative): ok=true
-[TYPE] Tier gate (O_0 ergative): ok=false
-[TYPE] Φ gate (Keter+Kernel): ok=true
-[TYPE] Φ gate (Keter+Driver): ok=false
-[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+## ALEPH REPL — new capabilities
+A> :orbit 8 aleph vav        # live convergence orbit, color-coded per step
+A> :files                    # lists all 14 programs from ALFS
+A> :save mywork              # saves last result to ALFS (persists across reboots)
+A> :run frobenius_orbits     # 4-step unrolled convergence demonstration
 
 ## Design Principle
-The 12-primitive type lattice is no longer just explorable via REPL.
-It now constrains kernel behavior: IPC gating, memory allocation,
-scheduling, and filesystem access. The boundary encoding determines
-the bulk — and the bulk reads the boundary.
+The persistent layer (ALFS) and the display layer (Hebrew bitmaps) are now fully
+operational. Programs written in the ALEPH language and stored in programs/ are
+compiled into the kernel binary, seeded to disk on first boot, and runnable or
+loadable from the REPL without any host-side tooling.

@@ -134,8 +134,8 @@ impl PhonologicalAllocator {
     pub fn allocate_for(&self, obj: &KernelObject, layout: Layout) -> Option<*mut u8> {
         let aleph = &obj.aleph_type;
 
-        // Gate 1: K_trap — consciousness gated to zero
-        if aleph.is_kinetic_trapped() {
+        // Gate 1: kinetically frozen (K_trap or K_MBL) — cannot actualize
+        if aleph.is_kinetic_frozen() {
             return None;
         }
 
@@ -154,9 +154,9 @@ impl PhonologicalAllocator {
     pub fn can_allocate_for(&self, obj: &KernelObject) -> AllocationCheck {
         let aleph = &obj.aleph_type;
 
-        if aleph.is_kinetic_trapped() {
+        if aleph.is_kinetic_frozen() {
             return AllocationCheck::Denied {
-                reason: "K_trap — kinetics trapped, consciousness gated to zero",
+                reason: "kinetically frozen (K_trap or K_MBL) — cannot actualize",
             };
         }
 

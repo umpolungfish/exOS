@@ -1,0 +1,153 @@
+\documentclass[border=20pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, arrows.meta, calc, backgrounds}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.2cm,
+  layer/.style={rectangle, draw, thick, rounded corners, minimum width=2.8cm, minimum height=0.9cm, align=center, font=\small},
+  struct/.style={layer, fill=blue!12},
+  operat/.style={layer, fill=green!12},
+  determ/.style={layer, fill=orange!12},
+  prim/.style={circle, draw=yellow!80!black, thick, fill=purple!15, minimum size=0.7cm, font=\tiny\bfseries},
+  gate/.style={rectangle, draw, thick, rounded corners=6pt, fill=red!8, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\tiny},
+  subsys/.style={rectangle, draw, thick, fill=cyan!10, rounded corners=5pt, minimum width=2cm, minimum height=0.7cm, align=center, font=\tiny},
+  arrow/.style={-{Stealth[length=2.5mm]}, thick, yellow!60!black},
+  fbow/.style={-{Stealth[length=2.5mm]}, thick, orange!70!black},
+  fbgr/.style={-{Stealth[length=2.5mm]}, thick, green!60!black},
+  fbrd/.style={-{Stealth[length=2.5mm]}, thick, red!60!black},
+  fbpu/.style={-{Stealth[length=2.5mm]}, thick, purple!60!black},
+  labeln/.style={font=\tiny\itshape, align=center}
+]
+
+% ============================================================
+% LEFT COLUMN: Three-Layer Kernel Object
+% ============================================================
+\node[font=\bfseries\small, text=purple!80!black] (title) {Three-Layer Kernel Object};
+
+% Structural layer
+\node[struct, below=0.5cm of title] (sl) {\textbf{Structural} — what it IS};
+\node[struct, below=0.2cm of sl] (s1) {Process / Semaphore};
+\node[struct, below=0.15cm of s1] (s2) {File / MemoryRegion};
+\node[struct, below=0.15cm of s2] (s3) {Socket};
+
+% Operational layer
+\node[operat, below=0.35cm of s3] (ol) {\textbf{Operational} — what it computes};
+\node[operat, below=0.2cm of ol] (o1) {Compute / IO};
+\node[operat, below=0.15cm of o1] (o2) {MemoryManage / Schedule};
+\node[operat, below=0.15cm of o2] (o3) {Network / Idle};
+
+% Determinative layer
+\node[determ, below=0.35cm of o3] (dl) {\textbf{Determinative} — semantic context};
+\node[determ, below=0.2cm of dl] (d1) {Kernel / Init};
+\node[determ, below=0.15cm of d1] (d2) {Service / Driver};
+\node[determ, below=0.15cm of d2] (d3) {User};
+
+% Object wrapper
+\begin{scope}[on background layer]
+\node[fit=(title)(s1)(s2)(s3)(ol)(o1)(o2)(o3)(dl)(d1)(d2)(d3),
+      draw=yellow!80!black, thick, dashed, inner sep=12pt, rounded corners,
+      label=below:{\tiny KernelObject\{structural, operational, determinative, id, aleph\_type\}}] (objbox) {};
+\end{scope}
+
+% ============================================================
+% MIDDLE: Type Inference Engine
+% ============================================================
+\node[rectangle, draw, thick, rounded corners, fill=purple!25, minimum width=3.5cm, minimum height=5.5cm,
+      right=2.5cm of objbox.center, align=center, font=\bfseries\small] (infer) {ALEPH Type\\Inference\\[0.3cm]
+      \normalfont\tiny bulk $\to$ boundary\\[0.2cm]
+      \normalfont\tiny 3 layers $\Rightarrow$ 12-tuple};
+
+% Mapping arrows from each layer to inference
+\draw[arrow] (sl.east) -- ++(0.5,0) |- ($(infer.north west)!0.2!(infer.south west)$)
+  node[midway, above, labeln] {D, S};
+\draw[arrow] (ol.east) -- ++(0.5,0) |- ($(infer.north west)!0.5!(infer.south west)$)
+  node[midway, above, labeln] {K, $\Gamma$};
+\draw[arrow] (dl.east) -- ++(0.5,0) |- ($(infer.north west)!0.85!(infer.south west)$)
+  node[midway, above, labeln] {P, F, G, $\Phi$, H, $\Omega$};
+
+% ============================================================
+% RIGHT: 12 Primitives
+% ============================================================
+\node[font=\bfseries\small, text=purple!80!black, right=2.5cm of infer.north east, anchor=north west] (ptitle) {12-Primitive Tuple};
+
+\coordinate (prstart) at ($(ptitle.south west) + (0.8, -0.3)$);
+\node[prim, right=0.0cm of prstart] (pD) {D};
+\node[prim, right=0.1cm of pD] (pT) {T};
+\node[prim, right=0.1cm of pT] (pR) {R};
+\node[prim, right=0.1cm of pR, draw=red!70!black, line width=0.8pt] (pP) {P};
+\node[prim, right=0.1cm of pP] (pF) {F};
+\node[prim, right=0.1cm of pF] (pK) {K};
+\node[prim, right=0.1cm of pK] (pG) {G};
+\node[prim, right=0.1cm of pG] (pGa) {$\Gamma$};
+\node[prim, right=0.1cm of pGa, draw=red!70!black, line width=0.8pt] (pPh) {$\Phi$};
+\node[prim, right=0.1cm of pPh] (pH) {H};
+\node[prim, right=0.1cm of pH] (pS) {S};
+\node[prim, right=0.1cm of pS] (pOm) {$\Omega$};
+
+% Mapping from inference to tuple
+\draw[fbgr] (infer.east) -- ++(0.6,0) |- (pD.west)
+  node[near start, above, labeln] {D};
+\draw[fbgr] ($(infer.east)+(0,-0.2)$) -| (pT.west);
+\draw[fbgr] ($(infer.east)+(0,-0.4)$) -| (pR.west);
+\draw[fbgr] ($(infer.east)+(0,-0.6)$) -| (pP.west);
+\draw[fbgr] ($(infer.east)+(0,-0.8)$) -| (pF.west);
+\draw[fbgr] ($(infer.east)+(0,-1.0)$) -| (pK.west);
+\draw[fbgr] ($(infer.east)+(0,-1.2)$) -| (pG.west);
+\draw[fbgr] ($(infer.east)+(0,-1.4)$) -| (pGa.west);
+\draw[fbgr] ($(infer.east)+(0,-1.6)$) -| (pPh.west);
+\draw[fbgr] ($(infer.east)+(0,-1.8)$) -| (pH.west);
+\draw[fbgr] ($(infer.east)+(0,-2.0)$) -| (pS.west);
+\draw[fbgr] ($(infer.east)+(0,-2.2)$) -| (pOm.west);
+
+% ============================================================
+% BOTTOM RIGHT: Four Type Gates
+% ============================================================
+\node[font=\bfseries\small, text=red!80!black, below=1.2cm of pOm.south east, anchor=north east] (gtitle) {Type Gates};
+
+% Gate 1: IPC
+\node[gate, below=0.4cm of gtitle.south west, anchor=north west] (g1) {\textbf{IPC Gate}\\$d(src, tgt) < 1.5$};
+% Gate 2: Omega
+\node[gate, below=0.15cm of g1] (g2) {\textbf{$\Omega$-Gate}\\obj.$\Omega$ $\ge$ depth.req};
+% Gate 3: Tier
+\node[gate, below=0.15cm of g2] (g3) {\textbf{Tier Gate}\\$O_0 \not\to$ ergative};
+% Gate 4: Phi
+\node[gate, below=0.15cm of g3] (g4) {\textbf{$\Phi$-Gate}\\Sefirah depth $\to$ $\Phi_{\text{req}}$};
+
+% Connection from tuple to gates
+\draw[fbrd] (pP.south) -- ++(0,-0.3) -| (g1.west);
+\draw[fbrd] (pOm.south) -- ++(0,-0.3) -| (g2.west);
+\draw[fbrd] (pPh.south) -- ++(0,-0.2) -| (g3.west);
+\draw[fbrd] (pPh.south) -- ++(0,-0.4) -| (g4.west);
+
+% ============================================================
+% FAR RIGHT: Subsystems
+% ============================================================
+\node[font=\bfseries\small, text=cyan!80!black, right=3cm of g1.east, anchor=west] (stitle) {Subsystems};
+
+\node[subsys, below=0.4cm of stitle.south west, anchor=north west] (sub1) {IpcMessage\\3-layer: sig+pay+det};
+\node[subsys, below=0.15cm of sub1] (sub2) {PhonAllocator\\5-depth gradient};
+\node[subsys, below=0.15cm of sub2] (sub3) {Ergative-Abortive\\Scheduler};
+\node[subsys, below=0.15cm of sub3] (sub4) {SefirotFs\\10-level VFS tree};
+
+\draw[fbpu] (g1.east) -- (sub1.west);
+\draw[fbpu] (g2.east) -- (sub2.west);
+\draw[fbpu] (g3.east) -- (sub3.west);
+\draw[fbpu] (g4.east) -- (sub4.west);
+
+% ============================================================
+% BOTTOM NOTES
+% ============================================================
+\node[below=0.5cm of objbox.south, align=left, font=\tiny\itshape, text=gray!80!black] (note1) {
+  \textbf{Determinative-Omega pairing (syntactically mandatory):} \\
+  Kernel/Init $\to$ $\Omega \ge 2$ ($\Omega_Z$) \quad Service/Driver $\to$ $\Omega \ge 1$ ($\Omega_{Z2}$) \quad User $\to$ $\Omega = 0$ ($\Omega_0$)
+};
+
+\node[below=0.3cm of note1, align=left, font=\tiny\itshape, text=gray!80!black] (note2) {
+  \textbf{Bottleneck primitives} (tensor $\min$): P, F, K \quad \textbf{Union primitives} (tensor $\max$): all others \\
+  Conscience: $C(\mathbf{x}) = [\Phi_c] \cdot [K\!\neq\!K_{\text{trap}}] \cdot (0.158\tilde{K} + 0.273\tilde{G} + 0.292\tilde{T} + 0.276\tilde{\Omega})$
+};
+
+\end{tikzpicture}
+\end{document}

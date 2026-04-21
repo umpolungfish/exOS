@@ -1,5 +1,4 @@
 \documentclass[border=20pt]{standalone}
-\usepackage[utf8]{inputenc}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, decorations.markings, shadows, positioning, fit}
 \usepackage{amssymb,amsmath}
@@ -13,11 +12,11 @@
 \begin{tikzpicture}
 
 % Central Special Frobenius node
-\node[frobenius, label=above:{\Large $\mathbf{P}_{\pm}^{\text{sym}}$}] (sym) {Special Frobenius\\$\mu \circ \delta = \text{id}$};
+\node[frobenius, label=left:{\small $\mathbf{P}_{\pm}^{\text{sym}}$}] (sym);
 
 % μ (multiplication) and δ (comultiplication)
-\node[below left=1.2cm and 2cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=2.5cm] (mu) {$\mu$ (multiplication)};
-\node[below right=1.2cm and 2cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=2.5cm] (delta) {$\delta$ (comultiplication)};
+\node[below left=0.9cm and 1cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=0.5cm] (mu) {$\mu$};
+\node[below right=0.9cm and 1cm of sym, draw, thick, rounded corners, fill=blue!10, minimum width=0.5cm] (delta) {$\delta$};
 
 \draw[arrow] (sym) -- (mu) node[midway, above left] {$\mu$};
 \draw[arrow] (sym) -- (delta) node[midway, above right] {$\delta$};
@@ -26,16 +25,18 @@
 
 % Commutative identity loop
 \draw[arrow, purple!70!black, line width=1.5pt] (sym.east) to[out=30, in=-30] (sym.west) 
-  node[midway, above, sloped, font=\small\itshape] {$\mu \circ \delta = \text{id}$ (exact)};
+  node[midway, above, sloped, font=\small\itshape] {$\mu \circ \delta = \text{id}$};
 
 % Ouroboricity tier O_∞
-\node[below=2.5cm of sym, draw, thick, circle, fill=orange!10, minimum size=1.2cm, font=\bfseries] (inf) {$O_{\infty}$};
-\draw[->, thick, purple, bend left=60] (sym) to node[above, sloped] {$\Phi_c$ self-modeling} (inf);
-\draw[->, thick, purple, bend right=60] (inf) to node[below, sloped] {holographic recursion} (sym);
+\node[below=2.0cm of sym, draw, thick, circle, fill=orange!10, minimum size=1.2cm, font=\bfseries] (inf) {$O_{\infty}$};
+\draw[->, thick, purple, bend left=30] (sym) to node[above, sloped] {$\Phi_c$} (inf);
+\draw[->, thick, purple, bend right=30] (inf) to node[below, sloped] {holo} (sym);
+\draw[->, thick, purple, bend right=30] (sym) to node[above, sloped] {$\Phi_c$} (inf);
+\draw[->, thick, purple, bend left=30] (inf) to node[below, sloped] {holo} (sym);
 
 % Context labels
-\node[fit=(sym)(mu)(delta), draw=dashed, thick, inner sep=15pt, label=above right:{\small Frobenian Infinities}] (box) {};
-\node[below=0.5cm of box, align=center, font=\small\itshape] {Enables infinite self-reference\\without descent --- boundary encodes bulk};
+\node[fit=(sym)(mu)(delta), draw, dashed, thick, inner sep=10pt, label=above right:{\small Frobenian Infinities}] (box) {};
+\node[below=0.25cm of box, align=left, font=\small\itshape] {$\infty$\\holo enc + dec};
 
 \end{tikzpicture}
 \end{document}

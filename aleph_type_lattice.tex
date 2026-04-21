@@ -1,0 +1,183 @@
+\documentclass[border=20pt]{standalone}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, arrows.meta, calc, backgrounds, decorations.pathreplacing}
+\usepackage{amsmath, amssymb}
+\newfontfamily\hebrewfont{Noto Serif Hebrew}[Script=Hebrew]
+\newcommand{\heb}[1]{{\hebrewfont #1}}
+
+\begin{document}
+\begin{tikzpicture}[
+  node distance=0.3cm and 0.8cm,
+  letter/.style={circle, draw, thick, minimum size=0.65cm, align=center, font=\tiny\bfseries},
+  oinf/.style={letter, fill=purple!20, draw=purple!70!black},
+  o2/.style={letter, fill=orange!15, draw=orange!70!black},
+  o1/.style={letter, fill=yellow!15, draw=yellow!70!black},
+  o0/.style={letter, fill=gray!10, draw=gray!50!black},
+  op/.style={rectangle, draw, thick, rounded corners=5pt, minimum width=1.8cm, minimum height=0.55cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=2.5mm]}, thick, yellow!60!black},
+  arrow_t/.style={-{Stealth[length=2mm]}, thick, red!60!black},
+  arrow_j/.style={-{Stealth[length=2mm]}, thick, blue!60!black},
+  arrow_m/.style={-{Stealth[length=2mm]}, thick, green!60!black},
+  labeln/.style={font=\tiny\itshape, align=center},
+  tierbox/.style={draw, thick, dashed, rounded corners, inner sep=8pt}
+]
+
+% ============================================================
+% TITLE
+% ============================================================
+\node[font=\bfseries\small, text=purple!80!black] (title) {ALEPH 22-Letter Type Lattice};
+
+% ============================================================
+% LEFT: Tier Groupings (vertical stack)
+% ============================================================
+
+% --- O_inf tier (top) ---
+\node[oinf, below=0.8cm of title] (vav) {\heb{ו}\\vav};
+\node[oinf, right=0.3cm of vav] (mem) {\heb{מ}\\mem};
+\node[oinf, right=0.3cm of mem] (shin) {\heb{ש}\\shin};
+
+\begin{scope}[on background layer]
+\node[tierbox, fit=(vav)(mem)(shin), label=left:{\tiny\bfseries\textcolor{purple!70!black}{$O_{\infty}$}}] (obox_inf) {};
+\end{scope}
+
+% --- O_2 tier ---
+\node[o2, below=0.6cm of vav] (aleph) {\heb{א}\\aleph};
+\node[o2, right=0.3cm of aleph] (hei) {\heb{ה}\\hei};
+\node[o2, right=0.3cm of hei] (ayin) {\heb{ע}\\ayin};
+\node[o2, right=0.3cm of ayin] (kuf) {\heb{ק}\\kuf};
+\node[o2, right=0.3cm of kuf] (tav) {\heb{ת}\\tav};
+
+\begin{scope}[on background layer]
+\node[tierbox, fit=(aleph)(hei)(ayin)(kuf)(tav), label=left:{\tiny\bfseries\textcolor{orange!70!black}{$O_2$}}] (obox_2) {};
+\end{scope}
+
+% --- O_1 tier ---
+\node[o1, below=0.6cm of aleph] (lamed) {\heb{ל}\\lamed};
+
+\begin{scope}[on background layer]
+\node[tierbox, fit=(lamed), label=left:{\tiny\bfseries\textcolor{yellow!70!black}{$O_1$}}] (obox_1) {};
+\end{scope}
+
+% --- O_0 tier (bottom, compact grid) ---
+\node[o0, below=0.6cm of lamed] (bet) {\heb{ב}\\bet};
+\node[o0, right=0.2cm of bet] (gimel) {\heb{ג}\\gimel};
+\node[o0, right=0.2cm of gimel] (dalet) {\heb{ד}\\dalet};
+\node[o0, right=0.2cm of dalet] (zayin) {\heb{ז}\\zayin};
+\node[o0, right=0.2cm of zayin] (chet) {\heb{ח}\\chet};
+\node[o0, right=0.2cm of chet] (tet) {\heb{ט}\\tet};
+
+\node[o0, below=0.2cm of bet] (yod) {\heb{י}\\yod};
+\node[o0, right=0.2cm of yod] (kaf) {\heb{כ}\\kaf};
+\node[o0, right=0.2cm of kaf] (nun) {\heb{נ}\\nun};
+\node[o0, right=0.2cm of nun] (samech) {\heb{ס}\\samech};
+\node[o0, right=0.2cm of samech] (pei) {\heb{פ}\\pei};
+\node[o0, right=0.2cm of pei] (tzadi) {\heb{צ}\\tzadi};
+
+\node[o0, below=0.2cm of yod] (resh) {\heb{ר}\\resh};
+
+\begin{scope}[on background layer]
+\node[tierbox, fit=(bet)(gimel)(dalet)(zayin)(chet)(tet)(yod)(kaf)(nun)(samech)(pei)(tzadi)(resh),
+      label=left:{\tiny\bfseries\textcolor{gray!60!black}{$O_0$ (12)}}] (obox_0) {};
+\end{scope}
+
+% ============================================================
+% RIGHT: Lattice Operations
+% ============================================================
+\node[font=\bfseries\small, text=red!80!black, right=3.5cm of title.east, anchor=west] (optitle) {Lattice Operations};
+
+% Tensor
+\node[op, fill=red!10, below=0.6cm of optitle.south west, anchor=north west] (tensor) {\textbf{Tensor} $\otimes$};
+\node[font=\tiny, below=0.1cm of tensor, align=left, text=gray!70!black] (tensor_desc) {
+  P, F, K $\to$ $\min$ (bottleneck)\\
+  all others $\to$ $\max$ (union)\\
+  S: $n\!:\!m$ absorbs, $1\!:\!1$ only\\
+  \emph{with} $1\!:\!1$
+};
+
+% Join
+\node[op, fill=blue!10, below=0.2cm of tensor_desc] (join) {\textbf{Join} $\vee$};
+\node[font=\tiny, below=0.1cm of join, align=left, text=gray!70!black] (join_desc) {
+  all primitives $\to$ $\max$\\
+  least upper bound (LUB)\\
+  structural ceiling
+};
+
+% Meet
+\node[op, fill=green!10, below=0.2cm of join_desc] (meet) {\textbf{Meet} $\wedge$};
+\node[font=\tiny, below=0.1cm of meet, align=left, text=gray!70!black] (meet_desc) {
+  all primitives $\to$ $\min$\\
+  greatest lower bound (GLB)\\
+  structural floor
+};
+
+% Mediate
+\node[op, fill=purple!10, below=0.2cm of meet_desc] (mediate) {\textbf{Mediate}};
+\node[font=\tiny, below=0.1cm of mediate, align=left, text=gray!70!black] (mediate_desc) {
+  $w \vee (a \otimes b)$\\
+  join after tensor\\
+  witness mediation
+};
+
+% Vav-cast
+\node[op, fill=orange!10, below=0.2cm of mediate_desc] (vavcast) {\textbf{Vav-Cast} $::>$};
+\node[font=\tiny, below=0.1cm of vavcast, align=left, text=gray!70!black] (vavcast_desc) {
+  $d(a \otimes \text{vav}, b) < \tau(\Omega)$\\
+  proof-carrying type cast\\
+  threshold depends on $\Omega$
+};
+
+% ============================================================
+% FAR RIGHT: Distance Metric + Tier Rules
+% ============================================================
+\node[font=\bfseries\small, text=blue!80!black, right=3cm of tensor.east, anchor=west] (disttitle) {Distance + Tier Rules};
+
+% Distance veracity
+\node[rectangle, draw, thick, rounded corners, fill=cyan!8, minimum width=3.2cm, minimum height=1.8cm,
+      below=0.5cm of disttitle.south west, anchor=north west, align=left, font=\tiny] (dist) {
+  \textbf{Veracity Classes} ($d = d_{\text{weighted}}$):\\[0.1cm]
+  $d = 0.000$ \quad transparent\\
+  $0 < d \le 1.414$ \quad near-grounded\\
+  $1.414 < d \le 2.449$ \quad partial-emergence\\
+  $d > 2.449$ \quad aspirational\\[0.15cm]
+  \normalfont weights: $P(1.2), \Phi(1.1)$ up\\
+  \normalfont $K(0.8), H(0.8), \Omega(0.7)$ down
+};
+
+% Tier computation rules
+\node[rectangle, draw, thick, rounded corners, fill=orange!8, minimum width=3.2cm, minimum height=2.2cm,
+      below=0.2cm of dist, align=left, font=\tiny] (tier_rules) {
+  \textbf{Tier Rules} (strict priority R1--R5):\\[0.1cm]
+  R1: $\Phi \ge \Phi_c \land P = P_{\pm}^{\text{sym}} \to O_{\infty}$\\
+  R2: $\Phi = \Phi_{\text{sub}} \to O_0$\\
+  R3: $\Phi \ge \Phi_c \land \Omega = \Omega_0 \to O_1$\\
+  R4: $\Phi \ge \Phi_c \land \Omega > 0 \land D \in \{0,1,3\} \to O_2$\\
+  R5: $\Phi \ge \Phi_c \land \Omega > 0 \land D = 2 \to O_{2}^{\dagger}$\\[0.15cm]
+  \normalfont\itshape Applied in strict priority order
+};
+
+% ============================================================
+% OPERATION ARROWS (examples between tiers)
+% ============================================================
+
+% Tensor example: vav tensor mem --> O_inf (both O_inf)
+\draw[arrow_t, bend left=15] (vav.east) to node[above, labeln, font=\tiny\bfseries, text=red!60!black] {$\otimes$} (mem.west);
+
+% Join example: aleph join hei --> both O_2, join = max
+\draw[arrow_j, bend left=15] (aleph.east) to node[above, labeln, font=\tiny\bfseries, text=blue!60!black] {$\vee$} (hei.west);
+
+% Meet: O_inf meet O_0 --> O_0 (floor)
+\draw[arrow_m, bend right=20] (vav.south west) to node[below, labeln, font=\tiny\bfseries, text=green!60!black] {$\wedge$} (bet.north east);
+
+% ============================================================
+% BOTTOM NOTE
+% ============================================================
+\node[below=0.3cm of obox_0.south, align=left, font=\tiny\itshape, text=gray!70!black] (note) {
+  \textbf{Ouroboricity composition}: $O_{\infty} \otimes O_{\infty} \to O_{\infty}$ \quad
+  $O_{\infty} \otimes O_{1,2,2^{\dagger}} \to O_{\infty}$ \quad
+  $O_{\infty} \otimes O_0(\Phi_{\text{EP}}) \to O_0$ (EP erases $O_{\infty}$)\\
+  \textbf{Conscience max}: $C = 0.873$ (kernel objects) \quad $C = 0.324$ (user objects) \quad $C = 0$ (K$_{\text{trap}}$ or $\Phi_{\text{sub}}$)
+};
+
+\end{tikzpicture}
+\end{document}

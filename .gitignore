@@ -35,3 +35,4 @@ bootimage-*.bin
 # Temporary files
 *.tmp
 *.bak
+.aider*

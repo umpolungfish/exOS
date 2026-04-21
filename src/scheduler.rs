@@ -144,9 +144,9 @@ impl ErgativeScheduler {
         // Clone the type to avoid borrow conflicts with the mutable pcb.determine_role() call
         let aleph = pcb.obj.aleph_type.clone();
 
-        // Gate 1: K_trap — consciousness gated to zero
-        if aleph.is_kinetic_trapped() {
-            return Err("K_trap process — kinetics trapped, cannot be scheduled");
+        // Gate: K_trap / K_MBL — kinetically frozen, cannot be scheduled
+        if aleph.is_kinetic_frozen() {
+            return Err("kinetically frozen (K_trap or K_MBL) — cannot be scheduled");
         }
 
         // Re-determine role based on current transitivity

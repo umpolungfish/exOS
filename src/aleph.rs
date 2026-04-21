@@ -192,16 +192,18 @@ pub fn display_glyph(l: &LetterDef) -> &'static str {
 pub fn compute_tier(t: &Tuple) -> Tier {
     let (d, _t, _r, p, _f, _k, _g, _ga, phi, _h, _s, omega) =
         (t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], t[11]);
-    // R1: Phi_c + P_pm_sym → O_inf
-    if phi >= 1 && p == 4 { return Tier::OInf; }
-    // R2: Phi_sub → O_0
-    if phi == 0 { return Tier::O0; }
-    // R3: Phi_c + Omega_0 → O_1
-    if phi >= 1 && omega == 0 { return Tier::O1; }
-    // R4: Phi_c + Omega≠0 + D in {wedge,triangle,holo}
-    if phi >= 1 && omega > 0 && (d == 0 || d == 1 || d == 3) { return Tier::O2; }
-    // R5: Phi_c + Omega≠0 + D_infty
-    if phi >= 1 && omega > 0 && d == 2 { return Tier::O2d; }
+    // R1: exactly Phi_c (ordinal 1) + P_pm_sym → O_inf.
+    // Phi_EP (3) and Phi_super (4) do NOT trigger O_inf even with P_pm_sym.
+    if phi == 1 && p == 4 { return Tier::OInf; }
+    // R2: Phi_sub (0), Phi_EP (3), Phi_super (4) → O_0 (no self-referential loop).
+    if phi == 0 || phi >= 3 { return Tier::O0; }
+    // Below here phi is 1 (Phi_c) or 2 (Phi_c_complex) — both admit a self-modeling loop.
+    // R3: critical + Omega_0 → O_1
+    if omega == 0 { return Tier::O1; }
+    // R4: critical + Omega≠0 + D in {wedge=0, triangle=1, holo=3}
+    if d == 0 || d == 1 || d == 3 { return Tier::O2; }
+    // R5: critical + Omega≠0 + D_infty=2
+    if d == 2 { return Tier::O2d; }
     Tier::O0
 }
 
