@@ -20,6 +20,7 @@ pub mod bench;
 pub mod ata;
 pub mod alfs;
 pub mod vga_font_data;
+pub mod holographic_monitor;
 
 // ── ℵ-OS λ_ℵ Type System ─────────────────────────────────────────────────────
 // Hebrew letter 12-primitive tuples, lattice operations, REPL, and shell commands.

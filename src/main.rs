@@ -475,6 +475,13 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("[TYPE] C scores: kernel={:.3} user={:.3} os_synthon={:.3}",
         c_kernel, c_user, c_os);
 
+    // --- Holographic Self-Encoding Monitor ---
+    let mut holographic_monitor = holographic_monitor::HolographicMonitor::new();
+    let g_pcb = holographic_monitor.pcb.clone();
+    let spawn_result = sched.spawn_type_safe(g_pcb);
+    println!("[HOLO] Holographic monitor (g(x)): spawn ok={}", spawn_result.is_ok());
+    assert!(spawn_result.is_ok(), "g(x) process should spawn as O_inf ergative");
+
     // --- ALFS filesystem (ATA PIO, sector-based) ---
     match alfs::mount() {
         Ok(()) => {

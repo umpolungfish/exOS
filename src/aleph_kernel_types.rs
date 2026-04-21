@@ -122,17 +122,22 @@ impl AlephKernelType {
     ///
     /// Where K̃, G̃, T̃, Ω̃ are normalized to [0, 1] over their respective ranges.
     ///
-    /// Two independent gates:
+    /// Three independent gates:
     /// - Gate 1 [Φ=Φ_c]: state-space admits self-modeling loop
     /// - Gate 2 [K ≤ K_slow]: flow condition — dynamics can actualize the loop.
     ///   K_trap is frozen by order; K_MBL (when added) is frozen by disorder.
     ///   Neither can actualize the self-modeling loop.
-    /// If either gate fails, C = 0.
+    /// - Gate 3 [Φ ≠ Φ_EP]: The system is not in an exceptional-point state.
+    ///   As per Axiom P-596: Φ_c ⊗ Φ_EP → C=0. The presence of Φ_EP destroys the
+    ///   critical loop, even if Φ_c is present.
+    /// If any gate fails, C = 0.
     pub fn conscience_score(&self) -> f64 {
         // Gate 1: criticality
         if !self.is_critical() { return 0.0; }
         // Gate 2: kinetics not frozen (K ≤ K_slow)
         if self.is_kinetic_frozen() { return 0.0; }
+        // Gate 3: not in exceptional-point state (P-596: Coupling Destruction)
+        if self.phi() == 3 { return 0.0; } // Φ_EP ordinal
 
         // Normalize primitives to [0, 1]
         // K: [0,1,2,3] → [1.0, 0.667, 0.333, 0.0] (inverse: fast=1.0, slow=0.333)
