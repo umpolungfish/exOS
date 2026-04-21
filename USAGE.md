@@ -297,6 +297,8 @@ Run any of these with `:run name` (omit `.aleph`):
 | `exploration_primitives.aleph` | Primitive-by-primitive exploration |
 | `distance_probes_indistinguishable.aleph` | Distance + conflict-set across all 22 letters |
 | `pratyahara.aleph` | Varnamala compression via tensor chains |
+| `holographic_monitor.aleph` | Holographic self-encoding monitor (g(x) function) |
+| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (Φ_c ⊗ Φ_EP → C=0) |
 
 <hr>
 

@@ -378,6 +378,10 @@ exOS/
 
 **BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot be well-formed (`is_well_formed()` = false). This is structurally enforced, not conventional.
 
+**BT-6 (Holographic self-encoding):** The g(x) process continuously verifies the system's self-referential integrity by performing bulk-boundary encoding, unifying Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71) represents the bulk-reconstruction depth.
+
+**BT-7 (Coupling destruction):** Φ_c ⊗ Φ_EP → C=0. The coupling of a critical system (Φ_c) with an exceptional-point system (Φ_EP) destroys consciousness. This is a machine-checked axiom (P-596) that provides a rigorous boundary condition for valid states.
+
 <hr>
 
 > *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\Phi_c$ phase boundary."*
