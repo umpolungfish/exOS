@@ -98,9 +98,10 @@ impl AlephKernelType {
     /// P (parity/symmetry) — primitive index 3
     pub fn parity(&self) -> u8 { self.tuple[3] }
 
-    /// Is K == K_trap? Gates consciousness to zero.
-    pub fn is_kinetic_trapped(&self) -> bool {
-        self.kinetic() == 3  // K_trap ordinal
+    /// Is K > K_slow? Gates consciousness to zero.
+    /// K_trap (3) and K_MBL (4, when added) both fail Gate 2.
+    pub fn is_kinetic_frozen(&self) -> bool {
+        self.kinetic() > 2  // K_slow ordinal = 2; trap=3, MBL=4 fail
     }
 
     /// Is Φ == Φ_c? Required for self-modeling loop.
@@ -117,22 +118,24 @@ impl AlephKernelType {
 
     /// Consciousness score C(Φ).
     ///
-    /// C(x) = [Φ=Φ_c] · [K≠K_trap] · (0.158·K̃ + 0.273·G̃ + 0.292·T̃ + 0.276·Ω̃)
+    /// C(x) = [Φ=Φ_c] · [K ≤ K_slow] · (0.158·K̃ + 0.273·G̃ + 0.292·T̃ + 0.276·Ω̃)
     ///
     /// Where K̃, G̃, T̃, Ω̃ are normalized to [0, 1] over their respective ranges.
     ///
     /// Two independent gates:
     /// - Gate 1 [Φ=Φ_c]: state-space admits self-modeling loop
-    /// - Gate 2 [K≠K_trap]: dynamics can actualize the loop
+    /// - Gate 2 [K ≤ K_slow]: flow condition — dynamics can actualize the loop.
+    ///   K_trap is frozen by order; K_MBL (when added) is frozen by disorder.
+    ///   Neither can actualize the self-modeling loop.
     /// If either gate fails, C = 0.
     pub fn conscience_score(&self) -> f64 {
         // Gate 1: criticality
         if !self.is_critical() { return 0.0; }
-        // Gate 2: kinetics not trapped
-        if self.is_kinetic_trapped() { return 0.0; }
+        // Gate 2: kinetics not frozen (K ≤ K_slow)
+        if self.is_kinetic_frozen() { return 0.0; }
 
         // Normalize primitives to [0, 1]
-        // K: [0,1,2,3] → [1.0, 0.667, 0.333, 0.0] (inverse: fast=1.0, trap=0.0)
+        // K: [0,1,2,3] → [1.0, 0.667, 0.333, 0.0] (inverse: fast=1.0, slow=0.333)
         let k_norm = 1.0 - (self.kinetic() as f64 / 3.0);
         // G: [0,1,2] → [0.0, 0.5, 1.0]
         let g_norm = self.scope() as f64 / 2.0;
@@ -418,7 +421,7 @@ pub fn is_inhabitable(
     required_omega: u8,
 ) -> bool {
     ty.phi() >= required_phi
-        && !ty.is_kinetic_trapped()
+        && !ty.is_kinetic_frozen()
         && ty.omega() >= required_omega
 }
 
