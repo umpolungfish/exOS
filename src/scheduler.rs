@@ -32,7 +32,7 @@ pub enum GrammaticalRole {
 }
 
 /// Process control block with grammatical role
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ProcessControlBlock {
     pub id: u64,
     pub obj: KernelObject,

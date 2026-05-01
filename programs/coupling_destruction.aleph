@@ -1,0 +1,66 @@
+# coupling_destruction.aleph — Frobenius non-synthesizability
+#
+# P is a bottleneck primitive under tensor (min, not max).
+# P_pm_sym (ordinal 4) is the Frobenius condition: μ∘δ=id.
+# Coupling an O_inf pole with any sub-Frobenius letter drops P below 4,
+# exiting the Frobenius tier irreversibly.
+# O_inf cannot be grown from weaker components — it must be directly planted.
+
+# ── The three O_inf poles ────────────────────────────────────────────────────
+tier(vav)
+tier(mem)
+tier(shin)
+
+# ── Baseline: poles are idempotent under self-tensor ────────────────────────
+let vv = vav x vav
+let mm = mem x mem
+let ss = shin x shin
+tier(vv) tier(mm) tier(ss)
+d(vv, vav) d(mm, mem) d(ss, shin)
+
+# ── P_sym (ordinal 3) coupling: vav x tav ───────────────────────────────────
+# tav carries P_sym — bottleneck drops P to 3, exits Frobenius tier
+let c3 = vav x tav
+tier(c3)
+d(c3, vav)
+probe_Φ(c3)
+
+# ── P_pm (ordinal 2) coupling: vav x ayin ───────────────────────────────────
+# ayin carries P_pm — P bottlenecks to 2
+let c2 = vav x ayin
+tier(c2)
+d(c2, vav)
+
+# ── P_asym (ordinal 0) coupling: vav x resh ─────────────────────────────────
+# resh carries P_asym — full Frobenius destruction; result snaps to resh (O_0)
+let c0 = vav x resh
+tier(c0)
+d(c0, vav)
+
+# ── Φ survives coupling; P does not ─────────────────────────────────────────
+# Coupling destroys Frobenius but leaves criticality intact
+probe_Φ(vav)
+probe_Φ(c3)
+probe_Φ(c2)
+probe_Φ(c0)
+
+# ── Re-coupling with the pole cannot recover O_inf ───────────────────────────
+# P bottleneck is irreversible: min(0, 4) = 0 again
+let recovery = c0 x vav
+tier(recovery)
+d(recovery, vav)
+d(recovery, c0)
+
+# ── Palace gates confirm tier loss ──────────────────────────────────────────
+palace(7) vav
+palace(4) c3
+palace(4) c2
+palace(2) c0
+
+c2 ⊗ c3
+
+# ── Distance ladder: P ordinal drop → structural distance to pole ────────────
+d(c3, vav)
+d(c2, vav)
+d(c0, vav)
+:census

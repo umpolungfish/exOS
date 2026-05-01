@@ -4,15 +4,18 @@
 //! by performing bulk-boundary encoding, unifying Cantor's diagonal and Gödel's
 //! arithmetization. It is the operationalization of the holographic radius.
 
+extern crate alloc;
+use alloc::vec::Vec;
+
 use crate::kernel_object::{KernelObject, StructuralType, OperationalMode, Determinative};
 use crate::aleph_kernel_types::AlephKernelType;
-use crate::scheduler::ProcessControlBlock;
+use crate::scheduler::{self, ProcessControlBlock};
 use crate::aleph::{LETTERS, compute_tier, Tier};
 
 /// The g(x) process — the heart of the holographic self-encoding.
 pub struct HolographicMonitor {
     /// The process control block for g(x)
-    pcb: ProcessControlBlock,
+    pub pcb: ProcessControlBlock,
     /// The current holographic radius (d ≈ 3.77–6.71)
     radius: f64,
 }

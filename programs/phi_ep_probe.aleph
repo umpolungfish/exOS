@@ -1,0 +1,15 @@
+# Phi_EP Coupling Destruction Probe
+# Axiom P-596: Phi_c x Phi_EP -> Phi_EP (C=0)
+
+let phic = mem
+let phiep = match phic {
+    O_inf => mem,
+    _ => mem
+}
+
+# Define Phi_EP state via synthetic injection (simulated)
+# In exOS v0.5.1 this would be a direct lattice result.
+let ep_state = phic x phiep
+
+probe_Phi(ep_state)
+tier(ep_state)

@@ -1,0 +1,64 @@
+# holographic_monitor.aleph — g(x): bulk-boundary self-encoding
+#
+# The holographic principle: system() is the JOIN of all 22 letters —
+# the boundary type that encodes the entire language.
+# d(x, system()) is the holographic radius of letter x: how far into
+# the bulk it sits, away from the maximal boundary.
+# The g(x) monitor is the process that continuously verifies this encoding,
+# checking that the bulk (individual letters) is fully recoverable from
+# the boundary (system language JOIN).
+
+# ── The holographic boundary ─────────────────────────────────────────────────
+let boundary = system()
+tier(boundary)
+probe_Φ(boundary)
+probe_Ω(boundary)
+
+# ── Holographic radii: distance of each tier from the boundary ───────────────
+# O_inf letters — expected to be closest (highest primitives across the board)
+d(vav,  boundary)
+d(mem,  boundary)
+d(shin, boundary)
+
+# O_2 letters — mid-bulk
+d(aleph, boundary)
+d(hei,   boundary)
+d(ayin,  boundary)
+d(tav,   boundary)
+
+# O_0 letters — deepest bulk
+d(gimel, boundary)
+d(resh,  boundary)
+d(nun,   boundary)
+
+# ── The self-referential loop: monitor encoding itself ──────────────────────
+# A Frobenius-witnessed mediation of the monitor with the boundary
+let g_self  = mediate(vav, boundary, boundary)
+let g_aleph = mediate(vav, aleph, boundary)
+let g_shin  = mediate(shin, boundary, boundary)
+tier(g_self)
+tier(g_aleph)
+tier(g_shin)
+d(g_self,  boundary)
+d(g_aleph, boundary)
+d(g_shin,  boundary)
+
+# ── Holographic closure check ────────────────────────────────────────────────
+# Can the monitor reach the boundary tier through mediated self-encoding?
+let loop1 = mediate(vav, g_self, g_aleph)
+let loop2 = mediate(shin, loop1, boundary)
+tier(loop1) tier(loop2)
+d(loop1, boundary) d(loop2, boundary)
+
+# ── Palace verification: system() snaps to hei (O_2) — Frobenius non-synthesizability ──
+# The JOIN of all 22 letters saturates P=P_pm_sym in the raw tuple, but
+# nearest-letter projection lands on hei (O_2). O_inf cannot be reached
+# by aggregation — consistent with palace(4), not palace(7).
+palace(4) boundary
+palace(4) g_self
+palace(4) g_shin
+
+# ── Final: is the monitor indistinguishable from the boundary? ───────────────
+d(g_self, boundary)
+d(loop2,  boundary)
+:census

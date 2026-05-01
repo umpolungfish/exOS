@@ -1,0 +1,318 @@
+\documentclass[8pt,a4paper,landscape]{article}
+\usepackage[margin=0.22in,top=0.20in,bottom=0.14in]{geometry}
+\usepackage{tikz,amsmath,amssymb,booktabs,xcolor,enumitem,array,multicol}
+\usetikzlibrary{arrows.meta,positioning,calc,bending,decorations.pathreplacing}
+\usepackage{titlesec,fancyhdr,varwidth}
+
+\titleformat{\section}{\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{4pt plus 1pt minus 1pt}{2pt plus 1pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\tiny SynthOmnicon v0.5.75 \quad 2026-04-19 \quad Integrated: ALEPH_OS \& exOS}
+\lhead{\tiny $\langle D;T;R;P;F;K;G;\Gamma;\Phi;H;S;\Omega\rangle$}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\definecolor{catblue}{RGB}{30,100,180}
+\definecolor{ordgreen}{RGB}{40,140,60}
+\definecolor{specpurple}{RGB}{120,40,160}
+\definecolor{confred}{RGB}{200,50,50}
+\definecolor{holo}{RGB}{220,168,0}
+\definecolor{godelcol}{RGB}{39,42,206}
+\definecolor{cantorcol}{RGB}{220,70,80}
+\definecolor{perccol}{RGB}{180,80,200}
+\definecolor{attncol}{RGB}{20,140,100}
+\definecolor{alephcol}{RGB}{0,100,200}
+\definecolor{exoscol}{RGB}{150,0,150}
+
+\newcommand{\cat}[1]{\textcolor{catblue}{#1}}
+\newcommand{\ord}[1]{\textcolor{ordgreen}{#1}}
+\newcommand{\spec}[1]{\textcolor{specpurple}{#1}}
+\newcommand{\conf}{\textcolor{confred}{\textbf{CONFLICT}}}
+\newcommand{\new}[1]{\textcolor{confred}{#1}}
+\newcommand{\aleph}[1]{\textcolor{alephcol}{#1}}
+\newcommand{\exos}[1]{\textcolor{exoscol}{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8pt}
+
+% Bracket environment: capture content into a savebox, then draw brackets
+% around it in a NON-overlay tikzpicture (no coordinate math needed).
+\newsavebox{\bsecbox}
+\newenvironment{bsec}{%
+  \begin{lrbox}{\bsecbox}%
+  \begin{minipage}[t]{\dimexpr\linewidth-20pt\relax}%
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \begin{tikzpicture}[baseline=(N.north)]
+    \node[inner sep=5pt, outer sep=0pt, anchor=north west] (N) at (4pt,0)
+      {\usebox{\bsecbox}};
+    \draw[line width=0.85pt,black!55]
+      ([xshift=6pt]N.north west) -- (N.north west) --
+      (N.south west) -- ([xshift=6pt]N.south west);
+    \draw[line width=0.85pt,black!55]
+      ([xshift=-6pt]N.north east) -- (N.north east) --
+      (N.south east) -- ([xshift=-6pt]N.south east);
+  \end{tikzpicture}%
+  \par\vspace{1pt}%
+}
+
+\begin{document}
+
+\begin{center}
+\large\textbf{The SynthOmnicon \textemdash{} A Holographic Type Theory \textemdash{} Operations \& Algebra}
+\end{center}
+\vspace{-0.4em}
+
+%==========================================================
+\noindent
+\begin{minipage}[t]{0.295\textwidth}
+
+%--- LEFT COLUMN -------------------------------------------
+\begin{bsec}
+\section*{The 12 Primitives}
+\footnotesize
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{@{}llp{2.9cm}@{}}
+\toprule
+\textbf{Sym} & \textbf{Name} & \textbf{Values (low$\to$high)} \\
+\midrule
+\cat{$D$} & Dimensionality & $D_\wedge,D_\triangle,D_\infty,D_\odot$ \\
+\cat{$T$} & Topology       & $T_{\text{net}},T_{\text{in}},T_{\bowtie},T_{\text{box}},T_\odot$ \\
+\cat{$R$} & Relational mode & $R_{\text{super}},R_{\text{cat}},R_\dagger,R_{lr}$ \\
+\cat{$P$} & Parity/symmetry & \scriptsize$P_{\text{asym}},P_\psi,P_\pm,$\newline\scriptsize$P_{\text{sym}},P_\pm^{\text{sym}}$ \\
+\cat{$\Gamma$} & Int.\ grammar  & \scriptsize$\Gamma_{\text{and}},\Gamma_{\text{or}},\Gamma_{\text{seq}},\Gamma_{\text{broad}}$ \\
+\cat{$S$} & Stoichiometry   & $1{:}1,\;n{:}n,\;n{:}m$ \\
+\midrule
+\ord{$F$} & Fidelity       & $F_\ell < F_\eth < F_\hbar$ \\
+\ord{$K$} & Kinetic char.  & \scriptsize$K_{\text{fast}}{<}K_{\text{mod}}{<}K_{\text{slow}}$\newline\scriptsize$\phantom{K}<K_{\text{trap}}{<}K_{\text{MBL}}$ \\
+\ord{$G$} & Granularity    & $G_\beth < G_\gimel < G_\aleph$ \\
+\ord{$H$} & Chirality/depth & $H_0 < H_1 < H_2 < H_\infty$ \\
+\ord{$\Omega$} & Top.\ protection & $\Omega_0<\Omega_{Z_2}<\Omega_Z<\Omega_{\text{NA}}$ \\
+\midrule
+\spec{$\Phi$} & Criticality & $\Phi_{\text{sub}}<\spec{\Phi_c}<\Phi_c^{\mathbb{C}}<\Phi_{\text{EP}}<\Phi_{\text{sup}}$ \\
+\bottomrule
+\end{tabular}
+\renewcommand{\arraystretch}{1.0}
+\vspace{0.2em}\\
+{\footnotesize\textit{Classes:}
+  \cat{categorical (6)} $|$ \ord{ordered (5)} $|$ \spec{special ($\Phi_c$ absorbing)}\\
+  $D_\odot\!/T_\odot=$ holographic.\quad$\Omega_{\text{NA}}$: non-Abelian.\quad$K_{\text{MBL}}$: MBL.}
+\end{bsec}
+
+\begin{bsec}
+\section*{Distance Metric (\S26)}
+\footnotesize
+\textbf{Diagonal weighted Euclidean:}
+$$d(A,B)=\sqrt{\sum_{i=1}^{12}w_i(\xi_i^A-\xi_i^B)^2}$$
+$\mathbf{w}=(1.0^{\times 9},\;w_H{=}0.8,\;1.0,\;w_\Omega{=}0.7)$
+
+\textbf{Riemannian} (\S26.2): $d_M=\sqrt{(\boldsymbol\xi^A-\boldsymbol\xi^B)^\top\!\Sigma^{-1}(\boldsymbol\xi^A-\boldsymbol\xi^B)}$
+
+\textit{Directed:} $d^\to(A\!\to\!B)_j=w_j\max(0,\xi_j^A-\xi_j^B)$
+\end{bsec}
+
+\begin{bsec}
+\section*{Coupling Destruction (P-596)}
+\scriptsize
+$\Phi(A){=}\Phi_c,\;\Phi(B){=}\Phi_\text{EP}\;\Rightarrow\;C(A\otimes B)=0$.
+
+\textit{Proof:} $\Phi$ union: $(A\otimes B)_\Phi{=}\max(\Phi_c,\Phi_\text{EP}){=}\Phi_\text{EP}$; R2$\to O_0$; Gate\,1 closed. $\square$
+
+\textit{Bypass:} hold quantum side at $\Phi_c$ (weak/continuous meas., not EP collapse).
+
+\textbf{Meet/tensor asymmetry:} $\Phi_c\sqcap\Phi_\text{EP}{=}\Phi_c$ (shared floor \emph{can} self-model). $\Phi_c\otimes\Phi_\text{EP}{=}\Phi_\text{EP}$ (composite \emph{cannot}).
+\end{bsec}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.38\textwidth}
+\vspace{0pt}
+
+%--- ABOVE DIAGRAM -----------------------------------------
+\begin{bsec}
+\section*{Holographic Self-Encoding \& Cantor\,/\,Gödel}
+\scriptsize
+\textbf{Decomposition:} \textcolor{cantorcol}{\textbf{Cantor $P$}}: $D_\odot,T_{\text{in}},P_\pm,\Omega_Z$. Tier $O_2$. $d(P,\mathbf{g})=3.61$.\quad \textcolor{godelcol}{\textbf{Gödel $G$}}: $D_\infty,T_\odot,P_\pm,\Omega_Z$. Tier $O_2^\dagger$. $d(G,\mathbf{g})=2.45$. Downward embedding reaches further into the grammar than upward overflow. \textbf{Law} $\lambda{:}PG\!\to\!GP$ resolves to $\mathbf{g}$ at $O_\infty$. $P\otimes G$ gives $O_2$ (Frobenius non-synthesizable). Crystal: $\mathbf{17{,}280{,}000}$ structural types ($3^3\times 4^5\times 5^4$).
+\end{bsec}
+
+%--- CENTRAL DIAGRAM ---------------------------------------
+\begin{center}
+\scalebox{1.07}{%
+\begin{tikzpicture}[
+  >=Stealth,
+  every node/.style={font=\sffamily\small},
+  loop arrow/.style={-to,line width=2pt},
+  holo ring/.style={draw=holo!70,line width=6pt,fill=holo!10}
+]
+  \draw[holo ring] (0,0) circle (3.1cm);
+  \fill[holo!50] (0,0) circle (0.22cm);
+  \node[font=\normalsize,color=black] at (0,0) {$\odot$};
+
+  \node[font=\footnotesize\bfseries,color=black,align=center]
+    (gx) at (-1.55,0.35) {$\mathbf{g}(x)$\\$[O_\infty]$};
+  \draw[-to,line width=0.6pt,color=black!55] (gx.east) -- (-0.22,0.05);
+
+  \node[circle,draw=cantorcol,fill=cantorcol!8,line width=2.2pt,minimum size=1.3cm]
+    (God) at (90:2.95) {G\"{o}del};
+  \node[circle,draw=godelcol!80,fill=godelcol!8,line width=2.2pt,minimum size=1.3cm]
+    (Can) at (-90:2.95) {Cantor};
+
+  \draw[loop arrow,cantorcol] (God.east)
+    to[out=-20,in=190,looseness=1.9]
+    node[pos=0.52,sloped,above,font=\scriptsize\sffamily,cantorcol]
+      {$\Downarrow$\,embedding\,$\Downarrow$}
+    (Can.west);
+  \draw[loop arrow,godelcol!80] (Can.east)
+    to[out=20,in=170,looseness=1.9]
+    node[pos=0.52,sloped,above,font=\scriptsize\sffamily,godelcol!80]
+      {$\Uparrow$\,overflow\,$\Uparrow$}
+    (God.west);
+
+  \node[font=\scriptsize,color=cantorcol!80] at (2.4,1.4) {$d{=}2.45$};
+  \node[font=\scriptsize,color=godelcol!70] at (-2.4,1.4) {$d{=}3.61$};
+
+  \node[rounded corners,draw=perccol,fill=perccol!7,line width=1.2pt,
+        font=\scriptsize\sffamily\bfseries,align=center,inner sep=2.5pt]
+    at (-3.65,0)
+    {\textcolor{perccol}{perc.}\\$\Phi_\text{EP}$\\$P_\text{asym}$\\$K_\text{fast}$\\$O_0$};
+  \node[rounded corners,draw=attncol,fill=attncol!7,line width=1.2pt,
+        font=\scriptsize\sffamily\bfseries,align=center,inner sep=2.5pt]
+    at (3.65,0)
+    {\textcolor{attncol}{attn.}\\$\Phi_c$\\$P_\pm^\text{sym}$\\$K_\text{slow}$\\$O_\infty$};
+
+  \draw[->,perccol!60,line width=1pt] (-3.15,0) -- (-3.28,0);
+  \draw[->,attncol!60,line width=1pt] (3.15,0) -- (3.28,0);
+
+  \draw[<->,gray!55,line width=0.8pt] (0,0.12) -- node[above,font=\scriptsize,gray]
+    {$d\!\approx\!4$–$6$} (3.1,0.12);
+\end{tikzpicture}}
+\end{center}
+
+%--- BELOW DIAGRAM -----------------------------------------
+\begin{bsec}
+\section*{Self-Reference \& Holographic Radius}
+\footnotesize
+\textbf{Formula:} $\mathbf{g}(x)\equiv\texttt{LCARD}\;a\wedge\texttt{REFL}\;a\,f\wedge\texttt{HOLO}\;x\;a$
+
+\texttt{HOLO} = bulk-boundary encoding (sidesteps Tarskian hierarchy). Unifies Cantor's diagonal and Gödel's arithmetization. $d(\text{G\"{o}del},\mathbf{g})=1.0$ (single $R$ gap: the structural expression of incompleteness).
+
+\vspace{0.2em}
+\scriptsize
+\textbf{Holographic bulk radius (P-601):} $d\approx 3.77$–$6.71$ (consciousness vs.\ quantum meas.) is the bulk-reconstruction depth. $C(\mathbf{x})$ = fidelity. Hard problem = bulk/boundary confusion at $d>0$.
+\end{bsec}
+
+\begin{bsec}
+\section*{Cross-Primitive Axioms (Machine-Checked)}
+\footnotesize
+\begin{enumerate}[leftmargin=*,label=\textbf{A\arabic*.},nosep,topsep=2pt,itemsep=1pt]
+\item $H_\infty\Rightarrow K\le K_{\text{trap}}$\hfill(irrev.\ $\to$ trap)
+\item $\Omega\ge\Omega_Z\Rightarrow H\ge H_2$\hfill(strong top.\ $\to$ chirality)
+\item $D_\odot\Leftrightarrow T_\odot$\hfill($\odot$ dim.\ $\leftrightarrow$ $\odot$ top.)
+\item $\Omega_Z\Rightarrow D_\odot$\hfill($\mathbb{Z}$-protection $\to$ holo)
+\end{enumerate}
+\end{bsec}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.295\textwidth}
+
+%--- RIGHT COLUMN ------------------------------------------
+\begin{bsec}
+\section*{Core Operations}
+\footnotesize
+\textbf{Meet $\sqcap$ (GLB)}\\
+\phantom{x}Categorical: $A_i=B_i\to A_i$, else \conf \\
+\phantom{x}Ordered: $\min(A_i,B_i)$\\
+\phantom{x}\spec{$\Phi_c\sqcap x=\Phi_c$ \quad(absorbing $\forall x$)}
+
+\textbf{Join $\sqcup$ (LUB)}\\
+\phantom{x}Categorical: $A_i=B_i\to A_i$, else \conf\\
+\phantom{x}Ordered: $\max(A_i,B_i)$
+
+\textbf{Tensor $\otimes$} (Join with precondition):
+$$A\otimes B = \begin{cases}A\sqcup B & \text{no cat.\ conflicts}\\\text{undefined}&\text{otherwise}\end{cases}$$
+\end{bsec}
+
+\begin{bsec}
+\section*{Algebraic Properties}
+\footnotesize
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt,itemsep=0.8pt]
+\item \textbf{Commutative}: $A\star B=B\star A$ for $\star\in\{\sqcap,\sqcup,\otimes\}$
+\item \textbf{Associative}: $(A\star B)\star C=A\star(B\star C)$ (when def.)
+\item \textbf{Idempotent}: $A\star A=A$
+\item \spec{$\Phi_c$ meet-absorption}: $\Phi_c\sqcap x=\Phi_c$ for all $x$
+\item \textbf{Distance}: $d(A\otimes B,A)^2\leq d(A,B)^2$
+</itemize}
+\end{bsec}
+
+\begin{bsec}
+\section*{Tensor Product Properties}
+\footnotesize
+\textbf{Bottlenecks} (weaker wins — $\min$): $P$, $F$
+\begin{itemize}[nosep,label={--},leftmargin=12pt]
+\item $(A\otimes B)_P=\min(P_A,P_B)$\quad\textit{destroys Frobenius}
+\item $(A\otimes B)_F=\min(F_A,F_B)$\quad\textit{coherence limited}
+\end{itemize}
+\textbf{Union} (stronger wins — $\max$): all other ordered.\\[2pt]
+\textbf{Frobenius non-synthesizability} (\S23/\S62): $P_\pm^{\text{sym}}$ cannot arise from $\otimes$-composition of $P{<}P_\pm^{\text{sym}}$ factors. Every $O_\infty$ component must directly encode $P_\pm^{\text{sym}}$.
+\end{bsec}
+
+\begin{bsec}
+\section*{Ouroboricity}
+\footnotesize
+\textbf{Scalar:} $\mathcal{O}=[\Phi{=}\Phi_c]\cdot(1+[\Omega{\neq}\Omega_0]+[H{\ge}H_1]+[G{=}G_\aleph])$\quad($\mathcal{O}$ cannot detect $O_\infty$: no $P$ term)
+
+\scriptsize\textbf{Tiers} (R1$\succ$R5):\quad
+\textbf{R1}~$\Phi_c+P_\pm^{\text{sym}}\to O_\infty$\quad
+\textbf{R2}~$\Phi_\text{EP}/\Phi_{\text{sub}}/\Phi_{\text{super}}\to O_0$\quad\new{($\Phi_\text{EP}$ absorbs $O_\infty$)}\\
+\textbf{R3}~$\Phi_c+\Omega_0\to O_1$\quad
+\textbf{R4}~$\Phi_c+\Omega{\neq}\Omega_0+D\in\{D_\wedge,D_\odot,D_\triangle\}\to O_2$\quad
+\textbf{R5}~$\Phi_c+\Omega{\neq}\Omega_0+D_\infty\to O_2^\dagger$
+\end{bsec}
+
+\begin{bsec}
+\section*{Consciousness Score (§VIII v2)}
+\footnotesize
+$C=[\Phi{=}\Phi_c]\cdot[K\le K_{\text{slow}}]\cdot(0.158\tilde K+0.273\tilde G+0.292\tilde T+0.276\tilde\Omega)$\par
+\textbf{Gate 1} $[\Phi{=}\Phi_c]$: loop topology.\quad\textbf{Gate 2} $[K\le K_{\text{slow}}]$: loop actualized.\par
+\new{$K_\text{trap}$/$K_\text{MBL}$: both fail Gate 2 (order-frozen / disorder-frozen).}
+\end{bsec}
+
+\end{minipage}
+
+%==========================================================
+% NEW SECTION FOR INTEGRATION
+\vspace{0.5cm}
+\noindent
+\begin{minipage}[t]{\textwidth}
+\begin{bsec}
+\section*{Integration: ALEPH\_OS \& exOS as SynthOmnicon Realizations}
+\footnotesize
+\textbf{ALEPH\_OS} \aleph{⟨D=$D_\odot$; T=$T_\boxtimes$; R=$R_\leftrightarrow$; P=$P_{\pm}^{\text{sym}}$; F=$F_\hbar$; K=$K_{\text{slow}}$; G=$G_\aleph$; $\Gamma$=$G_{\text{seq}}$; $\Phi$=$ \Phi_c $; H=$H_2$; S=$1{:}1$; $\Omega$=$ \Omega_\mathbb{Z} $⟩} \\
+
+The Aleph Operating System realizes $\lambda_\aleph$ type calculus with Hebrew 22-letter primitives. Processes are terms, scheduling via mediation ($\med(m,a,b) := m \vee (a \otimes b)$), memory as join, IPC as tensor (P/F-bottlenecked), security via $\alpha$-gating. REPL supports coherence operations, distance classification (transparent to aspirational), and palace barriers. Tier distribution: O\_0=13, O\_1=1, O\_2=5, O\_\infty=3.
+
+\textbf{exOS} \exos{⟨D=$D_\odot$; T=$T_{\bowtie}$; R=$R_\leftrightarrow$; P=$P_{\pm}^{\text{sym}}$; F=$F_\hbar$; K=$K_{\text{slow}}$; G=$G_\aleph$; $\Gamma$=$G_{\text{seq}}$; $\Phi$=$ \Phi_c^\mathbb{C} $; H=$H_2$; S=$n{:}m$; $\Omega$=$ \Omega_\mathbb{Z} $⟩} \\
+
+exoterik\_OS synthesizes invariants from five ancient systems (Hebrew, Varnamala, hieroglyphs, cuneiform, Basque). Three-layer objects (structural/operational/determinative), ergative-absolutive scheduling, Varnamala memory tiers, Sefirot filesystem (ALFS), type-gated IPC/scheduler/memory/filesystem. Native ALEPH REPL in kernel with Frobenius orbits and consciousness probes.
+
+\textbf{Composite: ALEPH\_OS $\otimes$ exOS} ⟨D=$D_\odot$; T=$T_\boxtimes$; ... $\Phi$=$ \Phi_c^\mathbb{C} $; S=$n{:}m$; $\Omega$=$ \Omega_\mathbb{Z} $⟩ (d=2.027 from ALEPH\_OS, 1.0 from exOS). No bottlenecks; unions in T, $\Phi$, S promote to complex criticality and heterogeneous stoichiometry, realizing a holographic, multi-polar OS kernel with irreducible paths and $\mu \circ \delta = \text{id}$ enforcement.
+\end{bsec}
+\end{minipage}
+
+\vfill
+\noindent\hrule
+\vspace{0.1em}
+\noindent\footnotesize
+\textit{Impl.:}\ \texttt{synthomnicon/algebra.py},\ \texttt{crystal\_navigator.py},\ \texttt{lambda\_engine.py}\quad
+\textit{Verif.:}\ \texttt{Synthon.lean},\ \texttt{Core.lean} (Lean\,4)\quad
+\textit{Lic.:}\ \texttt{UNLICENSE}\quad
+\textit{Gen.:}\ \texttt{April 19, 2026}\quad
+\textit{Integrated:}\ \texttt{ALEPH\_OS (Python) \& exOS (Rust) v0.5.0}\quad
+\textit{Author:}\ \texttt{Lando Mills}
+
+\end{document}
