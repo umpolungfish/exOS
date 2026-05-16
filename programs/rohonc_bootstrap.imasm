@@ -1,0 +1,11 @@
+; Rohonc bootstrap — RTFF glyph bootstrap sequence compiled to IMASM
+; Bootstrap core: id ∘ rev ∘ split ∘ fwd ∘ fuse ∘ link ∘ fix ∘ id
+; Source tokens: lp ba br fa cv lg dt lp
+ 0x5 | ISCRIB %r0
+ 0x3 | AREV   %r1
+ 0x6 | FSPLIT %r2
+ 0x2 | AFWD   %r3
+ 0x7 | FFUSE  %r4
+ 0x4 | CLINK  %r5
+ 0xB | IFIX   %r6
+ 0x5 | ISCRIB %r7

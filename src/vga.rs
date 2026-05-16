@@ -336,7 +336,6 @@ impl VgaWriter {
 
 impl fmt::Write for VgaWriter {
     fn write_str(&mut self, s: &str) -> fmt::Result {
-        crate::serial::write_str(s);
         for byte in s.bytes() {
             self.write_byte(byte);
         }

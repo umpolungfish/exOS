@@ -60,7 +60,7 @@ impl AlephRepl {
         // Line 2
         w.write_string("|  ");
         w.color_code = vga::ColorCode::new(Color::White, Color::Black);
-        w.write_string("Grammar: SynthOmnicon 12-primitive v0.4.27");
+        w.write_string("Grammar: Imscribing Grammar 12-primitive v0.4.27");
         for _ in 0..25 { w.write_byte(b' '); }
         w.color_code = vga::ColorCode::new(Color::Cyan, Color::Black);
         w.write_string("|\n");
@@ -784,8 +784,6 @@ impl AlephRepl {
                     continue;
                 }
 
-                // Echo to VGA and serial
-                crate::serial::write_byte(ch);
                 {
                     let mut w = WRITER.lock();
                     w.write_byte(ch);

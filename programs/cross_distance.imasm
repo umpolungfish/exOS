@@ -1,0 +1,20 @@
+; Cross-system distance probe
+; Run: imasm distance   (no VM execution needed — pure IG metric query)
+;
+; Expected output (exOS weighted metric, WEIGHTS from aleph.rs):
+;   d(Linear A,  OS imscription) = 0.00   [Minoan IS the structural core]
+;   d(Rohonc,    OS imscription) = 2.10
+;   d(Rohonc,    Linear A)       = 2.10
+;   d(Voynich,   OS imscription) = 4.31
+;   d(Voynich,   Rohonc)         = 3.55
+;   d(Voynich,   Linear A)       = 4.31
+;
+; Conflicting primitives by system pair:
+;   Rohonc  ↔ OS/Linear A : ƒ (0↔2), Ç (2↔1)
+;   Voynich ↔ OS/Linear A : Ð (3↔1), Þ (4↔3), Ř (3↔2), ƒ (0↔2), Ç (3↔1), ɢ (3↔2), Ħ (3↔2), Σ (0↔2)
+;
+; Paradox injection test sequence (shared across all systems):
+ 0x6 | FSPLIT %r0
+ 0xA | ENGAGR %r1
+ 0xB | IFIX   %r2
+ 0x5 | ISCRIB %r3

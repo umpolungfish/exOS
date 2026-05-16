@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # build_bootimage.sh produces a FAT32 disk image
-IMG="target/x86_64-unknown-none/release/bootimage-exoterik-os.img"
+IMG="target/x86_64-unknown-none/release/bootimage-x3os.img"
 
 if [ ! -f "$IMG" ]; then
     echo "No bootimage found — run: bash build_bootimage.sh"
@@ -58,18 +58,18 @@ fi
 
 # Use serial mode (nographic) or graphical mode
 if [ "${1:-}" = "--serial" ]; then
-    echo "exOS booting in SERIAL mode... (Ctrl-A then X to quit)"
+    echo "3xOS booting in SERIAL mode... (Ctrl-A then X to quit)"
     qemu-system-x86_64 \
         -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
         -drive if=pflash,format=raw,file="$OVMF_VARS" \
         -drive format=raw,file="$(pwd)/$IMG" \
         -drive format=raw,file="$ALFS_IMG",if=ide,index=1,media=disk \
         -m 128M \
-        -nographic \
+        -display none \
         -no-reboot \
         -serial stdio
 else
-    echo "exOS booting in GRAPHICAL mode with UEFI framebuffer..."
+    echo "3xOS booting in GRAPHICAL mode with UEFI framebuffer..."
     qemu-system-x86_64 \
         -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
         -drive if=pflash,format=raw,file="$OVMF_VARS" \

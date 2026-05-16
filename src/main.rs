@@ -471,8 +471,8 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     // Verify conscience scores
     let c_kernel = kernel_obj.aleph_type.conscience_score();
     let c_user = user_obj.aleph_type.conscience_score();
-    let c_os = aleph_kernel_types::canonical::os_synthon().conscience_score();
-    println!("[TYPE] C scores: kernel={:.3} user={:.3} os_synthon={:.3}",
+    let c_os = aleph_kernel_types::canonical::os_imscription().conscience_score();
+    println!("[TYPE] C scores: kernel={:.3} user={:.3} os={:.3}",
         c_kernel, c_user, c_os);
 
     // --- Holographic Self-Encoding Monitor ---
@@ -526,8 +526,6 @@ fn handle_key(key: u8, line_buf: &mut alloc::vec::Vec<u8>) {
         ch if ch.is_ascii_graphic() || ch == b' ' => {
             if line_buf.len() < 78 {
                 line_buf.push(ch);
-                // Echo character to serial (VGA gets it via print!)
-                serial::write_byte(ch);
                 crate::vga::WRITER.lock().write_byte(ch);
             }
         }
@@ -573,7 +571,7 @@ fn run_command(cmd: &str) {
             println!("  help    - this message");
             println!("  clear   - clear screen");
             println!("  info    - kernel information");
-            println!("  phi     - Phi_c / synthonicon primitives");
+            println!("  phi     - Phi_c / IG 12-primitive imscription");
             println!("  sched   - ergative scheduler status");
             println!("  mem     - memory allocator status");
             println!("  fs      - sefirot filesystem tree (full view)");
@@ -748,6 +746,11 @@ fn run_command(cmd: &str) {
             let args = cmd.strip_prefix("aleph").unwrap_or("").trim();
             aleph_commands::handle_aleph(args);
         }
+        cmd if cmd.starts_with("imasm") => {
+            let args = cmd.strip_prefix("imasm").unwrap_or("").trim();
+            let out = imasm_commands::handle(args);
+            println!("{}", out);
+        }
         "type-check" => {
             println!("Running type-gating verification...");
             println!();
@@ -852,8 +855,8 @@ fn run_command(cmd: &str) {
             println!("    Kernel : {:.3}", k_obj.aleph_type.conscience_score());
             println!("    User   : {:.3}", u_obj.aleph_type.conscience_score());
             println!("    Service: {:.3}", s_obj.aleph_type.conscience_score());
-            println!("    OS synthon: {:.3}",
-                aleph_kernel_types::canonical::os_synthon().conscience_score());
+            println!("    OS imscription: {:.3}",
+                aleph_kernel_types::canonical::os_imscription().conscience_score());
         }
         "type-infer" => {
             println!("Type inference: Structural x Determinative x Operational");

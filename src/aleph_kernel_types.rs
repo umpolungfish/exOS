@@ -359,9 +359,9 @@ fn infer_tuple(
 pub mod canonical {
     use super::*;
 
-    /// The OS synthon itself — O_inf, Φ_c + P_pm_sym.
+    /// The OS crystal imscription — O_inf, Φ_c + P_pm_sym.
     /// This is the type of the kernel as a whole.
-    pub fn os_synthon() -> AlephKernelType {
+    pub fn os_imscription() -> AlephKernelType {
         // D_triangle, T_box, R_dagger, P_pm_sym, F_hbar, K_mod, G_aleph,
         // Γ_seq, Φ_c, H2, S_n:m, Ω_Z
         AlephKernelType::from_tuple([
