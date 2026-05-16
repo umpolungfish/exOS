@@ -39,14 +39,17 @@ pub mod aleph_kernel_types;
 pub mod programs;
 
 // ── Tri-Phase Script Engines ──────────────────────────────────────────────────
-// Shared IMASM VM + three script-specific front-ends (Voynich, Rohonc, Linear A).
-// All three reduce to the same 12 categorical opcodes on the same TriPhase registers.
-// Crystal imscription distances computed via the OS weighted IG metric.
+// Shared IMASM VM + four script-specific front-ends (Voynich, Rohonc, Linear A,
+// Emerald Tablet). All four reduce to the same 12 categorical opcodes on the same
+// TriPhase registers. Crystal imscription distances computed via the OS weighted
+// IG metric. The Emerald Tablet is the only compiled manuscript with both gates
+// open and quantum-coherent fidelity (C = 1.0) — it is the grammar's self-statement.
 
 pub mod imasm_vm;
 pub mod voynich;
 pub mod rohonc;
 pub mod linear_a;
+pub mod emerald_tablet;
 pub mod imasm_commands;
 
 /// Global allocator — initialized by the kernel entry point

@@ -133,54 +133,124 @@ pub enum ScriptSystem {
     Voynich,
     Rohonc,
     LinearA,
+    EmeraldTablet,
 }
 
 impl ScriptSystem {
     pub fn name(self) -> &'static str {
         match self {
-            ScriptSystem::Voynich => "Voynich",
-            ScriptSystem::Rohonc  => "Rohonc",
-            ScriptSystem::LinearA => "Linear A",
+            ScriptSystem::Voynich       => "Voynich",
+            ScriptSystem::Rohonc        => "Rohonc",
+            ScriptSystem::LinearA       => "Linear A",
+            ScriptSystem::EmeraldTablet => "Emerald Tablet",
         }
+    }
+}
+
+// ── Voynich section context ──────────────────────────────────────────────────
+//
+// Each VMS section is a distinct memory segment type with its own execution
+// semantics. The section tag is set by physical folio context (Ð_ω dispatch)
+// and changes how the engine interprets FSPLIT, VINIT, TANCH, and CLINK.
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VoynichSection {
+    /// Þ_6 branching network — data segment. Standard execution.
+    Botanical,
+    /// Þ_O orbital — state register file. Cyclic closure on PC wrap.
+    Astronomical,
+    /// Þ_K nested containment — heap / runtime state snapshot.
+    /// Broken Frobenius: FSPLIT preferentially resets to VINIT rather than
+    /// completing to FFUSE. Empirical: p(VINIT|FSPLIT) = 0.622 in this section.
+    Biological,
+    /// Þ_O orbital, clock-indexed — structurally identical to Astronomical.
+    Cosmological,
+    /// Þ_6, type declarations — structurally identical to Botanical.
+    Pharmaceutical,
+    /// Ř_Ť sequential + Ħ_£ one-step memory — instruction memory / microcode.
+    Recipes,
+}
+
+impl VoynichSection {
+    pub fn name(self) -> &'static str {
+        match self {
+            VoynichSection::Botanical      => "Botanical",
+            VoynichSection::Astronomical   => "Astronomical",
+            VoynichSection::Biological     => "Biological",
+            VoynichSection::Cosmological   => "Cosmological",
+            VoynichSection::Pharmaceutical => "Pharmaceutical",
+            VoynichSection::Recipes        => "Recipes",
+        }
+    }
+
+    /// Whether this section has broken Frobenius (FSPLIT→VINIT reset).
+    pub fn broken_frobenius(self) -> bool {
+        self == VoynichSection::Biological
+    }
+
+    /// Whether this section enforces one-step sequential memory (Ħ_£).
+    pub fn sequential_memory(self) -> bool {
+        self == VoynichSection::Recipes
     }
 }
 
 // ── Snapshot ─────────────────────────────────────────────────────────────────
 
 pub struct Snapshot {
-    pub step:         u64,
-    pub pc:           usize,
-    pub active:       u32,
-    pub fixed:        u32,
-    pub paradoxes:    u32,
-    pub script:       ScriptSystem,
+    pub step:               u64,
+    pub pc:                 usize,
+    pub active:             u32,
+    pub fixed:              u32,
+    pub paradoxes:          u32,
+    pub script:             ScriptSystem,
+    pub section:            Option<VoynichSection>,
+    pub pending_splits:     u32,
+    pub cross_segment_refs: u32,
 }
 
 // ── Universal Engine ─────────────────────────────────────────────────────────
 
 pub struct UniversalEngine {
-    registers:   BTreeMap<u32, TriPhaseRegister>,
-    pub program: Vec<Instruction>,
-    pub pc:      usize,
-    pub steps:   u64,
-    pub script:  ScriptSystem,
+    registers:               BTreeMap<u32, TriPhaseRegister>,
+    pub program:             Vec<Instruction>,
+    pub pc:                  usize,
+    pub steps:               u64,
+    pub script:              ScriptSystem,
+    /// Active VMS section context — determines execution semantics.
+    pub section:             Option<VoynichSection>,
+    /// Open FSPLIT operations not yet closed by FFUSE.
+    /// In biological section, VINIT resets this counter (broken Frobenius).
+    pub pending_splits:      u32,
+    /// Count of CLINK (cross-segment pointer dereference) operations.
+    pub cross_segment_refs:  u32,
 }
 
 impl UniversalEngine {
     pub fn new(script: ScriptSystem) -> Self {
         UniversalEngine {
-            registers: BTreeMap::new(),
-            program:   Vec::new(),
-            pc:        0,
-            steps:     0,
+            registers:            BTreeMap::new(),
+            program:              Vec::new(),
+            pc:                   0,
+            steps:                0,
             script,
+            section:              None,
+            pending_splits:       0,
+            cross_segment_refs:   0,
         }
     }
 
+    pub fn new_sectioned(script: ScriptSystem, section: VoynichSection) -> Self {
+        let mut e = Self::new(script);
+        e.section = Some(section);
+        e
+    }
+
     pub fn load(&mut self, program: Vec<Instruction>) {
-        self.program = program;
-        self.pc      = 0;
-        self.steps   = 0;
+        self.program             = program;
+        self.pc                  = 0;
+        self.steps               = 0;
+        self.pending_splits      = 0;
+        self.cross_segment_refs  = 0;
         self.registers.clear();
     }
 
@@ -208,27 +278,89 @@ impl UniversalEngine {
     }
 
     pub fn snapshot(&self) -> Snapshot {
-        let active   = self.registers.values().filter(|r| r.is_active()).count() as u32;
-        let fixed    = self.registers.values().filter(|r| r.fixed).count() as u32;
+        let active    = self.registers.values().filter(|r| r.is_active()).count() as u32;
+        let fixed     = self.registers.values().filter(|r| r.fixed).count() as u32;
         let paradoxes = self.registers.values().map(|r| r.paradox_count).sum();
-        Snapshot { step: self.steps, pc: self.pc, active, fixed, paradoxes, script: self.script }
+        Snapshot {
+            step: self.steps, pc: self.pc, active, fixed, paradoxes,
+            script: self.script, section: self.section,
+            pending_splits: self.pending_splits,
+            cross_segment_refs: self.cross_segment_refs,
+        }
     }
 
     pub fn format_snapshot(&self) -> String {
         let s = self.snapshot();
+        let section_str = match s.section {
+            Some(sec) => sec.name(),
+            None      => "—",
+        };
+        let frobenius = if s.pending_splits == 0 {
+            "closed  (μ∘δ=id)"
+        } else {
+            "open    (pending splits)"
+        };
         format!(
-            "=== {} ENGINE ===\nSteps      : {}\nPC         : {}\nActive regs: {}\nFixed regs : {}\nParadoxes  : {}\nEntropy Δ  : 0.00000000 J/K\nStatus     : BOOTSTRAP_COMPLETE",
-            s.script.name(), s.step, s.pc, s.active, s.fixed, s.paradoxes
+            "=== {} ENGINE ===\n\
+             Section    : {}\n\
+             Steps      : {}\n\
+             PC         : {}\n\
+             Active regs: {}\n\
+             Fixed regs : {}\n\
+             Paradoxes  : {}\n\
+             Frobenius  : {}  [open: {}]\n\
+             Cross-segs : {}\n\
+             Entropy Δ  : 0.00000000 J/K\n\
+             Status     : BOOTSTRAP_COMPLETE",
+            s.script.name(), section_str,
+            s.step, s.pc, s.active, s.fixed, s.paradoxes,
+            frobenius, s.pending_splits,
+            s.cross_segment_refs,
         )
     }
 
     fn execute(&mut self, instr: Instruction) {
-        let reg = self.registers.entry(instr.dst).or_insert_with(TriPhaseRegister::new);
+        let broken_frobenius = self.section.map(|s| s.broken_frobenius()).unwrap_or(false);
+
         match instr.opcode {
-            Opcode::FSPLIT | Opcode::ENGAGR => reg.engage(),
-            Opcode::IFIX                    => reg.fix(),
-            // VINIT, TANCH, AFWD, AREV, CLINK, ISCRIB, FFUSE, EVALT, EVALF:
-            // structurally present; ΔS = 0 is a theorem of the linear type constraint.
+            Opcode::FSPLIT => {
+                self.registers.entry(instr.dst).or_insert_with(TriPhaseRegister::new).engage();
+                self.pending_splits += 1;
+            }
+            Opcode::FFUSE => {
+                // Frobenius μ: close the most recent open δ.
+                // In biological section the dominant path resets to VINIT instead,
+                // so FFUSE arriving here means a minority completion — still valid.
+                if self.pending_splits > 0 {
+                    self.pending_splits -= 1;
+                }
+            }
+            Opcode::VINIT => {
+                // In biological section: VINIT resets all pending splits.
+                // This is the empirical FSPLIT→VINIT dominant transition
+                // (p=0.622) that breaks Frobenius closure in the heap segment.
+                if broken_frobenius {
+                    self.pending_splits = 0;
+                }
+            }
+            Opcode::CLINK => {
+                // Cross-segment pointer dereference. No Flux change; ΔS preserved.
+                self.cross_segment_refs += 1;
+            }
+            Opcode::TANCH => {
+                // Terminal anchor: closes an address resolution chain.
+                // TANCH never self-chains (p(TANCH|FFUSE)=0 empirically) and
+                // invariably delivers control to VINIT on the next instruction.
+                // No Flux change; ΔS preserved.
+            }
+            Opcode::ENGAGR => {
+                self.registers.entry(instr.dst).or_insert_with(TriPhaseRegister::new).engage();
+            }
+            Opcode::IFIX => {
+                self.registers.entry(instr.dst).or_insert_with(TriPhaseRegister::new).fix();
+            }
+            // AFWD, AREV, ISCRIB, EVALT, EVALF: address navigation and lattice
+            // assertions. Structurally present; ΔS = 0 by linear type constraint.
             _ => {}
         }
     }
