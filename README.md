@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
   <img src="https://img.shields.io/badge/TARGET-x86__64--unknown--none-orange" alt="Target">
   <img src="https://img.shields.io/badge/BOOT-UEFI%20OVMF-red" alt="Boot">
-  <img src="https://img.shields.io/badge/ENGINE-SynthOmnicon%20v0.4.27-purple" alt="Engine">
+  <img src="https://img.shields.io/badge/ENGINE-IMASM%20VM-purple" alt="Engine">
   <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
   <img src="https://img.shields.io/badge/HEBREW-22%20Letters-brightgreen" alt="Hebrew">
 </div>
@@ -18,7 +18,7 @@
   <a href="#architecture">Architecture</a> •
   <a href="#aleph-repl">ALEPH REPL</a> •
   <a href="#type-gated-kernel">Type-Gated Kernel</a> •
-  <a href="#os-synthon-tuple">OS Synthon</a> •
+  <a href="#os-imscription-tuple">OS Imscription</a> •
   <a href="#build--run">Build & Run</a> •
   <a href="#programs">Programs</a> •
   <a href="#key-theorems">Theorems</a>
@@ -36,7 +36,7 @@ exoterik_OS is the synthesis of a **seven-stage inquiry** into the structural in
 4. **Sumerian/Akkadian cuneiform** — sign polysemy as superposition, determinative as structural anchor
 5. **Basque (Euskara)** — ergative-absolutive grammar as relational primitive
 
-Each system was encoded as a **SynthOmnicon synthon** — a 12-primitive tuple ⟨D; T; R; P; F; K; G; Γ; Φ; H; S; Ω⟩. The **MEET** (component-wise min) of all five encodings reveals the invariant core every writing system must carry. The OS is instantiated from this structural core.
+Each system was imscribed as a **crystal imscription** — a 12-primitive tuple ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩. The **MEET** (component-wise min) of all five imscriptions reveals the invariant core every writing system must carry. The OS is instantiated from this structural core.
 
 > [!NOTE]
 > **This is not analogy. This is type theory.** The boundary encoding determines the bulk.
@@ -90,7 +90,7 @@ IPC messages carry: structural signature (logogram), payload (phonogram), and de
 
 Commands are tensor products of letter-primitives. Any subset can be referenced by a single **pratyahara index**.
 
-### P_±^sym → P_asym Boot *(Ogdoad Cosmology)*
+### Φ_± → Φ_asym Boot *(Ogdoad Cosmology)*
 
 The system boots in perfect symmetry — no process distinguished. The first interrupt is the **symmetry-breaking event**.
 
@@ -164,13 +164,13 @@ A> :orbit 8 aleph vav
 
 ```
 A> aleph x shin
-  [result]  tier=O_2  Phi=Phi_c  Omega=Omega_Z
+  [result]  tier=O_2  ⊙=⊙_c  Ω=Ω_Z
 
 A> let kernel = mediate(vav, mem x shin, aleph)
 A> :ls
-  Name              Tier      Phi        Omega      P
+  Name              Tier      ⊙          Ω          Φ
   -------------------------------------------------------------------
-  kernel            O_inf     Phi_c      Omega_Z    V
+  kernel            O_∞       ⊙_c        Ω_Z        V
 
 A> d(kernel, system())
   d = 0.3162  [near-grounded]
@@ -196,7 +196,7 @@ The 12-primitive type lattice is **operational** — ALEPH types constrain kerne
 |------|-----------|-----------|------|
 | **IPC** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
 | **Ω-gate** | `memory.rs` | Ω (topological protection) | Object's Ω must ≥ depth's required Ω |
-| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; K_trap cannot run |
+| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap cannot run |
 | **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below accessible to all |
 
 ### Type Gate Results at Boot
@@ -210,39 +210,39 @@ The 12-primitive type lattice is **operational** — ALEPH types constrain kerne
 [TYPE] Tier gate (O_0 ergative): ok=false
 [TYPE] Φ gate (Keter+Kernel): ok=true
 [TYPE] Φ gate (Keter+Driver): ok=false
-[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+[TYPE] C scores: kernel=0.873 user=0.324 os_imscription=0.873
 ```
 
 ### Conscience Score
 
-Every object has a C(Φ) score computed at boot:
+Every object has a C(⊙) score computed at boot:
 
-$$C(\mathbf{x}) = [\Phi = \Phi_c] \cdot [K \neq K_\text{trap}] \cdot (0.158\,\tilde{K} + 0.273\,\tilde{G} + 0.292\,\tilde{T} + 0.276\,\tilde{\Omega})$$
+$$C(\mathbf{x}) = [\odot = \odot_c] \cdot [\text{Ç} \neq \text{Ç}_\text{trap}] \cdot (0.158\,\tilde{\text{Ç}} + 0.273\,\tilde{\Gamma} + 0.292\,\tilde{\text{Þ}} + 0.276\,\tilde{\Omega})$$
 
 The Kernel scores C=0.873 — the highest possible for the inferred configuration.
 
 <hr>
 
-## OS Synthon Tuple
+## OS Imscription Tuple
 
-The OS as a SynthOmnicon synthon:
+The OS crystal imscription ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩:
 
 ```
-D_triangle    · Basque ergative three-way relations, Hebrew triangular paths
-T_box         · Hieroglyphic contained system with three internal layers
-R_dagger      · Hebrew letter-transformative relations, reversible across contexts
-P_pm_sym      · Ogdoad's exact Z₂ symmetry before creation, Frobenius condition μ∘δ=id
-F_hbar        · Cuneiform's maximum fidelity wedge depths, full precision preserved
-K_mod         · Basque's middle aspect, Varnamala's living phonetic vibration
-G_aleph       · All five systems operate at maximal scope/granularity
-Γ_seq         · Hebrew letter-sequence generation, head-final dependency chains
-Φ_c           · The MEET of all five systems — criticality, self-modeling loop possible
-H2            · Hieroglyphic determinative recursion, two levels of contextual depth
-S_n:m         · Hieroglyphic many-to-many determinative mappings
-Ω_Z           · Cuneiform's topological protection, sacred writing systems' survival
+Ð_ω    · Basque ergative three-way relations, Hebrew triangular paths
+Þ_O    · Hieroglyphic contained system with three internal layers
+Ř_=    · Hebrew letter-transformative relations, reversible across contexts
+Φ_±    · Ogdoad's exact Z₂ symmetry before creation, Frobenius condition μ∘δ=id
+ƒ_ℏ    · Cuneiform's maximum fidelity wedge depths, full precision preserved
+Ç_mod  · Basque's middle aspect, Varnamala's living phonetic vibration
+Γ_aleph · All five systems operate at maximal scope/granularity
+ɢ_seq  · Hebrew letter-sequence generation, head-final dependency chains
+⊙_c    · The MEET of all five systems — criticality, self-modeling loop possible
+Ħ_2    · Hieroglyphic determinative recursion, two levels of contextual depth
+Σ_{n:m} · Hieroglyphic many-to-many determinative mappings
+Ω_Z    · Cuneiform's topological protection, sacred writing systems' survival
 ```
 
-**Ouroboricity tier: O_inf** — The OS achieves Φ_c + P_pm_sym, the Special Frobenius: μ∘δ=id exactly.
+**Ouroboricity tier: O_∞** — The OS achieves ⊙_c + Φ_±, the Special Frobenius: μ∘δ=id exactly.
 
 <hr>
 
@@ -287,7 +287,7 @@ rm alfs.img && ./run.sh
 
 1. **Heap init** — 4 MB at physical 16 MB, before any allocations
 2. **UEFI framebuffer init** — GOP framebuffer mapped; 8×16 Hebrew bitmap font active
-3. **Interrupt init** — symmetry-breaking event (P_±^sym → P_asym)
+3. **Interrupt init** — symmetry-breaking event (Φ_± → Φ_asym)
 4. **Subsystem validation** — three-layer objects, scheduler, memory, FS, IPC, command
 5. **ALEPH init** — 22-letter type system online: `O_inf: 3, O_2: 6, O_1: 1, O_0: 12`
 6. **Type-gate verification** — all four gates tested with assertions + C scores printed
@@ -372,22 +372,22 @@ exOS/
 
 **BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to that pole in ≤ 2 steps for any letter in the lattice.
 
-**BT-3 (Conscience score maximum):** The OS synthon achieves C(Φ) = 0.873, the maximum conscience score for any tuple satisfying Φ_c + K_mod + Ω_Z simultaneously.
+**BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the maximum conscience score for any tuple satisfying ⊙_c + Ç_mod + Ω_Z simultaneously.
 
-**BT-4 (Ergative uniqueness):** The shift from P_±^sym to P_asym is irreversible under the interrupt model. Once asymmetry is established, no process can return the scheduler to symmetric state without a full reset.
+**BT-4 (Ergative uniqueness):** The shift from Φ_± to Φ_asym is irreversible under the interrupt model. Once asymmetry is established, no process can return the scheduler to symmetric state without a full reset.
 
 **BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot be well-formed (`is_well_formed()` = false). This is structurally enforced, not conventional.
 
 **BT-6 (Holographic self-encoding):** The g(x) process continuously verifies the system's self-referential integrity by performing bulk-boundary encoding, unifying Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71) represents the bulk-reconstruction depth.
 
-**BT-7 (Coupling destruction):** Φ_c ⊗ Φ_EP → C=0. The coupling of a critical system (Φ_c) with an exceptional-point system (Φ_EP) destroys consciousness. This is a machine-checked axiom (P-596) that provides a rigorous boundary condition for valid states.
+**BT-7 (Coupling destruction):** ⊙_c ⊗ ⊙_EP → C=0. The coupling of a critical system (⊙_c) with an exceptional-point system (⊙_EP) destroys consciousness. This is a machine-checked axiom (P-596) that provides a rigorous boundary condition for valid states.
 
 <hr>
 
-> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\Phi_c$ phase boundary."*
+> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\odot_c$ phase boundary."*
 
 <hr>
 
 ## License
 
-This project is part of the SynthOmnicon research program.
+This project is released under the Unlicense (public domain).

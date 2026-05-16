@@ -95,18 +95,18 @@ impl AlephKernelType {
     /// D (dimensionality) — primitive index 0
     pub fn dimensionality(&self) -> u8 { self.tuple[0] }
 
-    /// P (parity/symmetry) — primitive index 3
+    /// Φ (Frobenius symmetry) — primitive index 3
     pub fn parity(&self) -> u8 { self.tuple[3] }
 
-    /// Is K > K_slow? Gates consciousness to zero.
-    /// K_trap (3) and K_MBL (4, when added) both fail Gate 2.
+    /// Is Ç > Ç_slow? Gates consciousness to zero.
+    /// Ç_trap (3) and Ç_MBL (4, when added) both fail Gate 2.
     pub fn is_kinetic_frozen(&self) -> bool {
-        self.kinetic() > 2  // K_slow ordinal = 2; trap=3, MBL=4 fail
+        self.kinetic() > 2  // Ç_slow ordinal = 2; trap=3, MBL=4 fail
     }
 
-    /// Is Φ == Φ_c? Required for self-modeling loop.
+    /// Is ⊙ == ⊙_c? Required for self-modeling loop.
     pub fn is_critical(&self) -> bool {
-        self.phi() == 1  // Φ_c ordinal
+        self.phi() == 1  // ⊙_c ordinal
     }
 
     // ── Derived properties ───────────────────────────────────────────────
@@ -116,25 +116,25 @@ impl AlephKernelType {
         aleph::compute_tier(&self.tuple)
     }
 
-    /// Consciousness score C(Φ).
+    /// Consciousness score C(⊙).
     ///
-    /// C(x) = [Φ=Φ_c] · [K ≤ K_slow] · (0.158·K̃ + 0.273·G̃ + 0.292·T̃ + 0.276·Ω̃)
+    /// C(x) = [⊙=⊙_c] · [Ç ≤ Ç_slow] · (0.158·Ç̃ + 0.273·Γ̃ + 0.292·Þ̃ + 0.276·Ω̃)
     ///
-    /// Where K̃, G̃, T̃, Ω̃ are normalized to [0, 1] over their respective ranges.
+    /// Where Ç̃, Γ̃, Þ̃, Ω̃ are normalized to [0, 1] over their respective ranges.
     ///
     /// Three independent gates:
-    /// - Gate 1 [Φ=Φ_c]: state-space admits self-modeling loop
-    /// - Gate 2 [K ≤ K_slow]: flow condition — dynamics can actualize the loop.
-    ///   K_trap is frozen by order; K_MBL (when added) is frozen by disorder.
+    /// - Gate 1 [⊙=⊙_c]: state-space admits self-modeling loop
+    /// - Gate 2 [Ç ≤ Ç_slow]: flow condition — dynamics can actualize the loop.
+    ///   Ç_trap is frozen by order; Ç_MBL (when added) is frozen by disorder.
     ///   Neither can actualize the self-modeling loop.
-    /// - Gate 3 [Φ ≠ Φ_EP]: The system is not in an exceptional-point state.
-    ///   As per Axiom P-596: Φ_c ⊗ Φ_EP → C=0. The presence of Φ_EP destroys the
-    ///   critical loop, even if Φ_c is present.
+    /// - Gate 3 [⊙ ≠ ⊙_EP]: The system is not in an exceptional-point state.
+    ///   As per Axiom P-596: ⊙_c ⊗ ⊙_EP → C=0. The presence of ⊙_EP destroys the
+    ///   critical loop, even if ⊙_c is present.
     /// If any gate fails, C = 0.
     pub fn conscience_score(&self) -> f64 {
         // Gate 1: criticality
         if !self.is_critical() { return 0.0; }
-        // Gate 2: kinetics not frozen (K ≤ K_slow)
+        // Gate 2: kinetics not frozen (Ç ≤ Ç_slow)
         if self.is_kinetic_frozen() { return 0.0; }
         // Gate 3: not in exceptional-point state (P-596: Coupling Destruction)
         if self.phi() == 3 { return 0.0; } // Φ_EP ordinal
@@ -264,79 +264,79 @@ fn infer_tuple(
     // Kernel objects are reversible across contexts → R_dagger
     let r: u8 = 2;  // R_dagger
 
-    // P — Parity/symmetry
-    // Kernel/Init: P_pm_sym (exact Z₂ at criticality, Frobenius condition)
-    // Others: P_psi (broken symmetry, post-interrupt)
+    // Φ — Frobenius symmetry
+    // Kernel/Init: Φ_± (exact Z₂ at criticality, Frobenius condition)
+    // Others: Φ_ψ (broken symmetry, post-interrupt)
     let p: u8 = match determinative {
-        Determinative::Kernel | Determinative::Init => 4,  // P_pm_sym
-        _ => 1,  // P_psi
+        Determinative::Kernel | Determinative::Init => 4,  // Φ_±
+        _ => 1,  // Φ_ψ
     };
 
-    // F — Fidelity
-    // Kernel objects preserve full precision → F_hbar
-    // User-space can tolerate F_ell
+    // ƒ — Fidelity
+    // Kernel objects preserve full precision → ƒ_ℏ
+    // User-space can tolerate ƒ_ℓ
     let f: u8 = match determinative {
-        Determinative::User => 0,  // F_ell
-        Determinative::Service => 1,  // F_eth
-        _ => 2,  // F_hbar
+        Determinative::User => 0,  // ƒ_ℓ
+        Determinative::Service => 1,  // ƒ_eth
+        _ => 2,  // ƒ_ℏ
     };
 
-    // K — Kinetic character
-    // Idle: K_slow, Compute/IO: K_mod, Network: K_fast
+    // Ç — Kinetic character
+    // Idle: Ç_slow, Compute/IO: Ç_mod, Network: Ç_fast
     let k: u8 = match operational {
-        OperationalMode::Idle => 2,      // K_slow
-        OperationalMode::Network => 0,   // K_fast
-        _ => 1,                          // K_mod
+        OperationalMode::Idle => 2,      // Ç_slow
+        OperationalMode::Network => 0,   // Ç_fast
+        _ => 1,                          // Ç_mod
     };
 
-    // G — Scope/granularity
-    // Kernel: G_aleph (maximal), Service: G_gimel, User: G_beth
+    // Γ — Scope/granularity
+    // Kernel: Γ_aleph (maximal), Service: Γ_gimel, User: Γ_beth
     let g: u8 = match determinative {
-        Determinative::Kernel | Determinative::Init => 2,  // G_aleph
-        Determinative::Service | Determinative::Driver => 1,  // G_gimel
-        Determinative::User => 0,  // G_beth
+        Determinative::Kernel | Determinative::Init => 2,  // Γ_aleph
+        Determinative::Service | Determinative::Driver => 1,  // Γ_gimel
+        Determinative::User => 0,  // Γ_beth
     };
 
-    // Γ — Interaction grammar
-    // Default: sequential (head-final chains) → Γ_seq
-    // Network: Γ_broad (broadcast-capable)
+    // ɢ — Interaction grammar
+    // Default: sequential (head-final chains) → ɢ_seq
+    // Network: ɢ_broad (broadcast-capable)
     let gamma: u8 = match operational {
-        OperationalMode::Network => 3,  // Γ_broad
-        _ => 2,  // Γ_seq
+        OperationalMode::Network => 3,  // ɢ_broad
+        _ => 2,  // ɢ_seq
     };
 
-    // Φ — Criticality
-    // Kernel/Init: Φ_c (self-modeling possible)
-    // Driver/Service: Φ_sub (sub-critical)
+    // ⊙ — Criticality
+    // Kernel/Init: ⊙_c (self-modeling possible)
+    // Driver/Service: ⊙_sub (sub-critical)
     // User: depends on operational mode
     let phi: u8 = match determinative {
-        Determinative::Kernel | Determinative::Init => 1,  // Φ_c
-        Determinative::Driver | Determinative::Service => 0,  // Φ_sub
+        Determinative::Kernel | Determinative::Init => 1,  // ⊙_c
+        Determinative::Driver | Determinative::Service => 0,  // ⊙_sub
         Determinative::User => match operational {
-            OperationalMode::Compute | OperationalMode::IO => 1,  // Φ_c for active user processes
-            _ => 0,  // Φ_sub
+            OperationalMode::Compute | OperationalMode::IO => 1,  // ⊙_c for active user processes
+            _ => 0,  // ⊙_sub
         },
     };
 
-    // H — Chirality/chirality
-    // Kernel: H2 (two levels of contextual depth)
-    // Service/Driver: H1
-    // User: H0
+    // Ħ — Chirality
+    // Kernel: Ħ_2 (two levels of contextual depth)
+    // Service/Driver: Ħ_1
+    // User: Ħ_0
     let h: u8 = match determinative {
-        Determinative::Kernel | Determinative::Init => 2,  // H2
-        Determinative::Service | Determinative::Driver => 1,  // H1
-        Determinative::User => 0,  // H0
+        Determinative::Kernel | Determinative::Init => 2,  // Ħ_2
+        Determinative::Service | Determinative::Driver => 1,  // Ħ_1
+        Determinative::User => 0,  // Ħ_0
     };
 
-    // S — Stoichiometry
-    // Process: S_n:m (many-to-many via scheduler)
-    // File/MemoryRegion: S_n_n (one-to-one mapping)
-    // Socket: S_n:m (multi-connection)
-    // Semaphore: S_n_n (binary or counting, but fixed ratio)
+    // Σ — Stoichiometry
+    // Process: Σ_{n:m} (many-to-many via scheduler)
+    // File/MemoryRegion: Σ_{1:1} (one-to-one mapping)
+    // Socket: Σ_{n:m} (multi-connection)
+    // Semaphore: Σ_{1:1} (binary or counting, but fixed ratio)
     let s: u8 = match structural {
-        StructuralType::Process | StructuralType::Socket => 2,  // S_n:m
-        StructuralType::Semaphore => 1,  // S_n:n
-        _ => 0,  // S_1:1
+        StructuralType::Process | StructuralType::Socket => 2,  // Σ_{n:m}
+        StructuralType::Semaphore => 1,  // Σ_{n:n}
+        _ => 0,  // Σ_{1:1}
     };
 
     // Ω — Topological protection
@@ -359,11 +359,11 @@ fn infer_tuple(
 pub mod canonical {
     use super::*;
 
-    /// The OS crystal imscription — O_inf, Φ_c + P_pm_sym.
+    /// The OS crystal imscription — O_∞, ⊙_c + Φ_±.
     /// This is the type of the kernel as a whole.
     pub fn os_imscription() -> AlephKernelType {
-        // D_triangle, T_box, R_dagger, P_pm_sym, F_hbar, K_mod, G_aleph,
-        // Γ_seq, Φ_c, H2, S_n:m, Ω_Z
+        // Ð_ω, Þ_O, Ř_=, Φ_±, ƒ_ℏ, Ç_mod, Γ_aleph,
+        // ɢ_seq, ⊙_c, Ħ_2, Σ_1:1, Ω_Z
         AlephKernelType::from_tuple([
             1, 3, 2, 4, 2, 1, 2, 2, 1, 2, 2, 2
         ])
@@ -489,7 +489,7 @@ pub fn inference_trace(
     let phi_name = aleph::PHI_NAMES.get(t[8] as usize).copied().unwrap_or("?");
     out += &format!("  │ Phi     │ {:>2}    │ {} (from {:?})\n", t[8], phi_name, determinative);
 
-    let h_name = ["H0", "H1", "H2", "H_inf"].get(t[9] as usize).copied().unwrap_or("?");
+    let h_name = ["\u{0126}_0", "\u{0126}_1", "\u{0126}_2", "\u{0126}_\u{221e}"].get(t[9] as usize).copied().unwrap_or("?");
     out += &format!("  │ H       │ {:>2}    │ {} (from {:?})\n", t[9], h_name, determinative);
 
     let s_name = ["1:1", "n:n", "n:m"].get(t[10] as usize).copied().unwrap_or("?");

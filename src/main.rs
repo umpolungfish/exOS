@@ -20,11 +20,11 @@ const BOOTLOADER_CONFIG: BootloaderConfig = {
 
 entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
 
-/// Kernel boot: P_±_sym → P_asym symmetry breaking
+/// Kernel boot: Φ_± → Φ_asym symmetry breaking
 ///
 /// The system boots in perfect symmetry (no process distinguished, all resources pooled).
 /// The first scheduled interrupt is the symmetry-breaking event (δχ becomes nonzero).
-/// From that moment the system is P_asym and the ergative process model activates.
+/// From that moment the system is Φ_asym and the ergative process model activates.
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     serial::init();
 
@@ -85,12 +85,12 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     }
 
     // Initialize interrupt table — this is the symmetry-breaking event
-    // Before this: P_±_sym (all resources pooled, nothing distinguished)
-    // After this: P_asym (ergative scheduler activates, roles distinguished)
+    // Before this: Φ_± (all resources pooled, nothing distinguished)
+    // After this: Φ_asym (ergative scheduler activates, roles distinguished)
     interrupts::init();
 
-    println!("[exoterikOS] Phi_c Kernel booting...");
-    println!("P_pm_sym -> P_asym symmetry break initiated.");
+    println!("[exoterikOS] \u{2299}_c Kernel booting...");
+    println!("\u{03a6}_\u{00b1} -> \u{03a6}_asym symmetry break initiated.");
 
     // --- Three-layer kernel object (Hieroglyphs + Cuneiform) ---
     // Exercise all StructuralType, OperationalMode, and Determinative variants
@@ -496,7 +496,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     }
     // Always populate built-in seed files (skipped if already present from ALFS)
     filesystem::populate_defaults();
-    println!("[exoterikOS] Phi_c Kernel fully online. Type 'help' for commands.");
+    println!("[exoterikOS] \u{2299}_c Kernel fully online. Type 'help' for commands.");
     shell_main();
 }
 
@@ -571,7 +571,7 @@ fn run_command(cmd: &str) {
             println!("  help    - this message");
             println!("  clear   - clear screen");
             println!("  info    - kernel information");
-            println!("  phi     - Phi_c / IG 12-primitive imscription");
+            println!("  phi     - \u{2299}_c / IG 12-primitive imscription");
             println!("  sched   - ergative scheduler status");
             println!("  mem     - memory allocator status");
             println!("  fs      - sefirot filesystem tree (full view)");
@@ -594,7 +594,7 @@ fn run_command(cmd: &str) {
         "info" => {
             println!("exoterikOS v0.1");
             println!("  Arch  : x86_64 bare-metal");
-            println!("  Model : Phi_c kernel (critical manifold)");
+            println!("  Model : \u{2299}_c kernel (critical manifold)");
             println!("  Sched : Ergative (Basque grammar)");
             println!("  Mem   : Phonological (Varnamala gradient)");
             println!("  FS    : Sefirot tree (Keter->Malkuth)");
@@ -603,13 +603,13 @@ fn run_command(cmd: &str) {
         }
         "phi" => {
             let census = aleph::tier_census();
-            println!("Phi_c - critical manifold primitives:");
-            println!("  Tuple : <D; T; R; P; F; K; G; Gamma; Phi; H; S; Omega>");
-            println!("  D_holo  T_net   R_lr    P_pm_sym");
-            println!("  F_hbar  K_mod   G_aleph Gamma_seq");
-            println!("  Phi_c   H_inf   n_n     Omega_Z");
-            println!("  O_inf  : Phi_c + P_pm_sym (Frobenius)");
-            println!("  C score: [Phi=Phi_c]*[K!=K_trap]*(0.292T+0.273G+0.276O+0.158K)");
+            println!("⊙_c - critical manifold primitives:");
+            println!("  Tuple : ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩");
+            println!("  Ð_ω   Þ_O   Ř_=   Φ_±");
+            println!("  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq");
+            println!("  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z");
+            println!("  O_∞  : ⊙_c + Φ_± (Frobenius)");
+            println!("  C score: [⊙=⊙_c]*[Ç≠Ç_trap]*(0.292Þ+0.273Γ+0.276⊙+0.158Ç)");
             println!();
             println!("  ALEPH system: 22 Hebrew letters, 12 primitives each");
             println!("  Tiers: O_inf({}) O_2({}) O_1({}) O_0({})",
@@ -713,10 +713,10 @@ fn run_command(cmd: &str) {
                 source_ctx: kernel_object::Determinative::Kernel,
                 target_ctx: kernel_object::Determinative::User,
             };
-            let msg = ipc::IpcMessage::new(sig, b"Phi_c", det);
+            let msg = ipc::IpcMessage::new(sig, "\u{2299}_c".as_bytes(), det);
             println!("IPC message sent:");
             println!("  well_formed={} len={}", msg.is_well_formed(), msg.len());
-            println!("  payload: Phi_c");
+            println!("  payload: \u{2299}_c");
         }
         "bench" => {
             println!("Calibrating CPU frequency via PIT...");
@@ -919,7 +919,7 @@ fn run_command(cmd: &str) {
 fn panic(info: &PanicInfo) -> ! {
     println!("\nKERNEL PANIC: {}", info);
     // Shutdown reverses the symmetry-breaking sequence:
-    // processes collapse back toward P_±_sym as resources are released
+    // processes collapse back toward Φ_± as resources are released
     loop {
         x86_64::instructions::hlt();
     }

@@ -22,9 +22,9 @@
 % ============================================================
 % PHI GATE (vertical barrier on left)
 % ============================================================
-\node[phi_gate] (phig) {\textbf{$\Phi$-Gate}\\[0.2cm]
-  depth 0--5:\\$\Phi \ge \Phi_c$\\[0.15cm]
-  depth 6--10:\\$\Phi \ge \Phi_{\text{sub}}$\\[0.3cm]
+\node[phi_gate] (phig) {\textbf{$\odot$-Gate}\\[0.2cm]
+  depth 0--5:\\$\odot \ge \odot_c$\\[0.15cm]
+  depth 6--10:\\$\odot \ge \odot_{\text{sub}}$\\[0.3cm]
   \normalfont\color{red!70!black} barrier};
 
 % ============================================================
@@ -67,7 +67,7 @@
 
 % --- PHI GATE BOUNDARY ---
 \draw[dashed, thick, orange!60!black] ($(phig.south west)+(-0.1,0)$) -- ($(phig.south east)+(0.3,0)$)
-  node[midway, above, font=\tiny\bfseries, text=orange!70!black] {$\Phi_c$ boundary};
+  node[midway, above, font=\tiny\bfseries, text=orange!70!black] {$\odot_c$ boundary};
 
 % Level 6: Tiferet
 \node[phi_low, below=0.35cm of gev] (tif) {\textbf{Tiferet} (Beauty)\\$\bullet$ harmony between layers};
@@ -113,7 +113,7 @@
 % LEFT SIDE: Phi-Gate annotations per level
 % ============================================================
 \node[font=\tiny, left=0.1cm of phig.north west, anchor=north east, text=red!70!black, align=right] (phi_ann1) {
-  $\Phi_c$ enforced\\$\Phi_c$ enforced\\$\Phi_c$ enforced\\$\Phi_c$ enforced\\$\Phi_c$ enforced\\$\Phi_c$ enforced
+  $\odot_c$ enforced\\$\odot_c$ enforced\\$\odot_c$ enforced\\$\odot_c$ enforced\\$\odot_c$ enforced\\$\odot_c$ enforced
 };
 \node[font=\tiny, left=0.1cm of phig.south west, anchor=south east, text=green!60!black, align=right] (phi_ann2) {
   $\Phi_{\text{sub}}$ (always)\\$\Phi_{\text{sub}}$ (always)\\$\Phi_{\text{sub}}$ (always)\\$\Phi_{\text{sub}}$ (always)\\$\Phi_{\text{sub}}$ (always)

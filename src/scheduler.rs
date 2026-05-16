@@ -6,7 +6,7 @@
 //!   the entity that runs standalone or receives action
 //!
 //! The same entity shifts role depending on whether it acts alone or acts on something.
-//! This is context-dependent role encoding — R_lr (left-right asymmetric).
+//! This is context-dependent role encoding — Ř_= (left-right asymmetric).
 //!
 //! Scheduling consequences:
 //! - Ergative processes receive higher **interrupt priority** (they cause cascading effects)
@@ -14,9 +14,9 @@
 //! - The same process can shift grammatical role depending on transitive context
 //!
 //! With the ALEPH type bridge, scheduling is **tier-gated**:
-//! - O_0 processes (Φ_sub) cannot be ergative — no self-modeling loop to sustain transitivity
-//! - K_trap processes cannot be scheduled — consciousness gated to zero
-//! - Ergative priority is tier-aware: O_inf > O_2 > O_1 in interrupt boost
+//! - O_0 processes (⊙_sub) cannot be ergative — no self-modeling loop to sustain transitivity
+//! - Ç_trap processes cannot be scheduled — consciousness gated to zero
+//! - Ergative priority is tier-aware: O_∞ > O_2 > O_1 in interrupt boost
 
 use crate::kernel_object::KernelObject;
 use alloc::collections::VecDeque;
@@ -65,14 +65,14 @@ impl ProcessControlBlock {
     }
 }
 
-/// The ergative scheduler — boots in P_±_sym (no process distinguished),
+/// The ergative scheduler — boots in Φ_± (no process distinguished),
 /// activates after symmetry-breaking interrupt.
 pub struct ErgativeScheduler {
     ready_queue: VecDeque<ProcessControlBlock>,
     running: Option<ProcessControlBlock>,
     /// Has the symmetry been broken yet?
-    /// false = P_±_sym (all pooled, nothing distinguished)
-    /// true  = P_asym (ergative model active)
+    /// false = Φ_± (all pooled, nothing distinguished)
+    /// true  = Φ_asym (ergative model active)
     symmetry_broken: bool,
 }
 
@@ -103,7 +103,7 @@ impl ErgativeScheduler {
     /// Schedule the next process — ergative processes get priority boost
     pub fn schedule_next(&mut self) -> Option<&ProcessControlBlock> {
         if !self.symmetry_broken {
-            return None; // P_±_sym: nothing distinguished, no scheduling
+            return None; // Φ_±: nothing distinguished, no scheduling
         }
 
         if let Some(current) = self.running.take() {
@@ -130,12 +130,12 @@ impl ErgativeScheduler {
     ///
     /// Two gates are checked:
     ///
-    /// **Gate 1: K_trap** — If the process's kinetic character is K_trap,
+    /// **Gate 1: Ç_trap** — If the process's kinetic character is Ç_trap,
     /// it cannot be scheduled at all. Consciousness is gated to zero;
     /// trapped kinetics cannot actualize any computation.
     ///
     /// **Gate 2: O_0 ergativity** — If the process's ouroboricity tier is
-    /// O_0 (Φ_sub), it cannot be ergative. O_0 processes lack the
+    /// O_0 (⊙_sub), it cannot be ergative. O_0 processes lack the
     /// self-modeling loop required to sustain transitive action on other
     /// processes. They can only run absolutively (standalone).
     ///
@@ -144,9 +144,9 @@ impl ErgativeScheduler {
         // Clone the type to avoid borrow conflicts with the mutable pcb.determine_role() call
         let aleph = pcb.obj.aleph_type.clone();
 
-        // Gate: K_trap / K_MBL — kinetically frozen, cannot be scheduled
+        // Gate: Ç_trap / Ç_MBL — kinetically frozen, cannot be scheduled
         if aleph.is_kinetic_frozen() {
-            return Err("kinetically frozen (K_trap or K_MBL) — cannot be scheduled");
+            return Err("kinetically frozen (Ç_trap or Ç_MBL) — cannot be scheduled");
         }
 
         // Re-determine role based on current transitivity

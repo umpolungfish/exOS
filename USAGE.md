@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>USAGE — exoterik_OS Φ_c Kernel</h1>
+  <h1>USAGE — exoterik_OS ⊙_c Kernel</h1>
   <p><b>Build, run, REPL reference, ALFS, programs, subsystem API, and extension guide</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="400">
 </div>
@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
   <img src="https://img.shields.io/badge/TARGET-x86__64--unknown--none-orange" alt="Target">
   <img src="https://img.shields.io/badge/BOOT-UEFI%20OVMF-red" alt="Boot">
-  <img src="https://img.shields.io/badge/ENGINE-SynthOmnicon%20v0.4.27-purple" alt="Engine">
+  <img src="https://img.shields.io/badge/ENGINE-IMASM%20VM-purple" alt="Engine">
   <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
 </div>
 
@@ -109,8 +109,8 @@ rm alfs.img && ./run.sh
 ```
 [BOOT] Heap: initialized (4MB)
 [BOOT] UEFI GOP Framebuffer: 1024x768 @ 32bpp
-[exoterikOS] Phi_c Kernel booting...
-P_pm_sym -> P_asym symmetry break initiated.
+[exoterikOS] ⊙_c Kernel booting...
+Φ_± -> Φ_asym symmetry break initiated.
 [INIT] Three-layer objects: all structural/operational/determinative variants exercised
 [SCHED] Ergative scheduler online, symmetry broken
 [MEM] Phonological allocator: Velar -> Bilabial gradient online
@@ -126,9 +126,9 @@ P_pm_sym -> P_asym symmetry break initiated.
 [TYPE] Tier gate (O_0 ergative): ok=false
 [TYPE] Phi gate (Keter+Kernel): ok=true
 [TYPE] Phi gate (Keter+Driver): ok=false
-[TYPE] C scores: kernel=0.873 user=0.324 os_synthon=0.873
+[TYPE] C scores: kernel=0.873 user=0.324 os_imscription=0.873
 [FS] ALFS v1: 14 files, 0 used / 1024 free sectors - files: 14
-[exoterikOS] Phi_c Kernel fully online. Type 'help' for commands.
+[exoterikOS] ⊙_c Kernel fully online. Type 'help' for commands.
 exOS>
 ```
 

@@ -78,7 +78,7 @@ impl HolographicMonitor {
 
     /// Check the system's symmetry (REFL operator).
     fn check_symmetry(&self) -> bool {
-        // Check if the ergative scheduler is still in P_pm_sym state.
+        // Check if the ergative scheduler is still in Φ_± state.
         // This would be false after the symmetry-breaking interrupt.
         false
     }

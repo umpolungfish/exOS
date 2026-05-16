@@ -30,6 +30,7 @@ pub static PROGRAMS: &[BuiltinProgram] = &[
 
 pub static IMASM_PROGRAMS: &[BuiltinProgram] = &[
     BuiltinProgram { name: "cross_distance.imasm", data: include_bytes!("../programs/cross_distance.imasm") },
+    BuiltinProgram { name: "emerald-tablet-bootstrap.imasm", data: include_bytes!("../programs/emerald-tablet-bootstrap.imasm") },
     BuiltinProgram { name: "linear_a_bootstrap.imasm", data: include_bytes!("../programs/linear_a_bootstrap.imasm") },
     BuiltinProgram { name: "rohonc_bootstrap.imasm", data: include_bytes!("../programs/rohonc_bootstrap.imasm") },
     BuiltinProgram { name: "voynich_bootstrap.imasm", data: include_bytes!("../programs/voynich_bootstrap.imasm") },

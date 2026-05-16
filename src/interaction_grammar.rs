@@ -1,8 +1,8 @@
-//! Interaction Grammar (Gamma) for IPC.
+//! Interaction Grammar (ɢ) for IPC — primitive index 7.
 //!
-//! Gamma governs the composition logic of messages.
-//! Gamma_seq (2): sequential, ordered packet delivery.
-//! Gamma_broad (3): multicast/broadcast support.
+//! ɢ governs the composition logic of messages.
+//! ɢ_seq (2): sequential, ordered packet delivery.
+//! ɢ_broad (3): multicast/broadcast support.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum InteractionGrammar {
@@ -15,8 +15,8 @@ pub enum InteractionGrammar {
 impl InteractionGrammar {
     pub fn name(&self) -> &'static str {
         match self {
-            Self::Sequential => "Gamma_seq",
-            Self::Broadcast => "Gamma_broad",
+            Self::Sequential => "\u{0262}_seq",
+            Self::Broadcast => "\u{0262}_broad",
         }
     }
 }

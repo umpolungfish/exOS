@@ -15,9 +15,9 @@ pub const PRIM_NAMES: [&str; 12] =
 
 // ── Value-name maps for formatting ──────────────────────────────────────────
 
-pub const PHI_NAMES: [&str; 5] = ["Phi_sub", "Phi_c", "Phi_c_complex", "Phi_EP", "Phi_super"];
-pub const OMEGA_NAMES: [&str; 3] = ["Omega_0", "Omega_Z2", "Omega_Z"];
-pub const P_NAMES: [&str; 5] = ["P_asym", "P_psi", "P_pm", "P_sym", "P_pm_sym"];
+pub const PHI_NAMES: [&str; 5] = ["\u{2299}_sub", "\u{2299}_c", "\u{2299}_c_complex", "\u{2299}_EP", "\u{2299}_super"];
+pub const OMEGA_NAMES: [&str; 3] = ["\u{03a9}_0", "\u{03a9}_Z2", "\u{03a9}_Z"];
+pub const P_NAMES: [&str; 5] = ["\u{03a6}_asym", "\u{03a6}_\u{03c8}", "\u{03a6}_pm", "\u{03a6}_sym", "\u{03a6}_\u{00b1}"];
 pub const TIER_NAMES: [&str; 5] = ["O_0", "O_1", "O_2", "O_2d", "O_inf"];
 
 // ── Tier enum ────────────────────────────────────────────────────────────────
@@ -104,10 +104,10 @@ fn tensor_s(a: u8, b: u8) -> u8 {
 }
 
 /// P-596: Coupling Destruction Rule
-/// Φ_c ⊗ Φ_EP → Φ_EP
+/// ⊙_c ⊗ ⊙_EP → ⊙_EP
 fn tensor_phi(a: u8, b: u8) -> u8 {
     if (a == 1 && b == 3) || (a == 3 && b == 1) {
-        3 // Phi_EP absorbs Phi_c
+        3 // ⊙_EP absorbs ⊙_c
     } else {
         a.max(b)
     }
@@ -295,7 +295,7 @@ pub fn format_tuple(l: &LetterDef) -> String {
             6  => ["beth","gimel","aleph"].get(l.t[i] as usize).copied().unwrap_or("?"),
             7  => ["and","or","seq","broad"].get(l.t[i] as usize).copied().unwrap_or("?"),
             8  => PHI_NAMES.get(l.t[i] as usize).copied().unwrap_or("?"),
-            9  => ["H0","H1","H2","H_inf"].get(l.t[i] as usize).copied().unwrap_or("?"),
+            9  => ["\u{0126}_0","\u{0126}_1","\u{0126}_2","\u{0126}_\u{221e}"].get(l.t[i] as usize).copied().unwrap_or("?"),
             10 => ["1:1","n:n","n:m"].get(l.t[i] as usize).copied().unwrap_or("?"),
             11 => OMEGA_NAMES.get(l.t[i] as usize).copied().unwrap_or("?"), _  => "?",
         };

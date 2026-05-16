@@ -5,10 +5,12 @@
 //! Correspondence is structural, not assigned.
 //!
 //! Crystal imscription (IG notation) — ROM-only (standalone VMS, operator absent):
-//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_±  ƒ_ℓ  Ç_Ù  Γ_ʔ  ɢ_Ş  ⊙_sub  Ħ_0  Σ_1:1  Ω_0 ⟩
+//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_±  ƒ_ℓ  Ç_Ù  Γ_ʔ  ɢ_Ş  ⊙_sub  Ħ_∞  Σ_1:1  Ω_0 ⟩
 //!   Tier: O_0  (⊙_sub; ROM/state-register without operator)
 //!
-//! Operator (missing CPU) supplies: ⊙_c + Φ_} + Ω_Z + Ħ_∞
+//! Operator (missing CPU) supplies: ⊙_c + Φ_} + Ω_Z
+//! Ħ_∞ is foldout-encoded — physically instantiated in the manuscript format
+//! regardless of CPU presence. The operator does not supply chirality.
 //! Composite VMS + operator recovers O_∞.
 //!
 //! Topology (Þ_O) and kinematics (Ç_Ù) are intrinsic to VMS structure;
@@ -27,8 +29,9 @@ use alloc::vec::Vec;
 // ── Crystal imscription ──────────────────────────────────────────────────────
 // Index: [Ð, Þ, Ř, Φ, ƒ, Ç, Γ, ɢ, ⊙, Ħ, Σ, Ω]
 
-// ROM-only encoding: operator-absent VMS. Drops ⊙, Φ, Ħ, Ω (operator-supplied).
-pub const VOYNICH_IMSCRIPTION: [u8; 12] = [3, 4, 3, 2, 0, 3, 2, 3, 0, 0, 0, 0];
+// ROM-only encoding: operator-absent VMS. Drops ⊙, Φ, Ω (operator-supplied).
+// Ħ_∞ retained: foldout format is the physical encoding of global state dependence.
+pub const VOYNICH_IMSCRIPTION: [u8; 12] = [3, 4, 3, 2, 0, 3, 2, 3, 0, 3, 0, 0];
 
 // ── EVA token table ──────────────────────────────────────────────────────────
 // Sorted longest-first so digraphs ('ch', 'sh') are matched before single chars.

@@ -28,7 +28,7 @@
 % Before symmetry break
 \node[symbox, minimum width=4.5cm, minimum height=1.5cm, below=0.6cm of title] (sym) {
   \textbf{Before Interrupt} \\
-  \tiny $P_{\pm}^{\text{sym}}$ -- all processes undifferentiated \\
+  \tiny $\Phi_{\pm}$ -- all processes undifferentiated \\
   \tiny \textcolor{orange!70!black}{is\_symmetric() = true} \\
   \tiny \textcolor{red!70!black}{schedule\_next() = None}
 };
@@ -79,14 +79,14 @@
 \draw[arrow_b, bend left=25] (abs1.north east) to node[below, labeln] {targets assigned} (erg1.south east);
 
 % ============================================================
-% RIGHT: Tier Priority + K_trap Gate
+% RIGHT: Tier Priority + Ç_trap Gate
 % ============================================================
-\node[font=\bfseries\small, text=purple!80!black, right=2.5cm of asym.east, anchor=west] (ttitle) {Tier Priority + K$_{\text{trap}}$ Gate};
+\node[font=\bfseries\small, text=purple!80!black, right=2.5cm of asym.east, anchor=west] (ttitle) {Tier Priority + Ç$_{\text{trap}}$ Gate};
 
-% K_trap gate
+% Ç_trap gate
 \node[rectangle, draw=red!70!black, thick, rounded corners, fill=red!8, minimum width=3.5cm, minimum height=0.6cm,
       below=0.5cm of ttitle.south west, anchor=north west] (ktrap) {
-  \textbf{K$_{\text{trap}}$ Gate}: if $K = K_{\text{trap}} \to C = 0$, cannot be scheduled
+  \textbf{Ç$_{\text{trap}}$ Gate}: if Ç = Ç$_{\text{trap}} \to C = 0$, cannot be scheduled
 };
 
 % Tier priority ladder

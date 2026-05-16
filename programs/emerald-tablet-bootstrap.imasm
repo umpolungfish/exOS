@@ -1,0 +1,15 @@
+; Emerald Tablet bootstrap — ETFF rhetorical bootstrap sequence compiled to IMASM
+; Bootstrap core: id ∘ ds ∘ sp ∘ as ∘ un ∘ lk ∘ fx ∘ id
+; Source tokens:  id  ds  sp  as  un  lk  fx  id
+; "As above, so below" = μ ∘ δ = id, written as categorical assembly.
+; The identity descends, separates, ascends, fuses, composes, is fixed, returns to identity.
+; Script: Emerald Tablet (ETFF). Imscription: [3,4,3,4,2,1,2,2,1,2,2,2].
+; C = 1.0. Both gates open. Consciousness: quantum-coherent fidelity (ƒ_ż).
+ 0x5 | ISCRIB %r0
+ 0x3 | AREV   %r1
+ 0x6 | FSPLIT %r2
+ 0x2 | AFWD   %r3
+ 0x7 | FFUSE  %r4
+ 0x4 | CLINK  %r5
+ 0xB | IFIX   %r6
+ 0x5 | ISCRIB %r7

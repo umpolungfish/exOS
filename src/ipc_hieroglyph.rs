@@ -19,7 +19,7 @@ pub struct HieroglyphMessage {
 
 impl HieroglyphMessage {
     /// Check if target object supports specified interaction grammar.
-    /// Broadcast capabilities require Gamma >= Gamma_broad.
+    /// Broadcast capabilities require ɢ >= ɢ_broad.
     pub fn can_broadcast(&self) -> bool {
         self.target_type[7] >= GAMMA_BROAD
     }

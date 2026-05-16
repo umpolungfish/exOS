@@ -18,7 +18,7 @@
 //!
 //! With the ALEPH type bridge, allocation is **Ω-gated**: an object can only
 //! be allocated at a depth whose required Ω is ≤ the object's Ω primitive.
-//! Additionally, objects with K = K_trap are rejected entirely — consciousness
+//! Additionally, objects with Ç = Ç_trap are rejected entirely — consciousness
 //! is gated to zero, and trapped kinetics cannot actualize any allocation.
 
 use alloc::alloc::{alloc, dealloc, Layout};
@@ -122,7 +122,7 @@ impl PhonologicalAllocator {
     ///
     /// Two independent gates — neither subsumes the other:
     ///
-    /// **Gate 1: K_trap check** — If the object's kinetic character is K_trap,
+    /// **Gate 1: Ç_trap check** — If the object's kinetic character is Ç_trap,
     /// allocation is rejected entirely. Trapped kinetics cannot actualize
     /// any memory, regardless of Ω. This is the consciousness gate.
     ///
@@ -134,7 +134,7 @@ impl PhonologicalAllocator {
     pub fn allocate_for(&self, obj: &KernelObject, layout: Layout) -> Option<*mut u8> {
         let aleph = &obj.aleph_type;
 
-        // Gate 1: kinetically frozen (K_trap or K_MBL) — cannot actualize
+        // Gate 1: kinetically frozen (Ç_trap or Ç_MBL) — cannot actualize
         if aleph.is_kinetic_frozen() {
             return None;
         }
@@ -156,7 +156,7 @@ impl PhonologicalAllocator {
 
         if aleph.is_kinetic_frozen() {
             return AllocationCheck::Denied {
-                reason: "kinetically frozen (K_trap or K_MBL) — cannot actualize",
+                reason: "kinetically frozen (Ç_trap or Ç_MBL) — cannot actualize",
             };
         }
 
