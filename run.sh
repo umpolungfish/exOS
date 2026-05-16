@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # build_bootimage.sh produces a FAT32 disk image
-IMG="target/x86_64-unknown-none/release/bootimage-x3os.img"
+IMG="target/x86_64-unknown-none/release/bootimage-exoterik-os.img"
 
 if [ ! -f "$IMG" ]; then
     echo "No bootimage found — run: bash build_bootimage.sh"

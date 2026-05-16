@@ -23,24 +23,63 @@ const SCALE: u64 = 1;
 pub const SCALED_CHAR_WIDTH: u64 = CHAR_WIDTH * SCALE;
 pub const SCALED_CHAR_HEIGHT: u64 = CHAR_HEIGHT * SCALE;
 
-/// Get glyph bitmap data for a given Unicode code point.
-///
-/// Returns an array of 16 bytes (one per scanline, 8 pixels wide).
-/// Returns all zeros for unsupported code points.
-fn get_glyph_bitmap(code_point: u8) -> [u8; GLYPH_HEIGHT] {
-    // Hebrew range: 0xE0–0xF5 (22 letters).
-    if code_point >= HEBREW_FONT_START && code_point < HEBREW_FONT_START + HEBREW_FONT.len() as u8 {
-        let index = (code_point - HEBREW_FONT_START) as usize;
+/// Map U+05D0–U+05EA (Hebrew Unicode block) to HEBREW_FONT indices.
+/// Finals (sofit) share the same glyph as their base form.
+const UNICODE_HEBREW_MAP: [usize; 27] = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, // aleph–yod
+    10, 10, // kaf sofit, kaf
+    11,     // lamed
+    12, 12, // mem sofit, mem
+    13, 13, // nun sofit, nun
+    14, 15, // samech, ayin
+    16, 16, // pei sofit, pei
+    17, 17, // tzadi sofit, tzadi
+    18, 19, 20, 21, // kuf, resh, shin, tav
+];
+
+/// Render a glyph bitmap into the framebuffer.
+fn render_bitmap(fb: &mut FrameBuffer, bitmap: &[u8; GLYPH_HEIGHT], x: u64, y: u64, fg: Color, bg: Color) {
+    for row in 0..GLYPH_HEIGHT {
+        let byte = bitmap[row];
+        for col in 0..8u64 {
+            let bit = (byte >> (7 - col)) & 1;
+            let color = if bit != 0 { fg } else { bg };
+            let px = x + col * SCALE;
+            let py = y + (row as u64) * SCALE;
+            for sy in 0..SCALE {
+                for sx in 0..SCALE {
+                    fb.set_pixel(px + sx, py + sy, color);
+                }
+            }
+        }
+    }
+}
+
+/// Get glyph bitmap from a Unicode `char`.
+/// Supports Hebrew U+05D0–U+05EA (with final forms) and ASCII U+0020–U+007E.
+fn get_glyph_bitmap_char(c: char) -> [u8; GLYPH_HEIGHT] {
+    let cp = c as u32;
+
+    if cp >= 0x05D0 && cp <= 0x05EA {
+        let index = UNICODE_HEBREW_MAP[(cp - 0x05D0) as usize];
         return HEBREW_FONT[index];
     }
 
-    // For ASCII, we use a basic 8×16 PC font (stored below).
-    if code_point >= 0x20 && code_point <= 0x7E {
-        let index = (code_point - 0x20) as usize;
-        return ASCII_FONT[index];
+    if cp >= 0x20 && cp <= 0x7E {
+        return ASCII_FONT[(cp - 0x20) as usize];
     }
 
-    // Return zeros for unsupported code points.
+    [0; GLYPH_HEIGHT]
+}
+
+/// Get glyph bitmap data for a given VGA private-range code point (legacy path).
+fn get_glyph_bitmap(code_point: u8) -> [u8; GLYPH_HEIGHT] {
+    if code_point >= HEBREW_FONT_START && code_point < HEBREW_FONT_START + HEBREW_FONT.len() as u8 {
+        return HEBREW_FONT[(code_point - HEBREW_FONT_START) as usize];
+    }
+    if code_point >= 0x20 && code_point <= 0x7E {
+        return ASCII_FONT[(code_point - 0x20) as usize];
+    }
     [0; GLYPH_HEIGHT]
 }
 
@@ -181,47 +220,28 @@ static ASCII_FONT: [[u8; GLYPH_HEIGHT]; 95] = [
     [0x00, 0x00, 0x00, 0x00, 0xE0, 0xF8, 0x1E, 0x07, 0xFC, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
 ];
 
-/// Render a single character glyph at the given position.
-///
-/// The glyph is rendered from its 8×16 bitmap, scaled by SCALE factor.
-/// Pixels where bit=1 are drawn in fg_color, bit=0 in bg_color.
-pub fn render_char(fb: &mut FrameBuffer, code_point: u8, x: u64, y: u64, fg: Color, bg: Color) {
-    let bitmap = get_glyph_bitmap(code_point);
-
-    for row in 0..GLYPH_HEIGHT {
-        let byte = bitmap[row];
-        for col in 0..8 {
-            // MSB is leftmost pixel.
-            let bit = (byte >> (7 - col)) & 1;
-            let color = if bit != 0 { fg } else { bg };
-
-            // Scale the pixel.
-            let px = x + (col as u64) * SCALE;
-            let py = y + (row as u64) * SCALE;
-
-            // Fill the scaled pixel block.
-            for sy in 0..SCALE {
-                for sx in 0..SCALE {
-                    fb.set_pixel(px + sx, py + sy, color);
-                }
-            }
-        }
-    }
+/// Render a Unicode char at (x, y). Handles Hebrew U+05D0–U+05EA and ASCII.
+pub fn render_char_unicode(fb: &mut FrameBuffer, c: char, x: u64, y: u64, fg: Color, bg: Color) {
+    let bitmap = get_glyph_bitmap_char(c);
+    render_bitmap(fb, &bitmap, x, y, fg, bg);
 }
 
-/// Render a string at the current cursor position.
-///
-/// Characters are rendered sequentially, advancing the cursor.
-/// Newlines cause the cursor to move to the next line.
+/// Render a single glyph via the legacy VGA private-range code point.
+pub fn render_char(fb: &mut FrameBuffer, code_point: u8, x: u64, y: u64, fg: Color, bg: Color) {
+    let bitmap = get_glyph_bitmap(code_point);
+    render_bitmap(fb, &bitmap, x, y, fg, bg);
+}
+
+/// Render a UTF-8 string at (start_x, start_y). Handles Hebrew Unicode and ASCII.
 pub fn render_string(fb: &mut FrameBuffer, text: &str, start_x: u64, start_y: u64, fg: Color, bg: Color) {
     let mut x = start_x;
     let mut y = start_y;
     let max_x = fb.width();
     let max_y = fb.height();
 
-    for byte in text.bytes() {
-        match byte {
-            b'\n' => {
+    for c in text.chars() {
+        match c {
+            '\n' => {
                 x = start_x;
                 y += SCALED_CHAR_HEIGHT;
                 if y + SCALED_CHAR_HEIGHT > max_y {
@@ -229,22 +249,20 @@ pub fn render_string(fb: &mut FrameBuffer, text: &str, start_x: u64, start_y: u6
                     y = max_y - SCALED_CHAR_HEIGHT;
                 }
             }
-            b'\r' => {
+            '\r' => {
                 x = start_x;
             }
-            b'\t' => {
-                // Tab = 4 character widths.
+            '\t' => {
                 x += SCALED_CHAR_WIDTH * 4;
                 if x + SCALED_CHAR_WIDTH > max_x {
                     x = start_x;
                     y += SCALED_CHAR_HEIGHT;
                 }
             }
-            0x08 => {
-                // Backspace.
+            '\x08' => {
                 if x >= SCALED_CHAR_WIDTH {
                     x -= SCALED_CHAR_WIDTH;
-                    render_char(fb, b' ', x, y, fg, bg);
+                    render_char_unicode(fb, ' ', x, y, fg, bg);
                 }
             }
             _ => {
@@ -256,13 +274,12 @@ pub fn render_string(fb: &mut FrameBuffer, text: &str, start_x: u64, start_y: u6
                         y = max_y - SCALED_CHAR_HEIGHT;
                     }
                 }
-                render_char(fb, byte, x, y, fg, bg);
+                render_char_unicode(fb, c, x, y, fg, bg);
                 x += SCALED_CHAR_WIDTH;
             }
         }
     }
 
-    // Update cursor position.
     fb.set_cursor_position(x, y);
 }
 

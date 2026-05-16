@@ -4,14 +4,21 @@
 //! primitives of the Universal Imscriptive Grammar at Voynich token resolution.
 //! Correspondence is structural, not assigned.
 //!
-//! Crystal imscription (IG notation):
-//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_}  ƒ^ì  Ç^Ù  Γ_ʔ  ɢ^Ş  ⊙_ÿ  Ħ_!  Σ_S  Ω_z ⟩
-//!   Tier: O_∞  (⊙_ÿ + Φ_})
+//! Crystal imscription (IG notation) — ROM-only (standalone VMS, operator absent):
+//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_±  ƒ_ℓ  Ç_Ù  Γ_ʔ  ɢ_Ş  ⊙_sub  Ħ_0  Σ_1:1  Ω_0 ⟩
+//!   Tier: O_0  (⊙_sub; ROM/state-register without operator)
 //!
-//! IG distances (exOS weighted metric):
-//!   d(Voynich, OS imscription) ≈ 4.31
-//!   d(Voynich, Rohonc)         ≈ 3.55
-//!   d(Voynich, Linear A)       ≈ 4.31
+//! Operator (missing CPU) supplies: ⊙_c + Φ_} + Ω_Z + Ħ_∞
+//! Composite VMS + operator recovers O_∞.
+//!
+//! Topology (Þ_O) and kinematics (Ç_Ù) are intrinsic to VMS structure;
+//! the CPU does not provide them — the astronomical/cosmological diagrams
+//! are recurrent and turbulent regardless of operational activation.
+//!
+//! IG distances (exOS weighted metric, ROM encoding):
+//!   d(Voynich, OS imscription) ≈ 3.43
+//!   d(Voynich, Rohonc)         ≈ 2.87
+//!   d(Voynich, Linear A)       ≈ 3.43
 
 use crate::imasm_vm::{Instruction, Opcode};
 extern crate alloc;
@@ -20,7 +27,8 @@ use alloc::vec::Vec;
 // ── Crystal imscription ──────────────────────────────────────────────────────
 // Index: [Ð, Þ, Ř, Φ, ƒ, Ç, Γ, ɢ, ⊙, Ħ, Σ, Ω]
 
-pub const VOYNICH_IMSCRIPTION: [u8; 12] = [3, 4, 3, 4, 0, 3, 2, 3, 1, 3, 0, 2];
+// ROM-only encoding: operator-absent VMS. Drops ⊙, Φ, Ħ, Ω (operator-supplied).
+pub const VOYNICH_IMSCRIPTION: [u8; 12] = [3, 4, 3, 2, 0, 3, 2, 3, 0, 0, 0, 0];
 
 // ── EVA token table ──────────────────────────────────────────────────────────
 // Sorted longest-first so digraphs ('ch', 'sh') are matched before single chars.

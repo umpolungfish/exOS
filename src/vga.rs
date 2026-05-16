@@ -263,9 +263,45 @@ impl VgaWriter {
         }
     }
 
+    /// Write a Unicode char — handles Hebrew (U+05D0–U+05EA) in framebuffer mode.
+    pub fn write_char_unicode(&mut self, c: char) {
+        if c.is_ascii() {
+            self.write_byte(c as u8);
+            return;
+        }
+        // Non-ASCII: serial as raw UTF-8 bytes, VGA text as '?', FB as Unicode glyph.
+        let mut buf = [0u8; 4];
+        let s = c.encode_utf8(&mut buf);
+        for b in s.bytes() {
+            crate::serial::write_byte_to_serial(b);
+        }
+        match get_display_mode() {
+            DisplayMode::VgaText => self.write_byte_vga(b'?'),
+            DisplayMode::Framebuffer => self.write_char_unicode_fb(c),
+        }
+    }
+
+    fn write_char_unicode_fb(&mut self, c: char) {
+        if let Some(fb) = framebuffer::get_fb() {
+            let fg = vga_color_to_fb_color(self.get_fg_color());
+            let bg = vga_color_to_fb_color(self.get_bg_color());
+            let char_h = font_renderer::SCALED_CHAR_HEIGHT;
+            if self.fb_cursor_x + font_renderer::SCALED_CHAR_WIDTH > fb.width() {
+                self.fb_cursor_x = 0;
+                self.fb_cursor_y += char_h;
+                if self.fb_cursor_y + char_h > fb.height() {
+                    fb.scroll(char_h);
+                    self.fb_cursor_y = fb.height() - char_h;
+                }
+            }
+            font_renderer::render_char_unicode(fb, c, self.fb_cursor_x, self.fb_cursor_y, fg, bg);
+            self.fb_cursor_x += font_renderer::SCALED_CHAR_WIDTH;
+        }
+    }
+
     pub fn write_string(&mut self, s: &str) {
-        for byte in s.bytes() {
-            self.write_byte(byte);
+        for c in s.chars() {
+            self.write_char_unicode(c);
         }
     }
 
@@ -336,8 +372,8 @@ impl VgaWriter {
 
 impl fmt::Write for VgaWriter {
     fn write_str(&mut self, s: &str) -> fmt::Result {
-        for byte in s.bytes() {
-            self.write_byte(byte);
+        for c in s.chars() {
+            self.write_char_unicode(c);
         }
         Ok(())
     }
