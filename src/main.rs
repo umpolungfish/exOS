@@ -145,14 +145,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     let mut sched = scheduler::ErgativeScheduler::new();
     assert!(sched.is_symmetric());
 
-    let pcb = scheduler::ProcessControlBlock {
-        id: 1,
-        obj: init_process,
-        role: scheduler::GrammaticalRole::Absolutive,
-        priority: 1,
-        stack_pointer: 0x1000,
-        targets: alloc::vec![2],
-    };
+    let pcb = scheduler::ProcessControlBlock::new(1, init_process, scheduler::GrammaticalRole::Absolutive, 1, 0x1000, alloc::vec![2]);
     let mut test_pcb = pcb;
     // Read all fields to satisfy dead-code analysis
     let _pcb_id = test_pcb.id;
@@ -398,14 +391,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         aleph_kernel_types::canonical::kernel_process(),
     );
     let mut sched_test = scheduler::ErgativeScheduler::new();
-    let o_inf_pcb = scheduler::ProcessControlBlock {
-        id: 400,
-        obj: o_inf_obj.clone(),
-        role: scheduler::GrammaticalRole::Ergative,
-        priority: 5,
-        stack_pointer: 0x5000,
-        targets: alloc::vec![401],
-    };
+    let o_inf_pcb = scheduler::ProcessControlBlock::new(400, o_inf_obj.clone(), scheduler::GrammaticalRole::Ergative, 5, 0x5000, alloc::vec![401]);
     let spawn_result = sched_test.spawn_type_safe(o_inf_pcb);
     println!("[TYPE] Tier gate (O_inf ergative): ok={}", spawn_result.is_ok());
     assert!(spawn_result.is_ok(), "O_inf process should pass tier gate as ergative");
@@ -418,14 +404,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         402,
         aleph_kernel_types::canonical::user_process(),
     );
-    let o0_pcb = scheduler::ProcessControlBlock {
-        id: 402,
-        obj: o0_obj,
-        role: scheduler::GrammaticalRole::Ergative,
-        priority: 5,
-        stack_pointer: 0x6000,
-        targets: alloc::vec![403],
-    };
+    let o0_pcb = scheduler::ProcessControlBlock::new(402, o0_obj, scheduler::GrammaticalRole::Ergative, 5, 0x6000, alloc::vec![403]);
     let o0_result = sched_test.spawn_type_safe(o0_pcb);
     println!("[TYPE] Tier gate (O_0 ergative): ok={}", o0_result.is_err());
     assert!(o0_result.is_err(), "O_0 process should fail tier gate as ergative");
@@ -634,14 +613,14 @@ fn run_command(cmd: &str) {
             println!("  Heap base: 0x1000000 + 4MB");
         }
         "fs" => {
-            let fs = filesystem::fs();
+            let mut fs = filesystem::fs();
             println!("Sefirot Filesystem:");
             println!("{}", fs.full_tree());
             println!("Current Sefirah: {}", fs.current().name());
         }
         cmd if cmd.starts_with("cd ") => {
             let target = cmd[3..].trim();
-            let fs = filesystem::fs();
+            let mut fs = filesystem::fs();
             if let Some(sefirah) = filesystem::Sefirah::all().iter().find(|s| 
                 s.name().eq_ignore_ascii_case(target) || 
                 s.default_path().trim_start_matches('/') == target
@@ -661,7 +640,7 @@ fn run_command(cmd: &str) {
             }
         }
         cmd if cmd.starts_with("ls") => {
-            let fs = filesystem::fs();
+            let mut fs = filesystem::fs();
             let files = fs.list();
             if files.is_empty() {
                 println!("{} (empty)", fs.current().default_path());
@@ -682,7 +661,7 @@ fn run_command(cmd: &str) {
         }
         cmd if cmd.starts_with("cat ") => {
             let name = cmd[4..].trim();
-            let fs = filesystem::fs();
+            let mut fs = filesystem::fs();
             if let Some(content) = fs.read_string(name) {
                 println!("{}", content);
             } else {
@@ -694,7 +673,7 @@ fn run_command(cmd: &str) {
             if let Some(space_pos) = rest.find(' ') {
                 let name = &rest[..space_pos];
                 let content = &rest[space_pos+1..];
-                let fs = filesystem::fs();
+                let mut fs = filesystem::fs();
                 fs.write(name, content.as_bytes());
                 println!("  Written {} bytes to '{}' in {}", 
                     content.len(), name, fs.current().name());
@@ -824,12 +803,7 @@ fn run_command(cmd: &str) {
 
             // Tier gates
             let mut sched = scheduler::ErgativeScheduler::new();
-            let erg_pcb = scheduler::ProcessControlBlock {
-                id: 9999, obj: k_obj.clone(),
-                role: scheduler::GrammaticalRole::Ergative,
-                priority: 5, stack_pointer: 0xFFFF,
-                targets: alloc::vec![10000],
-            };
+            let erg_pcb = scheduler::ProcessControlBlock::new(9999, k_obj.clone(), scheduler::GrammaticalRole::Ergative, 5, 0xFFFF, alloc::vec![10000]);
             println!("  Tier gate:");
             println!("    Kernel ergative: {}", sched.spawn_type_safe(erg_pcb).is_ok());
             println!();

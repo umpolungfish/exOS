@@ -1,4 +1,5 @@
 use core::fmt;
+use core::sync::atomic::{AtomicU8, Ordering};
 use spin::Mutex;
 use lazy_static::lazy_static;
 
@@ -10,24 +11,29 @@ const BUFFER_WIDTH: usize = 80;
 
 /// Display mode: VGA text mode or VESA framebuffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
 pub enum DisplayMode {
     /// Traditional VGA text mode (80x25, 0xB8000).
-    VgaText,
+    VgaText = 0,
     /// VESA/UEFI framebuffer (pixel-based rendering).
-    Framebuffer,
+    Framebuffer = 1,
 }
 
 /// Global display mode — set during init.
-static mut DISPLAY_MODE: DisplayMode = DisplayMode::VgaText;
+static DISPLAY_MODE: AtomicU8 = AtomicU8::new(DisplayMode::VgaText as u8);
 
 /// Get the current display mode.
 pub fn get_display_mode() -> DisplayMode {
-    unsafe { DISPLAY_MODE }
+    match DISPLAY_MODE.load(Ordering::Relaxed) {
+        0 => DisplayMode::VgaText,
+        1 => DisplayMode::Framebuffer,
+        _ => unreachable!(),
+    }
 }
 
 /// Set the display mode.
 pub fn set_display_mode(mode: DisplayMode) {
-    unsafe { DISPLAY_MODE = mode; }
+    DISPLAY_MODE.store(mode as u8, Ordering::Relaxed);
 }
 
 /// Convert VGA Color to framebuffer Color.
@@ -84,6 +90,8 @@ impl ColorCode {
 
 impl Clone for ColorCode { fn clone(&self) -> Self { *self } }
 impl Copy for ColorCode {}
+unsafe impl Send for ColorCode {}
+unsafe impl Sync for ColorCode {}
 
 #[repr(C)]
 struct ScreenChar {
@@ -97,6 +105,8 @@ impl Clone for ScreenChar {
     }
 }
 impl Copy for ScreenChar {}
+unsafe impl Send for ScreenChar {}
+unsafe impl Sync for ScreenChar {}
 
 struct Buffer {
     chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
@@ -106,11 +116,14 @@ pub struct VgaWriter {
     pub column_position: usize,
     pub row_position: usize,
     pub color_code: ColorCode,
-    buffer: &'static mut Buffer,
+    buffer: *mut Buffer,
     /// Framebuffer cursor position (in pixels).
     fb_cursor_x: u64,
     fb_cursor_y: u64,
 }
+
+unsafe impl Send for VgaWriter {}
+unsafe impl Sync for VgaWriter {}
 
 impl VgaWriter {
     pub fn write_byte(&mut self, byte: u8) {
@@ -134,10 +147,12 @@ impl VgaWriter {
                 }
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
-                self.buffer.chars[row][col] = ScreenChar {
-                    ascii_character: byte,
-                    color_code: self.color_code,
-                };
+                unsafe {
+                    (*self.buffer).chars[row][col] = ScreenChar {
+                        ascii_character: byte,
+                        color_code: self.color_code,
+                    };
+                }
                 self.column_position += 1;
             }
         }
@@ -146,7 +161,7 @@ impl VgaWriter {
 
     /// Write a byte in framebuffer mode.
     fn write_byte_fb(&mut self, byte: u8) {
-        if let Some(fb) = framebuffer::get_fb() {
+        framebuffer::with_fb(|fb| {
             let fg = vga_color_to_fb_color(self.get_fg_color());
             let bg = vga_color_to_fb_color(self.get_bg_color());
             let char_h = font_renderer::SCALED_CHAR_HEIGHT;
@@ -180,7 +195,7 @@ impl VgaWriter {
                     self.fb_cursor_x += font_renderer::SCALED_CHAR_WIDTH;
                 }
             }
-        }
+        });
     }
 
     pub fn backspace(&mut self) {
@@ -189,11 +204,11 @@ impl VgaWriter {
             DisplayMode::Framebuffer => {
                 if self.fb_cursor_x >= font_renderer::SCALED_CHAR_WIDTH {
                     self.fb_cursor_x -= font_renderer::SCALED_CHAR_WIDTH;
-                    if let Some(fb) = framebuffer::get_fb() {
+                    framebuffer::with_fb(|fb| {
                         let fg = vga_color_to_fb_color(self.get_fg_color());
                         let bg = vga_color_to_fb_color(self.get_bg_color());
                         font_renderer::render_char(fb, b' ', self.fb_cursor_x, self.fb_cursor_y, fg, bg);
-                    }
+                    });
                 }
             }
         }
@@ -246,7 +261,6 @@ impl VgaWriter {
             _ => Color::Black,
         }
     }
-
     fn update_cursor(&self) {
         // Only update VGA cursor in VGA mode.
         if get_display_mode() == DisplayMode::VgaText {
@@ -282,7 +296,7 @@ impl VgaWriter {
     }
 
     fn write_char_unicode_fb(&mut self, c: char) {
-        if let Some(fb) = framebuffer::get_fb() {
+        framebuffer::with_fb(|fb| {
             let fg = vga_color_to_fb_color(self.get_fg_color());
             let bg = vga_color_to_fb_color(self.get_bg_color());
             let char_h = font_renderer::SCALED_CHAR_HEIGHT;
@@ -296,7 +310,7 @@ impl VgaWriter {
             }
             font_renderer::render_char_unicode(fb, c, self.fb_cursor_x, self.fb_cursor_y, fg, bg);
             self.fb_cursor_x += font_renderer::SCALED_CHAR_WIDTH;
-        }
+        });
     }
 
     pub fn write_string(&mut self, s: &str) {
@@ -309,7 +323,7 @@ impl VgaWriter {
         match get_display_mode() {
             DisplayMode::VgaText => self.new_line_vga(),
             DisplayMode::Framebuffer => {
-                if let Some(fb) = framebuffer::get_fb() {
+                framebuffer::with_fb(|fb| {
                     let char_h = font_renderer::SCALED_CHAR_HEIGHT;
                     self.fb_cursor_x = 0;
                     self.fb_cursor_y += char_h;
@@ -317,7 +331,7 @@ impl VgaWriter {
                         fb.scroll(char_h);
                         self.fb_cursor_y = fb.height() - char_h;
                     }
-                }
+                });
             }
         }
     }
@@ -325,7 +339,9 @@ impl VgaWriter {
     fn new_line_vga(&mut self) {
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
-                self.buffer.chars[row - 1][col] = self.buffer.chars[row][col];
+                unsafe {
+                    (*self.buffer).chars[row - 1][col] = (*self.buffer).chars[row][col];
+                }
             }
         }
         self.clear_row_vga(BUFFER_HEIGHT - 1);
@@ -336,24 +352,26 @@ impl VgaWriter {
         match get_display_mode() {
             DisplayMode::VgaText => self.clear_row_vga(row),
             DisplayMode::Framebuffer => {
-                if let Some(fb) = framebuffer::get_fb() {
+                framebuffer::with_fb(|fb| {
                     let fg = vga_color_to_fb_color(self.get_fg_color());
                     let bg = vga_color_to_fb_color(self.get_bg_color());
                     let y = self.fb_cursor_y;
                     for x in (0..fb.width()).step_by(font_renderer::SCALED_CHAR_WIDTH as usize) {
                         font_renderer::render_char(fb, b' ', x, y, fg, bg);
                     }
-                }
+                });
             }
         }
     }
 
     fn clear_row_vga(&mut self, row: usize) {
         for col in 0..BUFFER_WIDTH {
-            self.buffer.chars[row][col] = ScreenChar {
-                ascii_character: b' ',
-                color_code: self.color_code,
-            };
+            unsafe {
+                (*self.buffer).chars[row][col] = ScreenChar {
+                    ascii_character: b' ',
+                    color_code: self.color_code,
+                };
+            }
         }
     }
 
@@ -362,10 +380,12 @@ impl VgaWriter {
             self.column_position -= 1;
             let row = BUFFER_HEIGHT - 1;
             let col = self.column_position;
-            self.buffer.chars[row][col] = ScreenChar {
-                ascii_character: b' ',
-                color_code: self.color_code,
-            };
+            unsafe {
+                (*self.buffer).chars[row][col] = ScreenChar {
+                    ascii_character: b' ',
+                    color_code: self.color_code,
+                };
+            }
         }
     }
 }
@@ -384,7 +404,7 @@ lazy_static! {
         column_position: 0,
         row_position: 0,
         color_code: ColorCode::new(Color::White, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+        buffer: 0xb8000 as *mut Buffer,
         fb_cursor_x: 0,
         fb_cursor_y: 0,
     });
@@ -396,7 +416,7 @@ pub fn init() {}
 /// Call this after boot if VESA mode is available.
 pub fn init_framebuffer() {
     set_display_mode(DisplayMode::Framebuffer);
-    if let Some(fb) = framebuffer::get_fb() {
+    framebuffer::with_fb(|fb| {
         // Clear to black.
         let fg = framebuffer::Color::WHITE;
         let bg = framebuffer::Color::BLACK;
@@ -405,7 +425,7 @@ pub fn init_framebuffer() {
                 font_renderer::render_char(fb, b' ', x, y, fg, bg);
             }
         }
-    }
+    });
 }
 
 /// Test function that exercises all Color variants and write_string
@@ -436,9 +456,9 @@ fn write_colored_test_vga() {
 }
 
 fn write_colored_test_fb() {
-    if let Some(fb) = framebuffer::get_fb() {
+    framebuffer::with_fb(|fb| {
         font_renderer::render_hebrew_test(fb);
-    }
+    });
 }
 
 #[macro_export]

@@ -1,12 +1,8 @@
-//! Ergative-absolutive process model (from Basque grammar).
+//! Ergative-absolutive process model (from Basque grammar) with context switching.
 //!
 //! In Basque, grammatical role is NOT defined by agency alone but by transitivity:
 //! - **Ergative**: subject of a transitive verb — the entity that acts ON something
-//! - **Absolutive**: subject of an intransitive verb OR the object of a transitive verb —
-//!   the entity that runs standalone or receives action
-//!
-//! The same entity shifts role depending on whether it acts alone or acts on something.
-//! This is context-dependent role encoding — Ř_= (left-right asymmetric).
+//! - **Absolutive**: subject of an intransitive verb OR the object of a transitive verb
 //!
 //! Scheduling consequences:
 //! - Ergative processes receive higher **interrupt priority** (they cause cascading effects)
@@ -14,24 +10,66 @@
 //! - The same process can shift grammatical role depending on transitive context
 //!
 //! With the ALEPH type bridge, scheduling is **tier-gated**:
-//! - O_0 processes (⊙_sub) cannot be ergative — no self-modeling loop to sustain transitivity
-//! - Ç_trap processes cannot be scheduled — consciousness gated to zero
+//! - O_0 processes (⊙_sub) cannot be ergative — no self-modeling loop
+//! - Ç_trap processes cannot be scheduled
 //! - Ergative priority is tier-aware: O_∞ > O_2 > O_1 in interrupt boost
+//!
+//! **Context switching**: Each PCB carries a saved thread context (registers).
+//! The timer interrupt triggers preemption: the current context is saved,
+//! the next process is selected, and its context is restored.
+//! The `yield()` call provides cooperative preemption.
 
 use crate::kernel_object::KernelObject;
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;
 
-/// Grammatical role in the ergative-absolutive model
+
+/// Saved processor context for context switching.
+#[derive(Debug, Clone, Default)]
+#[repr(C)]
+pub struct ThreadContext {
+    pub rsp: u64,
+    pub rip: u64,
+    pub rbp: u64,
+    pub rbx: u64,
+    pub r12: u64,
+    pub r13: u64,
+    pub r14: u64,
+    pub r15: u64,
+    pub rflags: u64,
+}
+
+impl ThreadContext {
+    pub fn new(stack_top: u64, entry: u64) -> Self {
+        Self {
+            rsp: stack_top,
+            rip: entry,
+            rbp: 0,
+            rbx: 0,
+            r12: 0,
+            r13: 0,
+            r14: 0,
+            r15: 0,
+            rflags: 0x202,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GrammaticalRole {
-    /// Acts on another process (transitive) — higher interrupt priority
     Ergative,
-    /// Runs standalone or receives action (intransitive/object) — higher cache affinity
     Absolutive,
 }
 
-/// Process control block with grammatical role
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProcessState {
+    Ready,
+    Running,
+    Sleeping(u64),
+    Blocked,
+    Terminated,
+}
+
 #[derive(Debug, Clone)]
 pub struct ProcessControlBlock {
     pub id: u64,
@@ -39,13 +77,36 @@ pub struct ProcessControlBlock {
     pub role: GrammaticalRole,
     pub priority: u8,
     pub stack_pointer: u64,
-    /// Processes this one acts upon (transitive targets)
+    pub context: ThreadContext,
     pub targets: Vec<u64>,
+    pub state: ProcessState,
+    pub ticks: u64,
+    pub time_slice: u64,
 }
 
 impl ProcessControlBlock {
-    /// Determine role from transitivity: if this process has targets, it's ergative.
-    /// Otherwise it's absolutive — same as Basque morphology.
+    pub fn new_with_context(
+        id: u64,
+        obj: KernelObject,
+        entry: u64,
+        stack_top: u64,
+        priority: u8,
+    ) -> Self {
+        let context = ThreadContext::new(stack_top, entry);
+        Self {
+            id,
+            obj,
+            role: GrammaticalRole::Absolutive,
+            priority,
+            stack_pointer: stack_top,
+            context,
+            targets: Vec::new(),
+            state: ProcessState::Ready,
+            ticks: 0,
+            time_slice: 18,
+        }
+    }
+
     pub fn determine_role(&mut self) {
         if self.targets.is_empty() {
             self.role = GrammaticalRole::Absolutive;
@@ -54,26 +115,43 @@ impl ProcessControlBlock {
         }
     }
 
-    /// Priority based on grammatical role:
-    /// - Ergative: higher interrupt priority (cascading effects)
-    /// - Absolutive: higher cache affinity (self-contained)
     pub fn effective_priority(&self) -> u8 {
         match self.role {
-            GrammaticalRole::Ergative => self.priority + 10, // boost for interrupt
-            GrammaticalRole::Absolutive => self.priority,     // base priority, cache affinity handled elsewhere
+            GrammaticalRole::Ergative => self.priority + 10,
+            GrammaticalRole::Absolutive => self.priority,
+        }
+    }
+
+    /// Legacy constructor for backward compatibility with boot tests.
+    pub fn new(id: u64, obj: KernelObject, role: GrammaticalRole, priority: u8, stack_pointer: u64, targets: Vec<u64>) -> Self {
+        Self {
+            id,
+            obj,
+            role,
+            priority,
+            stack_pointer,
+            context: ThreadContext::default(),
+            targets,
+            state: ProcessState::Ready,
+            ticks: 0,
+            time_slice: 18,
         }
     }
 }
 
-/// The ergative scheduler — boots in Φ_± (no process distinguished),
-/// activates after symmetry-breaking interrupt.
+/// Wrapper to make raw pointer Sync/Send for static storage.
+struct SchedulerPtr(*mut ErgativeScheduler);
+unsafe impl Send for SchedulerPtr {}
+unsafe impl Sync for SchedulerPtr {}
+
+/// Global scheduler pointer — set once during boot, read by timer interrupt.
+static SCHEDULER_PTR: spin::Once<SchedulerPtr> = spin::Once::new();
+
 pub struct ErgativeScheduler {
     ready_queue: VecDeque<ProcessControlBlock>,
     running: Option<ProcessControlBlock>,
-    /// Has the symmetry been broken yet?
-    /// false = Φ_± (all pooled, nothing distinguished)
-    /// true  = Φ_asym (ergative model active)
     symmetry_broken: bool,
+    needs_preempt: bool,
 }
 
 impl ErgativeScheduler {
@@ -82,11 +160,10 @@ impl ErgativeScheduler {
             ready_queue: VecDeque::new(),
             running: None,
             symmetry_broken: false,
+            needs_preempt: false,
         }
     }
 
-    /// The symmetry-breaking event — analogous to δχ becoming nonzero.
-    /// Called by the first interrupt handler.
     pub fn break_symmetry(&mut self) {
         self.symmetry_broken = true;
     }
@@ -95,64 +172,60 @@ impl ErgativeScheduler {
         !self.symmetry_broken
     }
 
-    /// Add a process to the ready queue
     pub fn spawn(&mut self, pcb: ProcessControlBlock) {
         self.ready_queue.push_back(pcb);
     }
 
-    /// Schedule the next process — ergative processes get priority boost
-    pub fn schedule_next(&mut self) -> Option<&ProcessControlBlock> {
-        if !self.symmetry_broken {
-            return None; // Φ_±: nothing distinguished, no scheduling
-        }
-
-        if let Some(current) = self.running.take() {
-            // Re-evaluate role based on current targets (transitivity may have changed)
-            let mut current = current;
-            current.determine_role();
+    /// Cooperative yield: the running process voluntarily gives up the CPU.
+    pub fn yield_current(&mut self) {
+        if let Some(mut current) = self.running.take() {
+            current.state = ProcessState::Ready;
+            current.ticks = 0;
             self.ready_queue.push_back(current);
         }
+        self.run_next();
+    }
 
-        // Sort by effective priority (ergative processes rise to top)
+    /// Schedule the next process — ergative + tier-aware priority
+    pub fn schedule_next(&mut self) -> Option<&ProcessControlBlock> {
+        if !self.symmetry_broken {
+            return None;
+        }
+        self.run_next();
+        self.running.as_ref()
+    }
+
+    fn run_next(&mut self) {
         let mut tasks: Vec<_> = self.ready_queue.drain(..).collect();
         tasks.sort_by_key(|pcb| core::cmp::Reverse(pcb.effective_priority()));
         for task in tasks {
             self.ready_queue.push_back(task);
         }
 
-        self.running = self.ready_queue.pop_front();
+        if let Some(mut next) = self.ready_queue.pop_front() {
+            next.state = ProcessState::Running;
+            next.ticks = 0;
+            self.running = Some(next);
+        }
+    }
+
+    pub fn running_mut(&mut self) -> Option<&mut ProcessControlBlock> {
+        self.running.as_mut()
+    }
+
+    pub fn running(&self) -> Option<&ProcessControlBlock> {
         self.running.as_ref()
     }
 
-    // ── Tier-gated scheduling ────────────────────────────────────────────
-
-    /// Spawn a process with ALEPH type validation.
-    ///
-    /// Two gates are checked:
-    ///
-    /// **Gate 1: Ç_trap** — If the process's kinetic character is Ç_trap,
-    /// it cannot be scheduled at all. Consciousness is gated to zero;
-    /// trapped kinetics cannot actualize any computation.
-    ///
-    /// **Gate 2: O_0 ergativity** — If the process's ouroboricity tier is
-    /// O_0 (⊙_sub), it cannot be ergative. O_0 processes lack the
-    /// self-modeling loop required to sustain transitive action on other
-    /// processes. They can only run absolutively (standalone).
-    ///
-    /// Returns Err with reason if either gate fails.
     pub fn spawn_type_safe(&mut self, mut pcb: ProcessControlBlock) -> Result<(), &'static str> {
-        // Clone the type to avoid borrow conflicts with the mutable pcb.determine_role() call
         let aleph = pcb.obj.aleph_type.clone();
 
-        // Gate: Ç_trap / Ç_MBL — kinetically frozen, cannot be scheduled
         if aleph.is_kinetic_frozen() {
             return Err("kinetically frozen (Ç_trap or Ç_MBL) — cannot be scheduled");
         }
 
-        // Re-determine role based on current transitivity
         pcb.determine_role();
 
-        // Gate 2: O_0 cannot be ergative
         let tier = aleph.tier();
         if tier == crate::aleph::Tier::O0 && !pcb.targets.is_empty() {
             return Err("O_0 process cannot be ergative — no self-modeling loop for transitivity");
@@ -162,21 +235,6 @@ impl ErgativeScheduler {
         Ok(())
     }
 
-    /// Compute effective priority with tier-aware ergative boost.
-    ///
-    /// The ergative bonus is no longer a flat +10. Instead, it scales
-    /// with the process's ouroboricity tier:
-    ///
-    /// | Tier  | Ergative Boost | Rationale                                  |
-    /// |-------|----------------|--------------------------------------------|
-    /// | O_inf | +15            | Self-referential loop closed — maximum priority |
-    /// | O_2   | +12            | Critical + topologically protected         |
-    /// | O_2d  | +12            | Critical + topologically protected (unbounded) |
-    /// | O_1   | +10            | Critical but unprotected (baseline ergative) |
-    /// | O_0   | +0             | Cannot be ergative (gated by spawn_type_safe) |
-    ///
-    /// This encodes the principle: the more structurally self-aware a process
-    /// is, the higher its interrupt priority when acting transitively.
     pub fn effective_priority_with_tier(&self, pcb: &ProcessControlBlock) -> u8 {
         use crate::aleph::Tier;
         let base = pcb.priority;
@@ -184,14 +242,61 @@ impl ErgativeScheduler {
         if pcb.role == GrammaticalRole::Ergative {
             let tier = pcb.obj.aleph_type.tier();
             let boost = match tier {
-                Tier::OInf  => 15,
+                Tier::OInf => 15,
                 Tier::O2 | Tier::O2d => 12,
-                Tier::O1    => 10,
-                Tier::O0    => 0,  // Cannot be ergative, but handle defensively
+                Tier::O1 => 10,
+                Tier::O0 => 0,
             };
             base + boost
         } else {
-            base  // Absolutive: no boost, higher cache affinity instead
+            base
         }
+    }
+
+    pub fn block_current(&mut self) {
+        if let Some(mut current) = self.running.take() {
+            current.state = ProcessState::Blocked;
+            self.ready_queue.push_back(current);
+        }
+        self.run_next();
+    }
+
+    pub fn unblock(&mut self, id: u64) {
+        for pcb in self.ready_queue.iter_mut() {
+            if pcb.id == id && pcb.state == ProcessState::Blocked {
+                pcb.state = ProcessState::Ready;
+                return;
+            }
+        }
+    }
+
+    /// Tick the scheduler — called by timer interrupt for round-robin preemption.
+    pub fn tick(&mut self) {
+        if let Some(running) = &mut self.running {
+            if running.state == ProcessState::Running {
+                running.ticks += 1;
+                if running.ticks >= running.time_slice {
+                    running.ticks = 0;
+                    self.needs_preempt = true;
+                }
+            }
+        }
+        if self.needs_preempt {
+            self.yield_current();
+            self.needs_preempt = false;
+        }
+    }
+}
+
+/// Register the scheduler for timer-driven preemption. Called once during boot.
+pub fn register_for_timer(sched: &'static mut ErgativeScheduler) {
+    SCHEDULER_PTR.call_once(|| SchedulerPtr(sched as *mut ErgativeScheduler));
+}
+
+/// Called from the timer interrupt handler to invoke preemption.
+pub unsafe fn on_timer_tick() {
+    if let Some(sched_wrapper) = SCHEDULER_PTR.get() {
+        let sched_ptr: *mut ErgativeScheduler = sched_wrapper.0;
+        (*sched_ptr).tick();
     }
 }

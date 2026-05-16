@@ -25,6 +25,8 @@ use alloc::vec;
 use alloc::vec::Vec;
 use alloc::format;
 use alloc::string::ToString;
+use core::sync::atomic::{AtomicBool, AtomicUsize, AtomicU32, Ordering};
+use spin::Mutex;
 
 use crate::ata;
 
@@ -68,52 +70,51 @@ pub struct FileInfo {
 
 /// Bitset tracking which data sectors are allocated.
 /// Bit i is set if sector (DATA_START_SECTOR + i) is in use.
-static mut SECTOR_BITMAP: [u64; (MAX_DATA_SECTORS + 63) / 64] = [0; (MAX_DATA_SECTORS + 63) / 64];
+static SECTOR_BITMAP: Mutex<[u64; (MAX_DATA_SECTORS + 63) / 64]> =
+    Mutex::new([0; (MAX_DATA_SECTORS + 63) / 64]);
 
 fn alloc_sectors(count: u32) -> Option<u32> {
     let count = count as usize;
-    unsafe {
-        // First-fit: find 'count' consecutive free bits
-        let mut consecutive = 0;
-        let mut start_bit = None;
-        
-        for bit in 0..MAX_DATA_SECTORS {
-            let word_idx = bit / 64;
-            let bit_idx = bit % 64;
-            if (SECTOR_BITMAP[word_idx] & (1u64 << bit_idx)) == 0 {
-                // Free
-                if start_bit.is_none() {
-                    start_bit = Some(bit);
-                }
-                consecutive += 1;
-                if consecutive >= count {
-                    // Found it — mark as allocated
-                    for b in start_bit.unwrap()..start_bit.unwrap() + count {
-                        let wi = b / 64;
-                        let bi = b % 64;
-                        SECTOR_BITMAP[wi] |= 1u64 << bi;
-                    }
-                    return Some(start_bit.unwrap() as u32);
-                }
-            } else {
-                // Occupied — reset
-                start_bit = None;
-                consecutive = 0;
+    let mut bitmap = SECTOR_BITMAP.lock();
+    // First-fit: find 'count' consecutive free bits
+    let mut consecutive = 0;
+    let mut start_bit = None;
+    
+    for bit in 0..MAX_DATA_SECTORS {
+        let word_idx = bit / 64;
+        let bit_idx = bit % 64;
+        if (bitmap[word_idx] & (1u64 << bit_idx)) == 0 {
+            // Free
+            if start_bit.is_none() {
+                start_bit = Some(bit);
             }
+            consecutive += 1;
+            if consecutive >= count {
+                // Found it — mark as allocated
+                for b in start_bit.unwrap()..start_bit.unwrap() + count {
+                    let wi = b / 64;
+                    let bi = b % 64;
+                    bitmap[wi] |= 1u64 << bi;
+                }
+                return Some(start_bit.unwrap() as u32);
+            }
+        } else {
+            // Occupied — reset
+            start_bit = None;
+            consecutive = 0;
         }
     }
     None  // Out of space
 }
 
 fn free_sectors(start: u32, count: u32) {
-    unsafe {
-        for i in 0..count {
-            let bit = (start + i) as usize;
-            if bit < MAX_DATA_SECTORS {
-                let wi = bit / 64;
-                let bi = bit % 64;
-                SECTOR_BITMAP[wi] &= !(1u64 << bi);
-            }
+    let mut bitmap = SECTOR_BITMAP.lock();
+    for i in 0..count {
+        let bit = (start + i) as usize;
+        if bit < MAX_DATA_SECTORS {
+            let wi = bit / 64;
+            let bi = bit % 64;
+            bitmap[wi] &= !(1u64 << bi);
         }
     }
 }
@@ -123,69 +124,66 @@ fn is_sector_allocated(rel_sector: u32) -> bool {
     if bit >= MAX_DATA_SECTORS {
         return true;  // Out of range = treated as allocated
     }
-    unsafe {
-        let wi = bit / 64;
-        let bi = bit % 64;
-        (SECTOR_BITMAP[wi] & (1u64 << bi)) != 0
-    }
+    let bitmap = SECTOR_BITMAP.lock();
+    let wi = bit / 64;
+    let bi = bit % 64;
+    (bitmap[wi] & (1u64 << bi)) != 0
 }
-
 // ── State ────────────────────────────────────────────────────────────────────
 
-static mut MOUNTED: bool = false;
-static mut FILE_COUNT: usize = 0;
-static mut TOTAL_DATA_SECTORS: u32 = 0;
+static MOUNTED: AtomicBool = AtomicBool::new(false);
+static FILE_COUNT: AtomicUsize = AtomicUsize::new(0);
+static TOTAL_DATA_SECTORS: AtomicU32 = AtomicU32::new(0);
 
 // ── Mount ────────────────────────────────────────────────────────────────────
 
 pub fn mount() -> Result<(), &'static str> {
-    unsafe {
-        if MOUNTED {
-            return Err("already mounted");
-        }
-
-        // Switch to drive 1 (primary slave = data disk) before any I/O
-        ata::ATA_DRIVE = 1;
-
-        // Read superblock (at ALFS_OFFSET_SECTORS + 0)
-        let superblock = ata::read_sector(ALFS_OFFSET_SECTORS)
-            .ok_or("failed to read superblock")?;
-
-        // Check magic
-        if superblock[0..4] != SUPERBLOCK_MAGIC {
-            return Err("invalid ALFS magic");
-        }
-
-        // Check version
-        let version = u16::from_le_bytes([superblock[4], superblock[5]]);
-        if version != SUPERBLOCK_VERSION {
-            return Err("unsupported ALFS version");
-        }
-
-        // Read metadata
-        let file_count = u16::from_le_bytes([superblock[6], superblock[7]]) as usize;
-        let total_data_sectors = u32::from_le_bytes([
-            superblock[8], superblock[9], superblock[10], superblock[11],
-        ]);
-
-        // Load sector bitmap from superblock bytes 16..144 into SECTOR_BITMAP[0..]
-        let bitmap_bytes = (MAX_DATA_SECTORS + 7) / 8;
-        let copy_len = bitmap_bytes.min(128);
-        let bitmap_slice = &raw mut SECTOR_BITMAP as *mut u8;
-        for i in 0..copy_len {
-            bitmap_slice.add(i).write_volatile(superblock[16 + i]);
-        }
-
-        FILE_COUNT = file_count;
-        TOTAL_DATA_SECTORS = total_data_sectors;
-        MOUNTED = true;
+    if MOUNTED.load(Ordering::Relaxed) {
+        return Err("already mounted");
     }
+
+    // Switch to drive 1 (primary slave = data disk) before any I/O
+    ata::ATA_DRIVE.store(1, Ordering::Relaxed);
+
+    // Read superblock (at ALFS_OFFSET_SECTORS + 0)
+    let superblock = ata::read_sector(ALFS_OFFSET_SECTORS)
+        .ok_or("failed to read superblock")?;
+
+    // Check magic
+    if superblock[0..4] != SUPERBLOCK_MAGIC {
+        return Err("invalid ALFS magic");
+    }
+
+    // Check version
+    let version = u16::from_le_bytes([superblock[4], superblock[5]]);
+    if version != SUPERBLOCK_VERSION {
+        return Err("unsupported ALFS version");
+    }
+
+    // Read metadata
+    let file_count = u16::from_le_bytes([superblock[6], superblock[7]]) as usize;
+    let total_data_sectors = u32::from_le_bytes([
+        superblock[8], superblock[9], superblock[10], superblock[11],
+    ]);
+
+    // Load sector bitmap from superblock bytes 16..144 into SECTOR_BITMAP[0..]
+    let bitmap_bytes = (MAX_DATA_SECTORS + 7) / 8;
+    let copy_len = bitmap_bytes.min(128);
+    let mut bitmap = SECTOR_BITMAP.lock();
+    let bitmap_ptr = &mut *bitmap as *mut [u64; (MAX_DATA_SECTORS + 63) / 64] as *mut u8;
+    for i in 0..copy_len {
+        unsafe { bitmap_ptr.add(i).write_volatile(superblock[16 + i]); }
+    }
+
+    FILE_COUNT.store(file_count, Ordering::Relaxed);
+    TOTAL_DATA_SECTORS.store(total_data_sectors, Ordering::Relaxed);
+    MOUNTED.store(true, Ordering::Relaxed);
 
     Ok(())
 }
 
 pub fn is_mounted() -> bool {
-    unsafe { MOUNTED }
+    MOUNTED.load(Ordering::Relaxed)
 }
 
 // ── Directory ────────────────────────────────────────────────────────────────
@@ -193,17 +191,11 @@ pub fn is_mounted() -> bool {
 /// List all files in the filesystem.
 pub fn list() -> Vec<FileInfo> {
     let mut entries = Vec::new();
+    let count = FILE_COUNT.load(Ordering::Relaxed);
 
-    unsafe {
-        let count = FILE_COUNT;
-        if count == 0 {
-            return entries;
-        }
-
-        for i in 0..count {
-            if let Some(entry) = read_dir_entry(i) {
-                entries.push(entry);
-            }
+    for i in 0..count {
+        if let Some(entry) = read_dir_entry(i) {
+            entries.push(entry);
         }
     }
 
@@ -346,9 +338,7 @@ pub fn write_file(name: &str, data: &[u8], file_type: u8) -> Result<usize, &'sta
             .ok_or("failed to write directory entry")?;
 
         // Update file count
-        unsafe {
-            FILE_COUNT += 1;
-        }
+        FILE_COUNT.fetch_add(1, Ordering::Relaxed);
 
         // Update superblock
         update_superblock()
@@ -357,7 +347,6 @@ pub fn write_file(name: &str, data: &[u8], file_type: u8) -> Result<usize, &'sta
         Ok(sectors_needed as usize)
     }
 }
-
 /// Delete a file from disk.
 pub fn delete_file(name: &str) -> Result<(), &'static str> {
     if !is_mounted() {
@@ -373,11 +362,9 @@ pub fn delete_file(name: &str) -> Result<(), &'static str> {
     invalidate_dir_entry(name).ok_or("failed to invalidate directory entry")?;
 
     // Update file count
-    unsafe {
-        if FILE_COUNT > 0 {
-            FILE_COUNT -= 1;
-        }
-    }
+    FILE_COUNT.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |c| {
+        if c > 0 { Some(c - 1) } else { Some(0) }
+    }).ok();
 
     // Update superblock
     update_superblock().ok_or("failed to update superblock")?;
@@ -528,17 +515,20 @@ fn update_superblock() -> Option<()> {
     superblock[5] = (SUPERBLOCK_VERSION >> 8) as u8;
 
     // File count + total data sectors
-    unsafe {
-        superblock[6] = (FILE_COUNT & 0xFF) as u8;
-        superblock[7] = (FILE_COUNT >> 8) as u8;
-        superblock[8] = (TOTAL_DATA_SECTORS & 0xFF) as u8;
-        superblock[9] = (TOTAL_DATA_SECTORS >> 8) as u8;
-        superblock[10] = (TOTAL_DATA_SECTORS >> 16) as u8;
-        superblock[11] = (TOTAL_DATA_SECTORS >> 24) as u8;
+    let file_count = FILE_COUNT.load(Ordering::Relaxed);
+    let total_data_sectors = TOTAL_DATA_SECTORS.load(Ordering::Relaxed);
+    superblock[6] = (file_count & 0xFF) as u8;
+    superblock[7] = (file_count >> 8) as u8;
+    superblock[8] = (total_data_sectors & 0xFF) as u8;
+    superblock[9] = (total_data_sectors >> 8) as u8;
+    superblock[10] = (total_data_sectors >> 16) as u8;
+    superblock[11] = (total_data_sectors >> 24) as u8;
 
-        // Sector bitmap (bytes 16..144)
-        let bitmap_ptr = &SECTOR_BITMAP as *const _ as *const u8;
-        for i in 0..128.min(superblock.len() - 16) {
+    // Sector bitmap (bytes 16..144)
+    let bitmap = SECTOR_BITMAP.lock();
+    let bitmap_ptr = &*bitmap as *const _ as *const u8;
+    for i in 0..128.min(superblock.len() - 16) {
+        unsafe {
             superblock[16 + i] = bitmap_ptr.add(i).read_volatile();
         }
     }
@@ -558,9 +548,9 @@ fn pad_to_sectors(data: &[u8], sectors: usize) -> Vec<u8> {
 
 /// Get filesystem info string.
 pub fn info() -> String {
-    let used_sectors = unsafe { TOTAL_DATA_SECTORS };
+    let used_sectors = TOTAL_DATA_SECTORS.load(Ordering::Relaxed);
     let free_sectors = MAX_DATA_SECTORS as u32 - used_sectors;
-    let file_count = unsafe { FILE_COUNT };
+    let file_count = FILE_COUNT.load(Ordering::Relaxed);
     format!("ALFS v{}: {} files, {} used / {} free sectors",
         SUPERBLOCK_VERSION, file_count, used_sectors, free_sectors)
 }

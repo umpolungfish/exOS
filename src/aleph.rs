@@ -322,9 +322,9 @@ pub fn format_distance(a: &LetterDef, b: &LetterDef) -> String {
 
 pub fn format_explain(l: &LetterDef) -> String {
     let tier = compute_tier(&l.t);
-    let phi_n = PHI_NAMES.get(l.t[8] as usize).copied().unwrap_or("?");
-    let om_n = OMEGA_NAMES.get(l.t[11] as usize).copied().unwrap_or("?");
-    let p_n = P_NAMES.get(l.t[3] as usize).copied().unwrap_or("?");
+    let _phi_n = PHI_NAMES.get(l.t[8] as usize).copied().unwrap_or("?");
+    let _om_n = OMEGA_NAMES.get(l.t[11] as usize).copied().unwrap_or("?");
+    let _p_n = P_NAMES.get(l.t[3] as usize).copied().unwrap_or("?");
     let mut out = format!("  {} ({})\n  tier  {}\n", display_glyph(l), l.name, tier_name(tier));
     for i in 0..12 {
         out += &format!("  {:<8} {:>2}\n", PRIM_NAMES[i], l.t[i]);

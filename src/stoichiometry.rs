@@ -17,4 +17,11 @@ impl Stoichiometry {
             Self::NM => "n:m",
         }
     }
+    pub fn from_primitive_index(idx: u8) -> Self {
+        match idx {
+            0 => Self::OneOne,
+            1 => Self::NN,
+            _ => Self::NM,
+        }
+    }
 }

@@ -4,6 +4,7 @@
 //! QEMU exposes the boot disk as primary master by default.
 
 use core::hint::spin_loop;
+use core::sync::atomic::{AtomicU8, Ordering};
 use x86_64::instructions::port::Port;
 
 const ATA_PRIMARY_DATA:       u16 = 0x1F0;  // Data port (16-bit)
@@ -25,22 +26,21 @@ const ATA_CMD_WRITE: u8 = 0x30;
 const SECTOR_SIZE: usize = 512;
 
 /// Drive selector: 0 = primary master, 1 = primary slave.
-pub static mut ATA_DRIVE: u8 = 0;
+pub static ATA_DRIVE: AtomicU8 = AtomicU8::new(0);
 
 /// Base drive selector byte (0xE0 = drive 0, 0xF0 = drive 1).
 #[inline]
 fn drive_select(lba: u32) -> u8 {
-    let drv = unsafe { ATA_DRIVE };
+    let drv = ATA_DRIVE.load(Ordering::Relaxed);
     0xE0 | ((drv & 1) << 4) | ((lba >> 24) & 0x0F) as u8
 }
 
 /// Read one 512-byte sector from the configured ATA drive.
 /// Returns the sector contents, or None on error.
 pub fn read_sector(lba: u32) -> Option<[u8; SECTOR_SIZE]> {
+    let drive_byte = drive_select(lba);
     unsafe {
-        let drive_byte = drive_select(lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
-
         // Wait for drive to be ready
         if !poll_ready() { return None; }
 
@@ -78,8 +78,8 @@ pub fn read_sectors(start_lba: u32, count: usize, out: &mut [u8]) -> Option<()> 
         return None;
     }
 
+    let drive_byte = drive_select(start_lba);
     unsafe {
-        let drive_byte = drive_select(start_lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }
@@ -107,12 +107,11 @@ pub fn read_sectors(start_lba: u32, count: usize, out: &mut [u8]) -> Option<()> 
 
     Some(())
 }
-
 /// Write one 512-byte sector to the configured ATA drive.
 /// Returns None on error.
 pub fn write_sector(lba: u32, data: &[u8; SECTOR_SIZE]) -> Option<()> {
+    let drive_byte = drive_select(lba);
     unsafe {
-        let drive_byte = drive_select(lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }
@@ -150,8 +149,8 @@ pub fn write_sectors(start_lba: u32, count: usize, data: &[u8]) -> Option<()> {
         return None;
     }
 
+    let drive_byte = drive_select(start_lba);
     unsafe {
-        let drive_byte = drive_select(start_lba);
         Port::<u8>::new(ATA_PRIMARY_DRIVE).write(drive_byte);
 
         if !poll_ready() { return None; }
@@ -184,41 +183,35 @@ pub fn write_sectors(start_lba: u32, count: usize, data: &[u8]) -> Option<()> {
 
 /// Poll until BSY clears and DRQ sets.
 fn poll_drq() -> bool {
-    unsafe {
-        let mut status_port = Port::<u8>::new(ATA_PRIMARY_STATUS);
-        for _ in 0..100_000 {
-            let status = status_port.read();
-            if (status & ATA_STATUS_BSY) == 0 && (status & ATA_STATUS_DRQ) != 0 {
-                return true;
-            }
-            if (status & ATA_STATUS_ERR) != 0 {
-                return false;
-            }
-            spin_loop();
+    let mut status_port = Port::<u8>::new(ATA_PRIMARY_STATUS);
+    for _ in 0..100_000 {
+        let status = unsafe { status_port.read() };
+        if (status & ATA_STATUS_BSY) == 0 && (status & ATA_STATUS_DRQ) != 0 {
+            return true;
         }
+        if (status & ATA_STATUS_ERR) != 0 {
+            return false;
+        }
+        spin_loop();
     }
     false
 }
 
 /// Poll until BSY clears.
 fn poll_ready() -> bool {
-    unsafe {
-        let mut status_port = Port::<u8>::new(ATA_PRIMARY_STATUS);
-        for _ in 0..100_000 {
-            let status = status_port.read();
-            if (status & ATA_STATUS_BSY) == 0 {
-                return true;
-            }
-            spin_loop();
+    let mut status_port = Port::<u8>::new(ATA_PRIMARY_STATUS);
+    for _ in 0..100_000 {
+        let status = unsafe { status_port.read() };
+        if (status & ATA_STATUS_BSY) == 0 {
+            return true;
         }
+        spin_loop();
     }
     false
 }
 
 /// Check if error bit is set.
 fn poll_error() -> bool {
-    unsafe {
-        let status = Port::<u8>::new(ATA_PRIMARY_STATUS).read();
-        (status & ATA_STATUS_ERR) != 0
-    }
+    let status = unsafe { Port::<u8>::new(ATA_PRIMARY_STATUS).read() };
+    (status & ATA_STATUS_ERR) != 0
 }

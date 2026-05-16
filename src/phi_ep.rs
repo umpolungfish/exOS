@@ -31,4 +31,13 @@ impl Criticality {
     pub fn absorbs_consciousness(a: Self, b: Self) -> bool {
         (a == Self::C && b == Self::EP) || (a == Self::EP && b == Self::C)
     }
+    pub fn from_primitive_index(idx: u8) -> Self {
+        match idx {
+            0 => Self::Sub,
+            1 => Self::C,
+            2 => Self::CComplex,
+            3 => Self::EP,
+            _ => Self::Super,
+        }
+    }
 }

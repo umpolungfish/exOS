@@ -10,7 +10,7 @@ use alloc::vec::Vec;
 use crate::kernel_object::{KernelObject, StructuralType, OperationalMode, Determinative};
 use crate::aleph_kernel_types::AlephKernelType;
 use crate::scheduler::{self, ProcessControlBlock};
-use crate::aleph::{LETTERS, compute_tier, Tier};
+use crate::aleph::LETTERS;
 
 /// The g(x) process — the heart of the holographic self-encoding.
 pub struct HolographicMonitor {
@@ -33,14 +33,7 @@ impl HolographicMonitor {
         );
 
         // Create a process control block with ergative role (it acts on the system)
-        let pcb = ProcessControlBlock {
-            id: 1000,
-            obj,
-            role: scheduler::GrammaticalRole::Ergative,
-            priority: 100,
-            stack_pointer: 0x100000,
-            targets: Vec::new(), // Will target system components
-        };
+        let pcb = scheduler::ProcessControlBlock::new(1000, obj, scheduler::GrammaticalRole::Ergative, 100, 0x100000, Vec::new());
 
         HolographicMonitor {
             pcb,

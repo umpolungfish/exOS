@@ -51,6 +51,13 @@ pub mod rohonc;
 pub mod linear_a;
 pub mod emerald_tablet;
 pub mod imasm_commands;
+// ── Stub modules integrated into IPC/scheduler/aleph ──────────────────
+pub mod interaction_grammar;
+pub mod frobenius_verification;
+pub mod stoichiometry;
+pub mod phi_ep;
+pub mod resource_isolation;
+
 
 /// Global allocator — initialized by the kernel entry point
 #[global_allocator]

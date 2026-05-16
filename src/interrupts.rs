@@ -64,24 +64,25 @@ pub fn eoi(irq_vector: u8) {
 }
 
 // ── IDT ───────────────────────────────────────────────────────────────────────
-static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
+
+/// The interrupt descriptor table, stored in an UnsafeCell.
+/// Only mutated during `init()` before interrupts are enabled;
+/// read-only after `load()`.
+static IDT: spin::Once<InterruptDescriptorTable> = spin::Once::new();
 
 pub fn init() {
-    unsafe {
-        let idt = &mut *core::ptr::addr_of_mut!(IDT);
+    IDT.call_once(|| {
+        let mut idt = InterruptDescriptorTable::new();
         idt.breakpoint.set_handler_fn(breakpoint_handler);
         idt.page_fault.set_handler_fn(page_fault_handler);
         idt.general_protection_fault.set_handler_fn(gpf_handler);
         idt.double_fault.set_handler_fn(double_fault_handler);
-        // IRQ0 timer — needed to avoid spurious interrupt panic
         idt[0x20].set_handler_fn(timer_handler);
-        // IRQ1 keyboard
         idt[0x21].set_handler_fn(keyboard_handler);
-        let idt = &*core::ptr::addr_of!(IDT);
-        idt.load();
-    }
+        idt
+    });
+    IDT.get().unwrap().load();
     init_pic();
-    // Enable hardware interrupts
     x86_64::instructions::interrupts::enable();
 }
 

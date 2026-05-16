@@ -37,6 +37,7 @@ use alloc::vec::Vec;
 use alloc::format;
 use alloc::string::ToString;
 use core::sync::atomic::{AtomicU32, Ordering};
+use spin::Mutex;
 
 use crate::alfs;
 use crate::kernel_object::KernelObject;
@@ -187,7 +188,7 @@ impl Inode {
 static NEXT_INO: AtomicU32 = AtomicU32::new(1);
 
 // In-memory inode table. In a full implementation this would be backed by ALFS.
-static mut INODES: Vec<Inode> = Vec::new();
+static INODES: Mutex<Vec<Inode>> = Mutex::new(Vec::new());
 
 /// The Sefirot filesystem — manages the tree of abstraction layers.
 pub struct SefirotFs {
@@ -277,13 +278,11 @@ impl SefirotFs {
 
     /// Set the current working directory by inode number
     pub fn set_cwd(&mut self, ino: u32) -> bool {
-        unsafe {
-            if INODES.iter().any(|i| i.ino == ino && i.file_type == FileType::Directory) {
-                self.cwd = Some(ino);
-                true
-            } else {
-                false
-            }
+        if INODES.lock().iter().any(|i| i.ino == ino && i.file_type == FileType::Directory) {
+            self.cwd = Some(ino);
+            true
+        } else {
+            false
         }
     }
 
@@ -318,7 +317,7 @@ impl SefirotFs {
             content: content.to_vec(),
             parent: self.cwd,
         };
-        unsafe { INODES.push(inode); }
+        INODES.lock().push(inode);
         ino
     }
 
@@ -329,18 +328,15 @@ impl SefirotFs {
 
     /// Open a file by name in the current Sefirah.
     pub fn open(&self, name: &str) -> Option<Inode> {
-        unsafe {
-            INODES.iter()
-                .find(|i| i.name == name && i.sefirah == self.current)
-                .cloned()
-        }
+        INODES.lock()
+            .iter()
+            .find(|i| i.name == name && i.sefirah == self.current)
+            .cloned()
     }
 
     /// Open a file by inode number.
     pub fn open_by_ino(&self, ino: u32) -> Option<Inode> {
-        unsafe {
-            INODES.iter().find(|i| i.ino == ino).cloned()
-        }
+        INODES.lock().iter().find(|i| i.ino == ino).cloned()
     }
 
     /// Read a file's content as bytes.
@@ -378,13 +374,11 @@ impl SefirotFs {
         // Update in-memory inode
         if let Some(existing) = self.open(name) {
             let ino = existing.ino;
-            unsafe {
-                for inode in INODES.iter_mut() {
-                    if inode.ino == ino {
-                        inode.content = content.to_vec();
-                        inode.size = content.len();
-                        break;
-                    }
+            for inode in INODES.lock().iter_mut() {
+                if inode.ino == ino {
+                    inode.content = content.to_vec();
+                    inode.size = content.len();
+                    break;
                 }
             }
             ino
@@ -401,43 +395,39 @@ impl SefirotFs {
         }
 
         // Remove from memory
-        unsafe {
-            if let Some(pos) = INODES.iter().position(|i| {
-                i.name == name && i.sefirah == self.current && i.file_type != FileType::Directory
-            }) {
-                INODES.remove(pos);
-                true
-            } else {
-                false
-            }
+        if let Some(pos) = INODES.lock().iter().position(|i| {
+            i.name == name && i.sefirah == self.current && i.file_type != FileType::Directory
+        }) {
+            INODES.lock().remove(pos);
+            true
+        } else {
+            false
         }
     }
 
     /// List files in the current Sefirah (optionally filtered by parent directory).
     pub fn list(&self) -> Vec<Inode> {
-        unsafe {
-            INODES.iter()
-                .filter(|i| {
-                    i.sefirah == self.current && 
-                    (self.cwd.is_none() || i.parent == self.cwd)
-                })
-                .cloned()
-                .collect()
-        }
+        INODES.lock()
+            .iter()
+            .filter(|i| {
+                i.sefirah == self.current &&
+                (self.cwd.is_none() || i.parent == self.cwd)
+            })
+            .cloned()
+            .collect()
     }
 
     /// List all files across all Sefirot levels.
     pub fn list_all(&self) -> Vec<Inode> {
-        unsafe { INODES.iter().cloned().collect() }
+        INODES.lock().iter().cloned().collect()
     }
 
     /// Find a file by Sefirot path: sefirah + name.
     pub fn find(&self, sefirah: Sefirah, name: &str) -> Option<Inode> {
-        unsafe {
-            INODES.iter()
-                .find(|i| i.sefirah == sefirah && i.name == name)
-                .cloned()
-        }
+        INODES.lock()
+            .iter()
+            .find(|i| i.sefirah == sefirah && i.name == name)
+            .cloned()
     }
 
     /// Resolve a SefirotPath (chain of Sefirot + filename) to an inode.
@@ -451,11 +441,10 @@ impl SefirotFs {
         // The last Sefirah in the chain determines where the file lives
         let target_sefirah = *path.chain.last().unwrap();
         
-        unsafe {
-            INODES.iter()
-                .find(|i| i.sefirah == target_sefirah && i.name == path.name)
-                .cloned()
-        }
+        INODES.lock()
+            .iter()
+            .find(|i| i.sefirah == target_sefirah && i.name == path.name)
+            .cloned()
     }
 
     /// Get the full tree view: all Sefirot with their files.
@@ -465,11 +454,11 @@ impl SefirotFs {
             out += &format!("[{}] {}\n", sefirah.name(), sefirah.default_path());
             out += &format!("  transformation: {}\n", sefirah.transformation());
             
-            let files = unsafe {
-                INODES.iter()
-                    .filter(|i| i.sefirah == *sefirah)
-                    .collect::<Vec<_>>()
-            };
+            let files: Vec<_> = INODES.lock()
+                .iter()
+                .filter(|i| i.sefirah == *sefirah)
+                .cloned()
+                .collect();
             
             if files.is_empty() {
                 out += "  (empty)\n";
@@ -606,15 +595,29 @@ fn infer_sefirah(name: &str) -> Sefirah {
 
 // ── Global filesystem instance ──────────────────────────────────────────────
 
-static mut GLOBAL_FS: Option<SefirotFs> = None;
+static GLOBAL_FS: Mutex<Option<SefirotFs>> = Mutex::new(None);
 
-/// Get a mutable reference to the global filesystem.
-pub fn fs() -> &'static mut SefirotFs {
-    unsafe {
-        if GLOBAL_FS.is_none() {
-            GLOBAL_FS = Some(SefirotFs::new());
-        }
-        GLOBAL_FS.as_mut().unwrap()
+/// Get a guard to the global filesystem (mutex-protected).
+pub fn fs() -> FsGuard {
+    let mut g = GLOBAL_FS.lock();
+    if g.is_none() {
+        *g = Some(SefirotFs::new());
+    }
+    FsGuard(g)
+}
+
+/// Mutex guard wrapper for the global filesystem.
+pub struct FsGuard(spin::MutexGuard<'static, Option<SefirotFs>>);
+
+impl core::ops::Deref for FsGuard {
+    type Target = SefirotFs;
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref().unwrap()
+    }
+}
+impl core::ops::DerefMut for FsGuard {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0.as_mut().unwrap()
     }
 }
 
@@ -622,14 +625,14 @@ pub fn fs() -> &'static mut SefirotFs {
 pub fn init() -> Result<usize, &'static str> {
     let mut filesystem = SefirotFs::new();
     let count = mount_from_alfs(&mut filesystem)?;
-    unsafe { GLOBAL_FS = Some(filesystem); }
+    *GLOBAL_FS.lock() = Some(filesystem);
     Ok(count)
 }
 
 /// Populate the global filesystem with built-in seed files.
 /// Called at boot so `ls` and `cat` work immediately without a disk.
 pub fn populate_defaults() {
-    let fs = self::fs();
+    let mut fs = self::fs();
 
     // Keter — kernel root / boot config
     fs.navigate_to(Sefirah::Keter);

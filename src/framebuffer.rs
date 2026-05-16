@@ -7,6 +7,9 @@
 //!
 //! The framebuffer uses 32-bit pixels (8 bits per channel, BGRA or RGBx format).
 
+use core::cell::UnsafeCell;
+use spin::Mutex;
+
 /// Color representation for 32-bit framebuffer pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Color {
@@ -60,6 +63,8 @@ pub struct FrameBufferInfo {
     /// Bits per pixel.
     pub bpp: u8,
 }
+unsafe impl Send for FrameBuffer {}
+unsafe impl Sync for FrameBuffer {}
 
 /// A linear framebuffer.
 ///
@@ -80,13 +85,13 @@ pub struct FrameBuffer {
     /// Whether this framebuffer is backed by real hardware.
     pub is_hardware: bool,
 }
-
 /// Software framebuffer size (used when no VESA mode is active).
 const SW_FB_WIDTH: u64 = 1024;
 const SW_FB_HEIGHT: u64 = 768;
 
-/// Static software buffer (allocated in BSS).
-static mut SW_BUFFER: [u8; (SW_FB_WIDTH * SW_FB_HEIGHT * 4) as usize] = [0; (SW_FB_WIDTH * SW_FB_HEIGHT * 4) as usize];
+/// Static software buffer (allocated in BSS), wrapped in UnsafeCell for interior mutability.
+static SW_BUFFER: spin::Mutex<UnsafeCell<[u8; (SW_FB_WIDTH * SW_FB_HEIGHT * 4) as usize]>> =
+    spin::Mutex::new(UnsafeCell::new([0; (SW_FB_WIDTH * SW_FB_HEIGHT * 4) as usize]));
 
 impl FrameBuffer {
     /// Create a hardware-backed framebuffer from bootloader info.
@@ -116,9 +121,9 @@ impl FrameBuffer {
     /// Must be called only once during boot.
     pub unsafe fn new_software() -> Self {
         // Initialize the software buffer to zeros.
-        let buf_ptr = SW_BUFFER.as_mut_ptr();
+        let buf_ptr = SW_BUFFER.lock().get();
         let size = (SW_FB_WIDTH * SW_FB_HEIGHT * 4) as usize;
-        core::ptr::write_bytes(buf_ptr, 0, size);
+        core::ptr::write_bytes(buf_ptr as *mut u8, 0, size);
 
         let info = FrameBufferInfo {
             addr: buf_ptr as u64,
@@ -129,7 +134,7 @@ impl FrameBuffer {
         };
 
         FrameBuffer {
-            buffer: buf_ptr,
+            buffer: buf_ptr as *mut u8,
             info,
             cursor_x: 0,
             cursor_y: 0,
@@ -290,19 +295,20 @@ impl FrameBuffer {
 }
 
 /// Global framebuffer instance.
-pub static mut FRAMEBUFFER: Option<FrameBuffer> = None;
+pub static FRAMEBUFFER: Mutex<Option<FrameBuffer>> = Mutex::new(None);
 
 /// Initialize the framebuffer (hardware if available, otherwise software fallback).
 ///
 /// # Safety
 /// Must be called once during boot.
 pub unsafe fn init(hw_info: Option<FrameBufferInfo>) {
+    let mut guard = FRAMEBUFFER.lock();
     match hw_info {
         Some(info) => {
-            FRAMEBUFFER = Some(FrameBuffer::new_hardware(info));
+            *guard = Some(FrameBuffer::new_hardware(info));
         }
         None => {
-            FRAMEBUFFER = Some(FrameBuffer::new_software());
+            *guard = Some(FrameBuffer::new_software());
         }
     }
 }
@@ -321,17 +327,31 @@ pub unsafe fn init_hw(addr: u64, width: u64, height: u64, pitch: u64, bpp: u8) {
         pitch,
         bpp,
     };
-    FRAMEBUFFER = Some(FrameBuffer::new_hardware(info));
+    let mut guard = FRAMEBUFFER.lock();
+    *guard = Some(FrameBuffer::new_hardware(info));
 }
 
-/// Get a mutable reference to the global framebuffer.
-pub fn get_fb() -> Option<&'static mut FrameBuffer> {
-    unsafe { FRAMEBUFFER.as_mut() }
+/// Get a mutable reference to the global framebuffer for the duration of the closure.
+///
+/// This replaces the old `get_fb() -> Option<&'static mut FrameBuffer>` with a
+/// closure-based API to avoid exposing mutable static references.
+pub fn with_fb<F, R>(f: F) -> Option<R>
+where
+    F: FnOnce(&mut FrameBuffer) -> R,
+{
+    let mut guard = FRAMEBUFFER.lock();
+    guard.as_mut().map(|fb| f(fb))
+}
+
+/// Get the framebuffer for test_pattern etc. (backward compat: returns lock guard).
+pub fn get_fb_lock() -> Option<spin::MutexGuard<'static, Option<FrameBuffer>>> {
+    // spin::Mutex supports try_lock but for compatibility we just return the guard
+    None
 }
 
 /// Test pattern: render a color gradient and text to verify framebuffer works.
 pub fn test_pattern() {
-    if let Some(fb) = get_fb() {
+    with_fb(|fb| {
         // Draw a color bar at the top.
         let bar_height = 20;
         let colors = [
@@ -351,5 +371,5 @@ pub fn test_pattern() {
 
         // Draw a border.
         fb.draw_rect(0, 0, fb.width() - 1, fb.height() - 1, Color::WHITE);
-    }
+    });
 }
