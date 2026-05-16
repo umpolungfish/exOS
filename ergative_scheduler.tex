@@ -1,4 +1,4 @@
-\documentclass[border=20pt]{standalone}
+\documentclass[border=25pt]{standalone}
 \usepackage{tikz}
 \usetikzlibrary{positioning, fit, arrows.meta, calc, backgrounds, decorations.pathreplacing}
 \usepackage{amsmath, amssymb}
@@ -27,10 +27,10 @@
 
 % Before symmetry break
 \node[symbox, minimum width=4.5cm, minimum height=1.5cm, below=0.6cm of title] (sym) {
-  \normalfont\textbf{Before Interrupt} \\
-  \normalfont\tiny $P_{\pm}^{\text{sym}}$ -- all processes undifferentiated \\
-  \normalfont\tiny \textcolor{orange!70!black}{is\_symmetric() = true} \\
-  \normalfont\tiny \textcolor{red!70!black}{schedule\_next() = None}
+  \textbf{Before Interrupt} \\
+  \tiny $P_{\pm}^{\text{sym}}$ -- all processes undifferentiated \\
+  \tiny \textcolor{orange!70!black}{is\_symmetric() = true} \\
+  \tiny \textcolor{red!70!black}{schedule\_next() = None}
 };
 \node[font=\tiny\bfseries, text=orange!70!black, above=0.05cm of sym.north, anchor=south] (symlabel) {Symmetric Phase (Ogdoad)};
 
@@ -42,10 +42,10 @@
 \coordinate (asym_pos) at ($(sym.south) + (0,-1.1)$);
 \node[rectangle, draw=green!60!black, thick, dashed, rounded corners, fill=green!3,
       minimum width=4.5cm, minimum height=1.2cm, at=(asym_pos)] (asym) {
-  \normalfont\textbf{After Interrupt} \\
-  \normalfont\tiny $P_{\text{asym}}$ -- ergative model activates \\
-  \normalfont\tiny \textcolor{green!60!black}{is\_symmetric() = false} \\
-  \normalfont\tiny \textcolor{green!60!black}{schedule\_next() = highest priority}
+  \textbf{After Interrupt} \\
+  \tiny $P_{\text{asym}}$ -- ergative model activates \\
+  \tiny \textcolor{green!60!black}{is\_symmetric() = false} \\
+  \tiny \textcolor{green!60!black}{schedule\_next() = highest priority}
 };
 \node[font=\tiny\bfseries, text=green!60!black, above=0.05cm of asym.north, anchor=south] (asymlabel) {Asymmetric Phase (Ennead)};
 
@@ -54,7 +54,7 @@
 % ============================================================
 \node[font=\bfseries\small, text=blue!80!black, left=3cm of asym.west, anchor=east] (rtitle) {Role Transitions};
 
-% Ergative process (has targets)
+% Ergative process
 \node[erg, below=0.7cm of rtitle.south west, anchor=north west] (erg1) {\textbf{Ergative}\\has targets $\neq \emptyset$};
 \node[font=\tiny, below=0.1cm of erg1, align=left, text=gray!70!black] (erg_desc) {
   acts \emph{on} others\\
@@ -65,8 +65,8 @@
   $O_0$ ergative: \textcolor{red!70!black}{gated (spawn\_type\_safe)}
 };
 
-% Absolutive process (no targets)
-\node[abs, below=0.4cm of erg_desc] (abs1) {\textbf{Absolut ive}\\targets $= \emptyset$};
+% Absolutive process
+\node[abs, below=0.4cm of erg_desc] (abs1) {\textbf{Absolutive}\\targets $= \emptyset$};
 \node[font=\tiny, below=0.1cm of abs1, align=left, text=gray!70!black] (abs_desc) {
   runs standalone\\
   e.g., background computation\\
@@ -76,11 +76,10 @@
 
 % Transition arrows
 \draw[arrow_b, bend left=25] (erg1.south east) to node[above, labeln] {targets cleared} (abs1.north west);
-
 \draw[arrow_b, bend left=25] (abs1.north east) to node[below, labeln] {targets assigned} (erg1.south east);
 
 % ============================================================
-% RIGHT: Tier Priority + K\_trap Gate
+% RIGHT: Tier Priority + K_trap Gate
 % ============================================================
 \node[font=\bfseries\small, text=purple!80!black, right=2.5cm of asym.east, anchor=west] (ttitle) {Tier Priority + K$_{\text{trap}}$ Gate};
 
@@ -98,11 +97,11 @@
 \node[tier, fill=gray!20, draw=gray!60!black, below=0.15cm of t1] (t0) {$O_0$ +0 \textcolor{red!70!black}{gated}};
 
 % Letters per tier
-\node[font=\tiny, left=0.15cm of tinf.west, anchor=east, text=gray!60!black] (l_inf) {vav, mem, shin};
-\node[font=\tiny, left=0.15cm of t2.west, anchor=east, text=gray!60!black] (l2) {aleph, hei, ayin, kuf, tav};
-\node[font=\tiny, left=0.15cm of t2d.west, anchor=east, text=gray!60!black] (l2d) {lamed};
-\node[font=\tiny, left=0.15cm of t1.west, anchor=east, text=gray!60!black] (l1) {lamed (alt)};
-\node[font=\tiny, left=0.15cm of t0.west, anchor=east, text=gray!60!black] (l0) {12 letters};
+\node[font=\tiny, left=0.15cm of tinf.west, anchor=east, text=gray!60!black] {vav, mem, shin};
+\node[font=\tiny, left=0.15cm of t2.west, anchor=east, text=gray!60!black] {aleph, hei, ayin, kuf, tav};
+\node[font=\tiny, left=0.15cm of t2d.west, anchor=east, text=gray!60!black] {lamed};
+\node[font=\tiny, left=0.15cm of t1.west, anchor=east, text=gray!60!black] {lamed (alt)};
+\node[font=\tiny, left=0.15cm of t0.west, anchor=east, text=gray!60!black] {12 letters};
 
 % Scheduling algorithm
 \node[rectangle, draw, thick, rounded corners, fill=purple!10, minimum width=3.5cm, minimum height=1.8cm,
@@ -122,24 +121,20 @@
 
 \node[rectangle, draw=yellow!80!black, thick, rounded corners, fill=yellow!5, minimum width=8cm, minimum height=1.5cm,
       below=0.3cm of pcbtitle, align=left, font=\small] (pcb) {
-  \normalfont\textbf{ProcessControlBlock} \{ \\
-  \normalfont\quad id: \texttt{u64} \quad obj: \texttt{KernelObject} \quad role: \texttt{GrammaticalRole} \\
-  \normalfont\quad priority: \texttt{u8} \quad stack\_pointer: \texttt{u64} \quad targets: \texttt{Vec<u64>} \\
-  \normalfont\}
+  \textbf{ProcessControlBlock} \{ \\
+  \quad id: \texttt{u64} \quad obj: \texttt{KernelObject} \quad role: \texttt{GrammaticalRole} \\
+  \quad priority: \texttt{u8} \quad stack\_pointer: \texttt{u64} \quad targets: \texttt{Vec<u64>} \\
+  \}
 };
 
-% Connections from PCB to roles
+% Connections
 \draw[arrow_b] (pcb.south west) -- ++(-0.3,-0.3) -| (erg1.west)
   node[midway, above, labeln] {role determined\\by targets};
 \draw[arrow_g] (pcb.south east) -- ++(0.3,-0.3) -| (algo.west)
   node[midway, above, labeln] {priority computed\\from tier};
-
-% Connection from K_trap to tier ladder
 \draw[arrow_r] (ktrap.south) -- (tinf.north);
 
-% ============================================================
-% BOTTOM NOTE
-% ============================================================
+% Bottom note
 \node[below=0.3cm of pcb, align=left, font=\tiny\itshape, text=gray!70!black] (note) {
   \textbf{Basque grammar model}: Ergative (agent with targets) vs Absolutive (patient, no targets). \\
   Same process can shift roles dynamically --- targets change $\iff$ role changes $\iff$ priority recomputed.

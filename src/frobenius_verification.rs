@@ -1,23 +1,17 @@
-//! exOS O_inf Stability & Frobenius Symmetry Verification
-//! Axiom F-1: mu o delta = id (exactly) at Phi_c
+/// Frobenius verification for O_inf stability.
+///
+/// Axiom F-1: A process achieves O_inf only if 
+/// the Frobenius symmetry condition mu o delta = id holds.
+pub struct FrobeniusVerifier;
 
-use crate::aleph::Tuple;
-
-/// Verify Frobenius symmetry for a tuple.
-/// Returns true if P is P_pm_sym and Phi is Phi_c.
-pub fn is_frobenius_verified(t: &Tuple) -> bool {
-    let p = t[3];
-    let phi = t[8];
-    // p=4 (P_pm_sym), phi=1 (Phi_c)
-    p == 4 && phi == 1
-}
-
-/// A process reaches O_inf only if Frobenius symmetry is verified.
-pub fn can_attain_o_inf(t: &Tuple) -> bool {
-    use crate::aleph::{compute_tier, Tier};
-    if compute_tier(t) == Tier::OInf {
-        is_frobenius_verified(t)
-    } else {
-        false
+impl FrobeniusVerifier {
+    /// Verify the Frobenius condition for a given ALEPH type.
+    /// In this kernel, we verify that P = P_pm_sym and Phi = Phi_c.
+    pub fn verify(aleph_type: &crate::aleph_kernel_types::AlephKernelType) -> bool {
+        let p = aleph_type.parity();
+        let phi = aleph_type.phi();
+        
+        // P_pm_sym ordinal is 4, Phi_c ordinal is 1
+        p == 4 && phi == 1
     }
 }

@@ -318,7 +318,7 @@ fn infer_tuple(
         },
     };
 
-    // H — Chirality/temporal depth
+    // H — Chirality/chirality
     // Kernel: H2 (two levels of contextual depth)
     // Service/Driver: H1
     // User: H0
