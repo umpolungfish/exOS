@@ -112,6 +112,10 @@ extern "x86-interrupt" fn double_fault_handler(sf: InterruptStackFrame, _ec: u64
 
 extern "x86-interrupt" fn timer_handler(_sf: InterruptStackFrame) {
     TICK_COUNT.fetch_add(1, Ordering::Relaxed);
+    // Advance the scheduler tick counter and set needs_preempt if the time slice
+    // has expired. The actual context switch is deferred to check_preempt(),
+    // which processes call from their own stack — not from inside this interrupt.
+    unsafe { crate::scheduler::on_timer_tick(); }
     eoi(0x20);
 }
 

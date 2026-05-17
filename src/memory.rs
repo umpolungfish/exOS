@@ -24,6 +24,7 @@
 use alloc::alloc::{alloc, dealloc, Layout};
 use spin::Mutex;
 use crate::kernel_object::KernelObject;
+use crate::resource_isolation::ResourceIsolation;
 
 /// Articulation depth — maps Varnamala points of articulation to memory tiers
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -145,7 +146,14 @@ impl PhonologicalAllocator {
             return None;
         }
 
-        // Both gates passed — proceed with standard allocation (with validation if required)
+        // Gate 3: Stoichiometric isolation — exclusive (Σ_1:1) objects require Velar (kernel) depth.
+        // Exclusive resources are 1:1 mapped; allocating them at shallower depths violates isolation.
+        if matches!(ResourceIsolation::from_type(aleph), ResourceIsolation::Exclusive)
+            && self.current_depth != ArticulationDepth::Velar
+        {
+            return None;
+        }
+
         self.allocate(layout)
     }
 
@@ -164,6 +172,14 @@ impl PhonologicalAllocator {
         if aleph.omega() < required_omega {
             return AllocationCheck::Denied {
                 reason: "Ω mismatch — object lacks sufficient topological protection for this depth",
+            };
+        }
+
+        if matches!(ResourceIsolation::from_type(aleph), ResourceIsolation::Exclusive)
+            && self.current_depth != ArticulationDepth::Velar
+        {
+            return AllocationCheck::Denied {
+                reason: "Σ_1:1 — exclusive resource must be allocated at Velar (kernel) depth",
             };
         }
 

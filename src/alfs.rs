@@ -258,6 +258,15 @@ fn read_dir_entry(index: usize) -> Option<FileInfo> {
 /// Read an entire file into a byte vector.
 pub fn read_file(name: &str) -> Option<Vec<u8>> {
     let info = find_file(name)?;
+
+    // Integrity check: every sector in the file's range must be marked allocated.
+    // Detects bitmap corruption or truncated writes.
+    for i in 0..info.sector_count {
+        if !is_sector_allocated(info.start_sector + i) {
+            return None;
+        }
+    }
+
     let total_bytes = (info.sector_count as usize) * SECTOR_SIZE;
     let mut buf = vec![0u8; total_bytes];
 

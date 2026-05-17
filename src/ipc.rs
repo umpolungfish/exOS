@@ -23,6 +23,7 @@
 
 use crate::kernel_object::{Determinative, StructuralType};
 use crate::aleph_kernel_types::AlephKernelType;
+use crate::interaction_grammar::InteractionGrammar;
 
 /// Structural signature — what type of object is being passed
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -232,5 +233,25 @@ impl IpcMessage {
 
     pub fn is_empty(&self) -> bool {
         self.payload.is_empty()
+    }
+
+    /// Interaction grammar gate — guards multicast delivery.
+    ///
+    /// Γ_seq (2) sources are point-to-point only. Γ_broad (3) sources may multicast.
+    /// If `is_multicast` is true and the source type's Γ < Broadcast, the message
+    /// is rejected: it lacks the interaction grammar for one-to-many delivery.
+    pub fn check_grammar_gate(&self, is_multicast: bool) -> Result<(), &'static str> {
+        if !is_multicast {
+            return Ok(());
+        }
+        let source = match &self.source_aleph_type {
+            Some(s) => s,
+            None => return Ok(()), // no type info — structural check only
+        };
+        if source.tuple[7] < InteractionGrammar::Broadcast as u8 {
+            Err("Γ_seq — source type lacks broadcast interaction grammar for multicast")
+        } else {
+            Ok(())
+        }
     }
 }

@@ -319,6 +319,7 @@ impl VgaWriter {
         }
     }
 
+    #[allow(dead_code)]
     fn new_line(&mut self) {
         match get_display_mode() {
             DisplayMode::VgaText => self.new_line_vga(),
@@ -348,6 +349,7 @@ impl VgaWriter {
         self.column_position = 0;
     }
 
+    #[allow(dead_code)]
     fn clear_row(&mut self, row: usize) {
         match get_display_mode() {
             DisplayMode::VgaText => self.clear_row_vga(row),

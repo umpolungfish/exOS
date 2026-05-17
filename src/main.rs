@@ -142,7 +142,9 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("[INIT] Three-layer objects: all structural/operational/determinative variants exercised");
 
     // --- Ergative scheduler (Basque grammar) ---
-    let mut sched = scheduler::ErgativeScheduler::new();
+    // Box and leak so we have a &'static mut for register_for_timer / init_sched.
+    let sched: &'static mut scheduler::ErgativeScheduler =
+        alloc::boxed::Box::leak(alloc::boxed::Box::new(scheduler::ErgativeScheduler::new()));
     assert!(sched.is_symmetric());
 
     let pcb = scheduler::ProcessControlBlock::new(1, init_process, scheduler::GrammaticalRole::Absolutive, 1, 0x1000, alloc::vec![2]);
@@ -320,7 +322,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     );
     let close_tgt = kernel_object::KernelObject::new(
         kernel_object::StructuralType::Process,
-        kernel_object::OperationalMode::IO,
+        kernel_object::OperationalMode::Compute,
         kernel_object::Determinative::Kernel,
         201,
     );
@@ -418,17 +420,15 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("[TYPE] Φ gate (Keter+Kernel): ok={}", keter_result.is_ok());
     assert!(keter_result.is_ok(), "Kernel object should pass Φ gate to Keter");
 
-    // Verify Φ-gated filesystem: user object (Compute) also has Φ_c and passes
-    // — user processes CAN conceptually reach Keter (Φ gate is about criticality,
-    //   not protection; Ω handles the protection gate separately)
+    // Verify Φ-gated filesystem: user object (Φ_sub) should fail Keter
     let user_keter_result = fs_test.navigate_to_type_safe(
         filesystem::Sefirah::Keter,
         &user_obj,
     );
     println!("[TYPE] Φ gate (Keter+User): ok={}", user_keter_result.is_ok());
-    assert!(user_keter_result.is_ok(), "User Compute object has Φ_c and passes Φ gate to Keter");
+    assert!(!user_keter_result.is_ok(), "User object (Φ_sub) should fail Φ gate to Keter");
 
-    // Verify Φ-gated filesystem: sub-critical object (Driver) should FAIL Keter
+    // Verify Φ-gated filesystem: Driver (Φ_c, Compute) should pass Keter
     let driver_obj = kernel_object::KernelObject::new(
         kernel_object::StructuralType::Process,
         kernel_object::OperationalMode::Compute,
@@ -440,7 +440,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         &driver_obj,
     );
     println!("[TYPE] Φ gate (Keter+Driver): ok={}", driver_keter_result.is_ok());
-    assert!(!driver_keter_result.is_ok(), "Driver object (Φ_sub) should fail Φ gate to Keter");
+    assert!(driver_keter_result.is_ok(), "Driver object (Φ_c, Compute) should pass Φ gate to Keter");
 
     // Verify Ω gate in isolation: user object at Velar should fail
     let user_velar_check = palloc.can_allocate_for(&user_obj);
@@ -455,11 +455,15 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         c_kernel, c_user, c_os);
 
     // --- Holographic Self-Encoding Monitor ---
-    let mut holographic_monitor = holographic_monitor::HolographicMonitor::new();
-    let g_pcb = holographic_monitor.pcb.clone();
-    let spawn_result = sched.spawn_type_safe(g_pcb);
+    let holographic_monitor = holographic_monitor::HolographicMonitor::new();
+    let spawn_result = sched.spawn_type_safe(holographic_monitor.pcb);
     println!("[HOLO] Holographic monitor (g(x)): spawn ok={}", spawn_result.is_ok());
     assert!(spawn_result.is_ok(), "g(x) process should spawn as O_inf ergative");
+
+    // Register the scheduler with the timer interrupt and break symmetry so
+    // the holographic monitor can be scheduled.
+    sched.break_symmetry();
+    scheduler::register_for_timer(sched);
 
     // --- ALFS filesystem (ATA PIO, sector-based) ---
     match alfs::mount() {
@@ -547,25 +551,197 @@ fn run_command(cmd: &str) {
         "" => {}
         "help" => {
             println!("Commands:");
-            println!("  help    - this message");
-            println!("  clear   - clear screen");
-            println!("  info    - kernel information");
-            println!("  phi     - \u{2299}_c / IG 12-primitive imscription");
-            println!("  sched   - ergative scheduler status");
-            println!("  mem     - memory allocator status");
-            println!("  fs      - sefirot filesystem tree (full view)");
-            println!("  cd X    - navigate to Sefirah X");
-            println!("  ls      - list files in current Sefirah");
-            println!("  cat F   - read file F in current Sefirah");
-            println!("  write F C - write content C to file F");
-            println!("  ipc     - send test IPC message");
-            println!("  aleph   - enter the ALEPH REPL");
-            println!("  type X  - show ALEPH type of kernel object X");
-            println!("  type-check - run all type-gating verification tests");
-            println!("  type-infer - show type inference trace for all variants");
-            println!("  history [N] - replay last N lines (default 50)");
-            println!("  bench   - run performance benchmarks");
-            println!("  reboot  - triple-fault reboot");
+            println!("  help              this message");
+            println!("  clear             clear screen");
+            println!("  info              kernel info");
+            println!("  phi               12-primitive IG imscription + tier census");
+            println!("  sched             ergative scheduler status");
+            println!("  mem               phonological allocator status");
+            println!("  fs                sefirot tree (full view)");
+            println!("  cd <sefirah>      navigate to Sefirot layer");
+            println!("  ls                list files in current Sefirah");
+            println!("  cat <file>        read file in current Sefirah");
+            println!("  write <F> <C>     write content C to file F");
+            println!("  ipc               send test IPC message");
+            println!("  aleph [expr]      ALEPH REPL / inline expression");
+            println!("  imasm <sub> ...   IMASM VM (4 script engines)");
+            println!("  type <X>          ALEPH type of kernel object X");
+            println!("  type-check        all gate verification tests");
+            println!("  type-infer        type inference table");
+            println!("  history [N]       replay last N lines (default 50)");
+            println!("  bench             CPU micro-benchmarks");
+            println!("  reboot            triple-fault reset");
+            println!();
+            println!("Token reference per engine:");
+            println!("  help aleph        ALEPH letter/operator tokens");
+            println!("  help imasm        IMASM script-engine tokens");
+            println!("  help fs           Sefirot layer names");
+            println!("  help mem          phonological depth tokens");
+            println!("  help ipc          structural/operational/determinative tokens");
+            println!("  help types        IG 12-primitive value tokens");
+        }
+        cmd if cmd.starts_with("help ") => {
+            match cmd["help ".len()..].trim() {
+                "aleph" => {
+                    aleph_commands::print_aleph_help();
+                    println!("Letter tokens (22 Hebrew letters):");
+                    println!("  aleph  bet    gimel  dalet  hei    vav");
+                    println!("  zayin  chet   tet    yod    kaf    lamed");
+                    println!("  mem    nun    samech ayin   pei    tzadi");
+                    println!("  kuf    resh   shin   tav");
+                    println!();
+                    println!("Operators:");
+                    println!("  x              tensor product (⊗): P,F,K bottlenecked; rest max");
+                    println!("  v              join (∪): component-wise maximum");
+                    println!("  ^              meet (∩): component-wise minimum");
+                    println!("  ::>            vav-cast: lift source to target type");
+                    println!("  d(a,b)         structural distance + conflict set");
+                    println!("  tier(a)        ouroboricity tier (O_0/O_1/O_2/O_inf)");
+                    println!("  probe_Phi(a)   criticality primitive");
+                    println!("  probe_Omega(a) topological protection primitive");
+                    println!("  mediate(w,a,b) triadic: w v (a x b)");
+                    println!("  palace(n) expr tier barrier gate (n=1..7)");
+                    println!("  system()       JOIN of all 22 letters");
+                    println!("  census()       tier distribution");
+                    println!("  let x = expr   bind to session variable");
+                    println!();
+                    println!("Examples:");
+                    println!("  aleph x shin         tensor two letters");
+                    println!("  aleph d(mem,vav)     structural distance");
+                    println!("  aleph tier(shin)     O_inf");
+                    println!("  aleph probe_Phi(aleph)  criticality");
+                    println!("  aleph let k = aleph x mem");
+                }
+                "imasm" => {
+                    println!("IMASM VM — 4 script engines, Tri-Phase Flux Register machine");
+                    println!("Usage: imasm <engine> <tokens>  |  imasm <control>");
+                    println!();
+                    println!("Script engines:");
+                    println!("  voynich         <EVA-tokens>   unsectioned");
+                    println!("  voynich-bot     <EVA-tokens>   botanical    (Þ_6)");
+                    println!("  voynich-astro   <EVA-tokens>   astronomical (Þ_O cyclic)");
+                    println!("  voynich-bio     <EVA-tokens>   biological   (Þ_K broken Frobenius)");
+                    println!("  voynich-cosmo   <EVA-tokens>   cosmological (Þ_O clock-indexed)");
+                    println!("  voynich-pharm   <EVA-tokens>   pharmaceutical (Þ_6)");
+                    println!("  voynich-recipe  <EVA-tokens>   recipes      (Ř_Ť + Ħ_£)");
+                    println!("  rohonc          <RTFF-tokens>  Rohonc codec VM");
+                    println!("  linear-a        <LATFF-tokens> Linear A VM  [C=0.0, OS MEET]");
+                    println!("  emerald-tablet  <ETFF-tokens>  Emerald Tablet [C=1.0, both gates]");
+                    println!();
+                    println!("VM opcodes (all engines share): LCARD REFL HOLO SPLIT FUSE");
+                    println!("                                FIXED PSTAB");
+                    println!();
+                    println!("Control:");
+                    println!("  run <name>      load .imasm program from ALFS");
+                    println!("  step            step one instruction");
+                    println!("  snapshot        dump VM state");
+                    println!("  paradox <N>     inject Both state at register N");
+                    println!("  distance        weighted IG distances between all systems");
+                    println!("  census          all crystal imscriptions side-by-side");
+                    println!();
+                    println!("Valid tokens per engine:");
+                    println!("  voynich:        ch sh o p e a d s t k r y");
+                    println!("  rohonc:         cr hk fa ba lg lp br cv vt hz cl dt");
+                    println!("  linear-a:       cu hk fa ba lt lp br cv vt hz cl dt");
+                    println!("  emerald-tablet: tr an as ds lk id sp un af ng px fx");
+                    println!();
+                    println!("Examples:");
+                    println!("  imasm voynich fachys ykal ataiin shol");
+                    println!("  imasm rohonc  cr fa ba br cv hk");
+                    println!("  imasm linear-a cu fa ba br cv hk");
+                    println!("  imasm emerald-tablet tr as ds sp un id");
+                    println!("  imasm step");
+                    println!("  imasm distance");
+                }
+                "fs" => {
+                    println!("Sefirot Filesystem — 10-layer Kabbalistic tree");
+                    println!("Usage: cd <sefirah>");
+                    println!();
+                    println!("Layer tokens:");
+                    println!("  0  Keter      /boot          kernel root     [Phi_c required]");
+                    println!("  1  Chokhmah   /bin           system binaries [Phi_c required]");
+                    println!("  2  Binah      /lib           system libs     [Phi_c required]");
+                    println!("  3  Daat       /dev           device nodes    [Phi_c required]");
+                    println!("  4  Chesed     /home          user home dirs  [Phi_c required]");
+                    println!("  5  Gevurah    /etc/security  access control  [Phi_c required]");
+                    println!("  6  Tiferet    /ipc           shared mem/IPC  [open]");
+                    println!("  7  Netzach    /net           network mounts  [open]");
+                    println!("  8  Hod        /var/log       logs/audit      [open]");
+                    println!("  9  Yesod      /tmp           temp/caches     [open]");
+                    println!(" 10  Malkuth    /data          user-facing     [open]");
+                    println!();
+                    println!("Phi gate: layers 0-5 require Phi_c (phi>=1); 6-10 are open.");
+                    println!("Kernel objects (Phi_c) pass all layers.");
+                    println!("User objects (Phi_sub) restricted to Tiferet and below.");
+                    println!();
+                    println!("Examples:  cd Keter   cd Malkuth   cd Tiferet");
+                }
+                "mem" => {
+                    println!("Phonological Memory Allocator — Varnamala articulation-depth tiers");
+                    println!();
+                    println!("Depth tokens (cd-analogue for memory):");
+                    println!("  Velar      deepest kernel space  — O_inf / O_2 objects only");
+                    println!("  Palatal    kernel space          — O_inf / O_2 objects");
+                    println!("  Retroflex  system space          — O_1 and above");
+                    println!("  Dental     user space            — any object");
+                    println!("  Bilabial   user space (shallow)  — any object");
+                    println!();
+                    println!("Omega gate rules:");
+                    println!("  Kernel (O_2, Omega_Z)     -> Velar allowed");
+                    println!("  User   (O_0, Omega_0)     -> Velar denied");
+                    println!("  Sigma_1:1 objects         -> Velar depth only");
+                    println!();
+                    println!("Heap base: 0x1000000 + 4 MB arena");
+                }
+                "ipc" => {
+                    println!("IPC Type Gate — three-layer Egyptian grammar");
+                    println!();
+                    println!("Structural tokens:");
+                    println!("  Process   File   Socket   Semaphore   MemoryRegion");
+                    println!();
+                    println!("Operational tokens:");
+                    println!("  Compute   IO   Idle");
+                    println!();
+                    println!("Determinative tokens:");
+                    println!("  Kernel   Init   Service   Driver   User");
+                    println!();
+                    println!("Gate rules:");
+                    println!("  d(source, target) < 1.5   -> accepted");
+                    println!("  d >= 1.5                  -> rejected");
+                    println!("  multicast: source Gamma >= Broadcast (Gamma=3) required");
+                    println!();
+                    println!("IO operational mode activates Egyptian Gamma entry (->3);");
+                    println!("Compute leaves Gamma at MEET floor (0). Mixing IO+Compute");
+                    println!("across an IPC pair produces d>1.5 and fails the gate.");
+                    println!();
+                    println!("Examples:");
+                    println!("  close:  Process+Compute+Kernel <-> Process+Compute+Kernel  (pass)");
+                    println!("  remote: Process+Compute+Kernel <-> File+IO+User            (fail)");
+                }
+                "types" => {
+                    println!("IG 12-primitive tuple: <D;T;R;P;F;K;G;g;o;H;S;W>");
+                    println!();
+                    println!("Index  Glyph  Name              Value tokens");
+                    println!("  0    D  Dimensionality     0=wedge 1=triangle 2=inf 3=holo");
+                    println!("  1    T  Topology (Th)      0=net 1=incl 2=bowtie 3=box 4=holo");
+                    println!("  2    R  Relationality      0=set 1=categ 2=adjoint 3=self-ref");
+                    println!("  3    P  Parity (Phi)       0=Z1 1=Z2 2=Z4 3=partial 4=Phi_pm");
+                    println!("  4    F  Fidelity           0=zero 1=thermal 2=hbar 3=perfect");
+                    println!("  5    K  Kinetics (C)       0=fast 1=mod 2=slow 3=trap 4=MBL");
+                    println!("  6    G  Scope (Gamma)      0=point 1=gimel 2=aleph");
+                    println!("  7    g  Interaction (g)    0=conjunctive 1=seq 2=broadcast");
+                    println!("  8    o  Criticality (phi)  0=sub 1=c 2=complex 3=EP 4=super");
+                    println!("  9    H  Chirality (Hbar)   0=1step 1=2step 2=eternal");
+                    println!(" 10    S  Stoichiometry      0=1:1 1=n:n 2=n:m");
+                    println!(" 11    W  Protection (Omega) 0=Omega_0 1=Omega_Z2 2=Omega_Z");
+                    println!();
+                    println!("OS imscription: [1,3,2,4,2,1,2,2,1,2,2,2]  tier=O_inf  C=0.873");
+                    println!("MEET floor:     [1,1,1,2,1,1,1,0,0,1,1,1]  (all five systems)");
+                }
+                other => {
+                    println!("Unknown engine '{}'. Try: aleph imasm fs mem ipc types", other);
+                }
+            }
         }
         "clear" => {
             for _ in 0..25 { println!(); }
@@ -613,7 +789,7 @@ fn run_command(cmd: &str) {
             println!("  Heap base: 0x1000000 + 4MB");
         }
         "fs" => {
-            let mut fs = filesystem::fs();
+            let fs = filesystem::fs();
             println!("Sefirot Filesystem:");
             println!("{}", fs.full_tree());
             println!("Current Sefirah: {}", fs.current().name());
@@ -640,7 +816,7 @@ fn run_command(cmd: &str) {
             }
         }
         cmd if cmd.starts_with("ls") => {
-            let mut fs = filesystem::fs();
+            let fs = filesystem::fs();
             let files = fs.list();
             if files.is_empty() {
                 println!("{} (empty)", fs.current().default_path());
@@ -661,7 +837,7 @@ fn run_command(cmd: &str) {
         }
         cmd if cmd.starts_with("cat ") => {
             let name = cmd[4..].trim();
-            let mut fs = filesystem::fs();
+            let fs = filesystem::fs();
             if let Some(content) = fs.read_string(name) {
                 println!("{}", content);
             } else {

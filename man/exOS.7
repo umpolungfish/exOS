@@ -1,0 +1,890 @@
+.TH exOS 7 "2026-05-16" "exoterik_OS 0.1" "exoterik_OS Reference Manual"
+.
+.SH NAME
+exOS \- exoterik_OS: a holographic bare-metal OS derived via exoteric linguistic synthesis
+.
+.SH SYNOPSIS
+.B ./run.sh
+.RB [ \-\-serial ]
+.
+.SH DESCRIPTION
+.B exoterik_OS
+is a bare-metal x86_64 operating system written in Rust (no_std) that operationalises the
+Imscribing Grammar's 12-primitive type lattice as a functioning kernel type system.
+It boots via UEFI OVMF and runs on QEMU.
+.PP
+The OS is derived from the component-wise MEET (structural floor) of five ancient writing
+systems: Hebrew, Sanskrit Varnamala, Egyptian hieroglyphs, Sumerian cuneiform, and Basque
+ergative-absolutive grammar.  Every kernel object carries an ALEPH type \(em one 12-primitive
+tuple drawn from or inferred via the 22-letter Hebrew lattice \(em and four type gates
+constrain real kernel subsystems: the scheduler, memory allocator, filesystem, and IPC.
+.PP
+Processes run as real ring-0 tasks on individually allocated 16\~KB kernel stacks.
+Context switching is performed by a hand-written assembly routine
+.RB ( context_switch_asm )
+that saves and restores callee-saved registers and swaps RSP via a stable per-process slot in
+.BR RSP_TABLE .
+The PIT timer fires at \(ap18\~Hz and sets a preemption flag; the actual CPU switch is
+deferred to cooperative yield points inside each process, avoiding IRET-frame corruption.
+.
+.SH THE 12-PRIMITIVE TUPLE
+Every kernel object carries a tuple
+.BR "\(laD;\~T;\~R;\~P;\~F;\~K;\~G;\~\(*G;\~\(*F;\~\(*H;\~\(*S;\~\(*W\(ra" ,
+which is written with the following glyph names in the codebase:
+.PP
+.TS
+tab(@) allbox;
+lb lb lb lb
+l l l l.
+Index@Glyph@Name@Meaning
+0@\*(`D@Dimensionality (Ð)@wedge / triangle / inf / holo
+1@T@Topology (Þ)@network / inclusion / bowtie / box / holo
+2@R@Relationality (Ř)@set / categorical / adjoint / self-ref
+3@P@Parity (Φ)@Z1 / Z2 / Z4 / partial / Φ_±
+4@F@Fidelity (ƒ)@zero / thermal / hbar / perfect
+5@K@Kinetics (Ç)@fast / moderate / slow / trap / MBL
+6@G@Scope (Γ)@point / gimel / aleph
+7@\(*G@Interaction grammar (ɢ)@conjunctive / sequential / broadcast
+8@\(*F@Criticality (⊙)@sub / ⊙_c / complex / EP / super
+9@\(*H@Chirality (Ħ)@1\-step / 2\-step / eternal
+10@\(*S@Stoichiometry (Σ)@1:1 / n:n / n:m
+11@\(*W@Protection (Ω)@Ω_0 / Ω_Z2 / Ω_Z
+.TE
+.PP
+The OS imscription is
+.BR [1,3,2,4,2,1,2,2,1,2,2,2] ,
+yielding tier O_\(if (Frobenius fixed point).
+.
+.SH OUROBORICITY TIERS
+.TP
+.B O_0
+12 letters.  Subcritical (\(sy_sub).  Cannot be ergative, cannot be scheduled as O_inf.
+.TP
+.B O_1
+1 letter.  Critical loop possible but topologically unprotected (\(*W_0 or \(*W_Z2).
+.TP
+.B O_2 / O_2d
+6 letters.  Critical, protected (\(*W_Z2 or \(*W_Z).
+.TP
+.B O_\(if
+3 letters: vav (\(*W), mem (\(*W), shin (\(*W).
+Critical (\(sy_c) + Parity \(*F_\(+- simultaneously.  Frobenius fixed points: a\~\(ox\~a\~=\~a.
+Convergence: any letter tensored with an O_\(if pole converges in \(<=\~2 steps.
+.
+.SH TYPE GATES
+Four subsystems are constrained by ALEPH types at runtime.
+.SS IPC Distance Gate
+.B ipc.rs
+\(em \fBcheck_grammar_gate()\fP, \fBis_type_valid()\fP
+.PP
+Structural distance d(source, target):
+.RS
+.IP "d < 0.5" 12
+transparent \(em structurally identical, unrestricted
+.IP "d < 1.5" 12
+near-grounded \(em viable IPC
+.IP "d \(>= 1.5" 12
+aspirational \(em requires a vav-cast witness (mediating O_1+ type within 1.5 of both ends)
+.RE
+.PP
+Broadcast delivery additionally requires the source's interaction-grammar primitive
+\(*G\~\(>=\~3 (\fB\(*G_broad\fP).
+Sources with \(*G\~=\~2 (\fB\(*G_seq\fP) are point-to-point only.
+.SS Omega-Gate (Memory)
+.B memory.rs
+\(em \fBallocate_for()\fP, \fBcan_allocate_for()\fP
+.PP
+An object's \(*W (protection) must be \(>= the required \(*W of the articulation depth:
+.RS
+.IP "Velar / Palatal" 14
+\(*W_Z (2) required
+.IP "Retroflex" 14
+\(*W_Z2 (1) required
+.IP "Dental / Bilabial" 14
+\(*W_0 (0) \(em unprotected
+.RE
+.PP
+Additionally, \(*S_1:1 (Exclusive) objects are restricted to Velar depth only.
+.SS Tier-Gate (Scheduler)
+.B scheduler.rs
+\(em \fBspawn_type_safe()\fP
+.PP
+Five axioms are enforced before queuing a process:
+.RS
+.IP "Ç_trap / Ç_MBL" 4
+Kinetically frozen \(em cannot be scheduled under any conditions.
+.IP "P-596 (\(sy_EP)" 4
+Exceptional-point criticality absorbs the self-modeling loop (C=0).
+Spawn is rejected.
+.IP "O_0 ergative" 4
+A subcritical process with transitive targets (non-empty pcb.targets) is rejected:
+no self-modeling loop to sustain transitivity.
+.IP "Frobenius F-1" 4
+An O_\(if process must satisfy \(*m\(ci\(*d\~=\~id: parity index\~=\~4 AND phi index\~=\~1.
+Violation is rejected.
+.IP "\(*S quota" 4
+\(*S_1:1 resources permit only one holder; \(*S_n:n pools have capacity 8.
+Spawn that exceeds the quota is rejected.
+.RE
+.SS Phi-Gate (Filesystem)
+.B filesystem.rs
+\(em \fBnavigate_to_type_safe()\fP
+.PP
+Sefirot layers Keter through Gevurah (depth 0\(en5) require the accessing object to have
+criticality \(*F_c (phi index\~\(>=\~1).
+Sub-critical objects (Driver, Service without \(*F_c) are denied above Gevurah.
+.
+.SH PROCESS EXECUTION MODEL
+.SS Spawning a Real Process
+.nf
+ProcessControlBlock::spawn_ring0(id, obj, entry_fn, priority)
+.fi
+.PP
+Allocates a 16\~KB kernel stack via the global heap allocator.
+Writes the initial saved-register frame at the top of the stack:
+.nf
+
+  [top \- 8]   entry_fn   <- ret address; jumped to on first schedule
+  [top \- 16]  0          <- rbp
+  [top \- 24]  0          <- rbx
+  [top \- 32]  0          <- r12
+  [top \- 40]  0          <- r13
+  [top \- 48]  0          <- r14
+  [top \- 56]  0          <- r15  <- initial RSP stored here
+
+.fi
+Assigns a slot in
+.B RSP_TABLE[MAX_PROCS]
+(static array; slots have stable addresses for the process lifetime).
+.SS Context Switch
+.nf
+context_switch_asm(old_rsp_ptr: *mut u64, new_rsp: u64)
+.fi
+.PP
+Assembly routine (global_asm!):
+.nf
+
+  push rbp; push rbx; push r12; push r13; push r14; push r15
+  mov [rdi], rsp        ; save RSP into RSP_TABLE[old_slot]
+  mov rsp, rsi          ; load RSP from RSP_TABLE[new_slot]
+  pop r15; pop r14; pop r13; pop r12; pop rbx; pop rbp
+  ret                   ; jumps to saved return address on new stack
+
+.fi
+Only invoked when both the outgoing and incoming process have real stacks (proc_slot > 0).
+Legacy test PCBs fall back to a data-structure-only swap.
+.SS Preemption Protocol
+The PIT timer fires at \(ap18\~Hz.
+.B timer_handler
+calls
+.BR scheduler::on_timer_tick() ,
+which increments the running process's tick counter and sets
+.B needs_preempt = true
+when the time slice (18 ticks \(ap 1 second) expires.
+.PP
+Processes check
+.B global_check_preempt()
+at cooperative yield points (e.g. after each work unit in the holographic monitor loop).
+The actual context switch happens in process context, not inside the interrupt frame.
+This avoids corruption of the IRET state.
+.SS Stoichiometric Quotas
+.nf
+stoichiometry::register(resource_id, mode, capacity)
+stoichiometry::acquire(resource_id, pid) -> Result<(), &str>
+stoichiometry::release(resource_id, pid)
+stoichiometry::occupancy(resource_id) -> Option<(Stoichiometry, u64, u64)>
+.fi
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Mode@Primitive index@Enforcement
+\(*S_1:1 (Exclusive)@0@One holder only; second acquire returns Err
+\(*S_n:n (Homogeneous)@1@Pool of capacity 8; acquire fails when full
+\(*S_n:m (Heterogeneous)@2@No hard cap; occupancy tracked for diagnostics
+.TE
+.
+.SH BOOT SEQUENCE
+.TP
+.B 1. Heap init
+4\~MB heap at physical 16\~MB.  Must complete before any println! or allocation.
+.TP
+.B 2. UEFI framebuffer init
+UEFI GOP mapped; 8\(mu16 Hebrew bitmap font rendered natively on framebuffer.
+.TP
+.B 3. Interrupt init
+IDT loaded, 8259 PIC configured.  IRQ0 (timer) and IRQ1 (keyboard) unmasked.
+This is the symmetry-breaking event (\(*F_\(+- \(-> \(*F_asym).
+.TP
+.B 4. Subsystem validation
+Three-layer objects, scheduler, memory, filesystem, IPC, command grammar \(em
+all structural/operational/determinative variants exercised.
+.TP
+.B 5. ALEPH system online
+22-letter type system loaded.  Tier census: O_\(if:3, O_2:6, O_1:1, O_0:12.
+Three Frobenius fixed points verified by assertion.
+.TP
+.B 6. Type-gate verification
+All five type gates tested with
+.BR assert!() .
+Conscience scores printed.
+.TP
+.B 7. Holographic monitor spawn
+.B holographic_monitor_entry
+allocated a real 16\~KB kernel stack and queued as process 1000.
+.TP
+.B 8. Timer registration
+.B scheduler::register_for_timer()
+wires the global scheduler to the PIT IRQ0 handler.
+Symmetry broken: holographic monitor eligible for scheduling.
+.TP
+.B 9. ALFS mount
+ATA primary slave (alfs.img, 32\~MB).  Programs seeded from kernel binary if absent.
+.TP
+.B 10. Shell
+Interactive prompt
+.BR "exOS>" .
+.
+.SH SHELL COMMANDS
+.TP
+.B help
+Print command reference.
+.TP
+.BI "help " engine
+Per-engine token reference.
+.I engine
+is one of:
+.BR aleph ", " imasm ", " fs ", " mem ", " ipc ", " types .
+.TP
+.B clear
+Clear the screen.
+.TP
+.B info
+Kernel version, architecture, and subsystem summary.
+.TP
+.B phi
+Print the OS 12-primitive imscription, C-score formula, and tier census.
+.TP
+.B sched
+Report ergative scheduler state.
+.TP
+.B mem
+Report phonological allocator articulation-depth tiers and heap base.
+.TP
+.B fs
+Print the full Sefirot filesystem tree (all 10 layers, all files).
+.TP
+.BI "cd " sefirah
+Navigate to a Sefirot layer by name.
+Valid tokens: Keter, Chokhmah, Binah, Daat, Chesed, Gevurah, Tiferet, Netzach, Hod, Yesod, Malkuth.
+.TP
+.B ls
+List files in the current Sefirot layer.
+.TP
+.BI "cat " filename
+Print contents of a file in the current layer.
+.TP
+.BI "write " "filename content"
+Write a single-line file to the current Sefirot layer.
+.TP
+.B ipc
+Send a test IPC message and print its validation result.
+.TP
+.B "aleph [expr]"
+Enter the ALEPH REPL (or evaluate one expression inline).
+.TP
+.BI "imasm " "engine tokens"
+Execute an IMASM VM command.
+.I engine
+is one of the four script systems; see
+.B TOKEN REFERENCE
+below.
+.TP
+.BI "type " object
+Display the ALEPH type, tier, and conscience score of a named kernel object.
+.TP
+.B type-check
+Run all five type-gate verification tests and print results.
+.TP
+.B type-infer
+Print the type inference table (all Structural \(mu Determinative combinations for Compute mode).
+.TP
+.B bench
+Calibrate CPU frequency via PIT and run RDTSC micro-benchmarks.
+.TP
+.BI "history " [N]
+Replay last N lines of output (default 50).
+.TP
+.B reboot
+Triple-fault reboot (load null IDT, trigger int3).
+.
+.SH TOKEN REFERENCE
+.SS ALEPH Engine Tokens
+The ALEPH type language uses 22 Hebrew letter names as atomic tokens.
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Name@Abbrev@Tier
+aleph@A@O_2
+bet@B@O_0
+gimel@G@O_2
+dalet@D@O_0
+hei@H@O_0
+vav@V@O_\(if
+zayin@Z@O_0
+chet@C@O_0
+tet@T@O_0
+yod@Y@O_0
+kaf@K@O_0
+lamed@L@O_0
+mem@M@O_\(if
+nun@N@O_0
+samech@S@O_0
+ayin@E@O_2
+pei@P@O_2
+tzadi@Q@O_1
+kuf@U@O_2
+resh@R@O_2
+shin@X@O_\(if
+tav@O@O_0
+.TE
+.PP
+Operators:
+.TS
+tab(@) allbox;
+lb lb
+l l.
+Token@Operation
+a x b@tensor product (\(ox): P,F,K bottlenecked (min); others max
+a v b@join (\(cu): component-wise max
+a ^ b@meet (\(ca): component-wise min
+a ::> b@vav-cast: lift a to b's type
+d(a,b)@structural distance + conflict set
+tier(a)@ouroboricity tier: O_0 / O_1 / O_2 / O_\(if
+probe_Phi(a)@criticality primitive (\(sy_sub, \(sy_c, EP, super)
+probe_Omega(a)@topological protection (\(*W_0, \(*W_Z2, \(*W_Z)
+mediate(w,a,b)@triadic: w \(cu (a \(ox b)
+palace(n) expr@tier barrier gate, n=1..7
+system()@JOIN of all 22 letters
+census()@tier distribution
+let x = expr@bind result to session variable
+.TE
+.PP
+REPL commands (prefixed with
+.BR : ):
+.BR :help ", " :tips ", " :quit " / " :q ", " :ls ", " :clear ", " :census ,
+.BR :system ", " ":tier name" ", " ":tuple name" ", " ":explain name" ,
+.BR ":orbit N letter pole" ", " ":save name" ", " ":load name" ", " ":run name" ,
+.BR :files ", " :history ", " ":scroll [N]" .
+.PP
+Inline (outside REPL):
+.B aleph <expr>
+\(em e.g.\&
+.BR "aleph d(mem,vav)" ,
+.BR "aleph tier(shin)" .
+.SS IMASM VM Tokens
+Four undeciphered-script engines; each accepts a space-separated token sequence.
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Engine command@Token set (scan codes)@IG signature
+voynich <tokens>@ch sh o p e a d s t k r y@Þ_6 / Þ_O / Þ_K (by section)
+voynich-bot <tokens>@(same EVA set)@Þ_6 data segment
+voynich-astro <tokens>@(same EVA set)@Þ_O cyclic state
+voynich-bio <tokens>@(same EVA set)@Þ_K broken Frobenius
+voynich-cosmo <tokens>@(same EVA set)@Þ_O clock-indexed
+voynich-pharm <tokens>@(same EVA set)@Þ_6 type declarations
+voynich-recipe <tokens>@(same EVA set)@Ř_Ť + Ħ_£
+rohonc <tokens>@cr hk fa ba lg lp br cv vt hz cl dt@d(Rohonc, OS) = 0.58
+linear-a <tokens>@cu hk fa ba lt lp br cv vt hz cl dt@d(Linear A, OS) = 0.00
+emerald-tablet <tokens>@tr an as ds lk id sp un af ng px fx@C = 1.0; both gates open
+.TE
+.PP
+VM opcodes shared by all engines:
+.TS
+tab(@) allbox;
+lb lb
+l l.
+Opcode@Meaning
+LCARD@measure cardinality (Cantor diagonal)
+REFL@self-referential reflection (Gödel arithmetization)
+HOLO@holographic boundary encoding
+SPLIT@Frobenius \(*d: A \(-> A \(ox A
+FUSE@Frobenius \(*m: A \(ox A \(-> A
+FIXED@write to linear tape (no overwrite)
+PSTAB@paradox stabilization (Both state)
+.TE
+.PP
+VM control subcommands:
+.BR "run <name>" " (load .imasm from ALFS),"
+.BR step " (one instruction),"
+.BR snapshot " (dump VM state),"
+.BR "paradox <N>" " (inject Both at register N),"
+.BR distance " (weighted IG distances between all systems),"
+.BR census " (all crystal imscriptions side-by-side)."
+.SS Sefirot Filesystem Tokens
+Valid tokens for
+.BR "cd <sefirah>" :
+.PP
+.TS
+tab(@) allbox;
+lb lb lb lb
+l l l l.
+Token@Layer@Path@Phi gate
+Keter@0@/boot@Phi_c required
+Chokhmah@1@/bin@Phi_c required
+Binah@2@/lib@Phi_c required
+Daat@3@/dev@Phi_c required
+Chesed@4@/home@Phi_c required
+Gevurah@5@/etc/security@Phi_c required
+Tiferet@6@/ipc@open
+Netzach@7@/net@open
+Hod@8@/var/log@open
+Yesod@9@/tmp@open
+Malkuth@10@/data@open
+.TE
+.PP
+Objects with \(*F_sub (phi = 0, e.g.\& User determinative) are restricted to layers 6\(en10.
+Kernel and Driver objects (Compute mode, \(*F_c) pass all layers.
+.SS Phonological Memory Depth Tokens
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Token@Zone@Omega gate requirement
+Velar@deep kernel@O_\(if or O_2; Kernel/Driver determinative
+Palatal@kernel@O_\(if or O_2
+Retroflex@system@O_1 and above
+Dental@user@any
+Bilabial@user (shallow)@any
+.TE
+.PP
+\(*S_1:1 (Exclusive) objects may only be allocated at Velar depth.
+.SS IPC Structural / Operational / Determinative Tokens
+Objects on each side of an IPC message are typed by three orthogonal axes.
+.PP
+.TS
+tab(@) allbox;
+lb lb
+l l.
+Axis@Tokens
+Structural@Process, File, Socket, Semaphore, MemoryRegion
+Operational@Compute, IO, Idle
+Determinative@Kernel, Init, Service, Driver, User
+.TE
+.PP
+Gate: d(source, target) \(< 1.5 passes; \(>= 1.5 fails.
+The
+.B IO
+operational mode activates the Egyptian \(*G entry (pushing it from 0 to 3); mixing
+.B IO
+with
+.B Compute
+across an IPC pair produces d\~>\~1.5 and fails the gate.
+Multicast requires source \(*G index \(>= 3
+.RB ( Broadcast ).
+.SS IG 12-Primitive Value Tokens
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Index / Glyph@Name@Integer value tokens
+0 / Ð@Dimensionality@0=wedge 1=triangle 2=inf 3=holo
+1 / Þ@Topology@0=net 1=inclusion 2=bowtie 3=box 4=holo
+2 / Ř@Relationality@0=set 1=categorical 2=adjoint 3=self-ref
+3 / Φ@Parity@0=Z1 1=Z2 2=Z4 3=partial 4=Phi_pm
+4 / ƒ@Fidelity@0=zero 1=thermal 2=hbar 3=perfect
+5 / Ç@Kinetics@0=fast 1=moderate 2=slow 3=trap 4=MBL
+6 / Γ@Scope@0=point 1=gimel 2=aleph
+7 / ɢ@Interaction@0=conjunctive 1=sequential 2=broadcast
+8 / ⊙@Criticality@0=sub 1=c 2=complex 3=EP 4=super
+9 / Ħ@Chirality@0=1-step 1=2-step 2=eternal
+10 / Σ@Stoichiometry@0=1:1 1=n:n 2=n:m
+11 / Ω@Protection@0=Omega_0 1=Omega_Z2 2=Omega_Z
+.TE
+.PP
+OS imscription: [1,3,2,4,2,1,2,2,1,2,2,2] \(em tier O_\(if, C\~=\~0.873.
+MEET floor: [1,1,1,2,1,1,1,0,0,1,1,1] \(em structural core of all five ancient systems.
+.
+.SH ALEPH REPL
+Entered via
+.BR "exOS> aleph" .
+Prompt becomes
+.BR "A>" .
+.SS Expression Syntax
+.TP
+.I letter
+Any of the 22 Hebrew letter names (aleph, bet, gimel, dalet, heh, vav, zayin, chet, tet, yod, kaf, lamed, mem, nun, samech, ayin, pei, tzadi, kuf, resh, shin, tav).
+.TP
+.IB expr " x " expr
+Tensor product (\(ox) \(em P, F, K are bottlenecked (min); others take max.
+.TP
+.IB expr " v " expr
+Join (\(cu) \(em component-wise maximum.
+.TP
+.IB expr " ^ " expr
+Meet (\(ca) \(em component-wise minimum.
+.TP
+.IB expr " ::> " expr
+Vav-cast: lift source to target type.
+.TP
+.BI "mediate(" w ,\~ a ,\~ b )
+Triadic mediation: w \(cu (a \(ox b).
+.TP
+.BI "d(" a ,\~ b )
+Structural distance and conflict set.
+.TP
+.BI "probe_Phi(" a )
+Report criticality primitive of
+.IR a .
+.TP
+.BI "probe_Omega(" a )
+Report topological protection primitive of
+.IR a .
+.TP
+.BI "tier(" a )
+Ouroboricity tier of
+.IR a .
+.TP
+.BI "palace(" n ") " expr
+Tier barrier gate.
+.I n
+is 1..7.
+.TP
+.BR "system()"
+JOIN of all 22 letters.
+.TP
+.BI "let " name " = " expr
+Bind
+.I expr
+to
+.IR name .
+.SS REPL Commands
+.TP
+.B :help
+Full syntax reference.
+.TP
+.B :tips
+Quick-start examples.
+.TP
+.B :ls
+List all session bindings.
+.TP
+.BI ":tuple " name
+Visual 12-primitive bar chart.
+.TP
+.BI ":explain " name
+Detailed breakdown: all primitives, tier, conscience score.
+.TP
+.B :census
+Tier distribution across all 22 letters.
+.TP
+.B :system
+Compute and display the JOIN of all 22 letters.
+.TP
+.BI ":tier " name
+Ouroboricity tier of one letter.
+.TP
+.BI ":orbit " "N letter pole"
+Iterate
+.IB state " = state \(ox " pole
+N times.
+Prints nearest canonical letter, tier, distance to pole, and convergence delta at each step.
+.TP
+.B :files
+List files on ALFS.
+.TP
+.BI ":save " "name [expr]"
+Save expression (or last result) to ALFS as
+.IR name .aleph .
+.TP
+.BI ":load " name
+Load and bind an
+.I .aleph
+file from ALFS.
+.TP
+.BI ":run " name
+Run an
+.I .aleph
+file from ALFS.
+.TP
+.B :history
+Show command history within the current session.
+.TP
+.BI ":scroll " [N]
+Replay last N lines of REPL output.
+.TP
+.B :clear
+Clear the screen.
+.TP
+.B :quit
+Return to the main shell.
+.
+.SH IMASM VM
+The
+.B IMASM
+(Imscribing Grammar Assembly) VM is a Tri-Phase Flux Register machine with four register states:
+Void, True, False, Both (quantum superposition).
+.PP
+Four undeciphered script systems are compiled to IMASM opcodes:
+.TP
+.B Voynich
+.br
+.B "imasm voynich ch sh o p e a d s t k r y"
+(EVA character scan codes)
+.TP
+.B Rohonc Codex
+.br
+.B "imasm rohonc cr hk fa ba lg lp br cv vt hz cl dt"
+(RTFF two-char scan codes)
+.TP
+.B Linear A
+.br
+.B "imasm linear-a cu hk fa ba lt lp br cv vt hz cl dt"
+(LATFF two-char scan codes)
+.TP
+.B Emerald Tablet
+.br
+.B "imasm emerald-tablet tr an as ds lk id sp un af ng px fx"
+(ETFF two-char scan codes)
+.PP
+The Emerald Tablet is the only compiled manuscript with both type gates open and C\~=\~1.0.
+.SS IMASM Opcodes
+.TS
+tab(@) allbox;
+lb lb
+l l.
+Opcode@Meaning
+LCARD@measure cardinality (Cantor diagonal)
+REFL@self-referential reflection (Gödel arithmetization)
+HOLO@holographic boundary encoding
+SPLIT@Frobenius \(*d: A \(-> A \(ox A
+FUSE@Frobenius \(*m: A \(ox A \(-> A
+FIXED@write to linear tape (no overwrite)
+PSTAB@paradox stabilization
+.TE
+.
+.SH ALFS \(em ALEPH LINEAR FILESYSTEM
+Sector-based ATA PIO filesystem on the primary slave drive (alfs.img, 32\~MB).
+.PP
+.TS
+tab(@) allbox;
+lb lb
+l l.
+Sector 0@Superblock (magic "ALFS", version, counts, bitmap)
+Sectors 1\(en16@Directory (64\~bytes/entry, 8/sector, 128 max entries)
+Sectors 17+@File data (raw sectors)
+.TE
+.PP
+File types: 0\~=\~data, 1\~=\~aleph program, 2\~=\~temp.
+Maximum filename: 31 chars.
+Sector allocation: first-fit from DATA_START_SECTOR.
+Every sector in a file's range is verified against the bitmap before reading
+.RB ( is_sector_allocated() ).
+.
+.SH SEFIROT FILESYSTEM
+Ten-layer virtual filesystem mapped onto the Hebrew Kabbalistic tree.
+Each Sefirah has a default path and a transformation role:
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+Layer@Sefirah@FS Role
+0@Keter@Kernel root / boot config
+1@Chokhmah@System binaries
+2@Binah@System libraries
+3@Da'at@Device nodes
+4@Chesed@User home directories
+5@Gevurah@Permission / access control
+6@Tiferet@Shared memory / IPC endpoints
+7@Netzach@Network filesystem mounts
+8@Hod@Log files / audit trails
+9@Yesod@Temp files / caches
+10@Malkuth@User-facing data / UI configs
+.TE
+.PP
+Sefirot navigation is by transformation chain (SefirotPath), not flat pathname.
+The Φ-gate restricts layers 0\(en5 to \(*F_c objects.
+.
+.SH FIVE ANCIENT WRITING SYSTEMS
+The OS type lattice is derived as
+.B MEET(Hebrew, Varnamala, Egyptian, Cuneiform, Basque)
+followed by layer-specific JOIN promotions.
+.PP
+.TS
+tab(@) allbox;
+lb lb lb
+l l l.
+System@Tuple@Kernel analog
+Hebrew@[1,4,2,3,2,2,2,0,1,3,1,2]@scheduler + memory (Ω, Φ)
+Varnamala@[1,2,1,2,1,1,1,2,0,1,1,1]@memory kinetics (K, F)
+Egyptian@[3,4,2,2,2,2,2,3,1,2,2,2]@IPC three-layer, filesystem (D, \(*G)
+Cuneiform@[1,3,1,3,1,2,1,0,0,1,1,1]@fidelity, stoichiometry (F, \(*S)
+Basque@[1,1,2,4,2,2,2,2,1,3,2,2]@scheduler ergative (R, G, Ħ, P)
+MEET floor@[1,1,1,2,1,1,1,0,0,1,1,1]@structural core of all five
+.TE
+.
+.SH TYPE INFERENCE ALGORITHM
+.nf
+infer_tuple(structural, operational, determinative):
+  1. Start from FIVE_SYSTEM_MEET as the structural floor.
+  2. Structural layer activates source systems:
+       Process / Socket  -> Basque (R, G, Ħ) + Hebrew (Ω; Φ for Process)
+       File / Semaphore  -> Cuneiform (F, Σ) + Egyptian (D)
+       MemoryRegion      -> Varnamala (F, K) + Hebrew (Ω)
+  3. Operational layer promotes kinetics / grammar:
+       Compute     -> Varnamala K
+       IO          -> Egyptian K, Γ
+       Network     -> Egyptian Γ + Basque R
+       MemoryManage -> Hebrew F + Varnamala K
+       Schedule    -> Basque G; K -> slow
+       Idle        -> K -> slow
+  4. Determinative sets protection / criticality:
+       Kernel / Init    -> Ω_Z, Φ_c, F_hbar
+       Service / Driver -> Ω_Z2, F_thermal
+       User             -> Ω_0, Φ_sub
+  5. Final: JOIN all activated promotions into base.
+.fi
+.
+.SH KEY AXIOMS
+.TP
+.B P-596 (Coupling Destruction)
+\(sy_c \(ox \(sy_EP \(-> \(sy_EP.
+Coupling a critical system with an exceptional-point system destroys the self-modeling loop.
+Enforced at spawn.
+.TP
+.B F-1 (Frobenius O_inf)
+An O_\(if process must satisfy \(*m\(ci\(*d\~=\~id: parity\~=\~4 and phi\~=\~1.
+Enforced at spawn.
+.TP
+.B BT-2 (Tier Faithfulness)
+a \(ox a = a for all O_\(if letters (idempotency).
+Convergence to any O_\(if pole in \(<= 2 tensor steps from any letter.
+.TP
+.B BT-5 (Determinative Necessity)
+is_well_formed() = false if any determinative field is absent or inconsistent.
+.
+.SH FILES
+.TP
+.B alfs.img
+32\~MB raw disk image for ALFS (ATA primary slave).  Created automatically by run.sh.
+Delete to trigger re-seeding of built-in programs on next boot.
+.TP
+.B programs/*.aleph
+Source programs compiled into the kernel binary via include_bytes! and seeded to ALFS.
+.TP
+.B bootloader.toml
+Bootloader configuration: physical memory mapping, framebuffer, 128\~KB kernel stack.
+.TP
+.B build_bootimage.sh
+Builds the UEFI bootable disk image (EFI System Partition + kernel ELF).
+.TP
+.B run.sh
+QEMU launcher.  Use
+.B --serial
+for text-only operation.
+.TP
+.B src/scheduler.rs
+Ergative scheduler, context_switch_asm (global_asm!), RSP_TABLE, spawn_ring0,
+stoichiometric quota integration.
+.TP
+.B src/stoichiometry.rs
+Stoichiometric quota table (register / acquire / release / occupancy).
+.TP
+.B src/holographic_monitor.rs
+g(x) process entry point; real ring-0 stack; cooperative preemption via
+global_check_preempt().
+.TP
+.B src/aleph_kernel_types.rs
+Type inference (MEET+JOIN algorithm), canonical dictionary, conscience score.
+.TP
+.B src/ipc.rs
+Three-layer IPC; distance gate; interaction grammar gate (check_grammar_gate).
+.TP
+.B src/memory.rs
+Phonological allocator; Ω-gate; Σ_1:1 isolation gate.
+.TP
+.B src/frobenius_verification.rs
+FrobeniusVerifier::verify() \(em checks F-1 axiom for O_inf spawn.
+.TP
+.B src/phi_ep.rs
+Criticality enum; is_ep() \(em P-596 spawn gate.
+.TP
+.B src/interaction_grammar.rs
+InteractionGrammar enum (Sequential=2, Broadcast=3).
+.TP
+.B src/resource_isolation.rs
+ResourceIsolation enum; extends AlephKernelType with stoichiometry() and
+interaction_grammar() accessors.
+.
+.SH BUILD
+.PP
+Requirements: Rust nightly, x86_64-unknown-none target, QEMU, OVMF, mtools.
+.PP
+.nf
+rustup default nightly
+rustup target add x86_64-unknown-none --toolchain nightly
+sudo apt install qemu-system-x86 ovmf mtools   # Debian/Ubuntu
+cargo build --release
+./build_bootimage.sh
+./run.sh
+.fi
+.
+.SH DIAGNOSTICS
+.TP
+.B [BOOT] Heap: initialized (4MB)
+Heap is ready.  All subsequent boot steps may allocate.
+.TP
+.B [SCHED] Ergative scheduler online, symmetry broken
+Scheduler initialized; symmetry-breaking event (first interrupt) has fired.
+.TP
+.B [TYPE] IPC gate (close): accepted=true
+The IPC distance gate is operational and passing close-type messages.
+.TP
+.B [TYPE] Ω gate (Velar+User): allowed=false
+User objects correctly rejected from kernel-depth allocation.
+.TP
+.B [HOLO] Holographic monitor (g(x)): spawn ok=true
+g(x) process passed all five spawn gates and has a live 16\~KB kernel stack.
+.TP
+.B [g(x)] iter=N LCARD=M REFL=false radius=R
+The holographic monitor is actually running on the CPU, not just queued.
+Printed every 64 iterations of its main loop.
+.TP
+.B KERNEL PANIC
+Unrecoverable fault.  CPU halts.  Connect serial to see the panic message.
+.
+.SH NOTES
+exoterik_OS runs in ring-0 only.  No user/kernel mode transition, no syscall interface,
+no paging beyond what UEFI provides.  Processes are cooperative (they yield explicitly
+or via the preemption flag); there is no forced preemption from interrupt context.
+.PP
+The maximum number of real processes is bounded by MAX_PROCS\~=\~32 (RSP_TABLE slots)
+and MAX_ENTRIES\~=\~128 (ALFS directory).
+.PP
+Ħ (primitive index 9) denotes
+.B chirality
+\(em not "temporal depth" or any other label.
+.
+.SH SEE ALSO
+.BR USAGE.md ,
+.BR POTENTIALITY.md ,
+.BR aleph_type_lattice.pdf ,
+.BR ergative_scheduler.pdf ,
+.BR sefirot_filesystem.pdf ,
+.BR holographic_kernel.pdf ,
+.BR boot_sequence_symmetry_breaking.pdf
+.PP
+Lean formalization:
+.B ~/MillenniumAnkh
+(43 modules, Mathlib v4.28.0)
+.
+.SH AUTHORS
+exoterik_OS is released under the Unlicense (public domain).

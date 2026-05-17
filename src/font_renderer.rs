@@ -41,7 +41,7 @@ const UNICODE_HEBREW_MAP: [usize; 27] = [
 fn render_bitmap(fb: &mut FrameBuffer, bitmap: &[u8; GLYPH_HEIGHT], x: u64, y: u64, fg: Color, bg: Color) {
     for row in 0..GLYPH_HEIGHT {
         let byte = bitmap[row];
-        for col in 0..8u64 {
+        for col in 0..(GLYPH_WIDTH * 8) as u64 {
             let bit = (byte >> (7 - col)) & 1;
             let color = if bit != 0 { fg } else { bg };
             let px = x + col * SCALE;

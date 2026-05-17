@@ -8,6 +8,7 @@ use core::sync::atomic::{AtomicU8, Ordering};
 use x86_64::instructions::port::Port;
 
 const ATA_PRIMARY_DATA:       u16 = 0x1F0;  // Data port (16-bit)
+#[allow(dead_code)]
 const ATA_PRIMARY_ERROR:      u16 = 0x1F1;  // Error
 const ATA_PRIMARY_SECCOUNT:   u16 = 0x1F2;  // Sector count
 const ATA_PRIMARY_LBA_LOW:    u16 = 0x1F3;  // LBA bits 0-7
@@ -15,6 +16,7 @@ const ATA_PRIMARY_LBA_MID:    u16 = 0x1F4;  // LBA bits 8-15
 const ATA_PRIMARY_LBA_HIGH:   u16 = 0x1F5;  // LBA bits 16-23
 const ATA_PRIMARY_DRIVE:      u16 = 0x1F6;  // Drive select + LBA bits 24-27
 const ATA_PRIMARY_STATUS:     u16 = 0x1F7;  // Status (read) / Command (write)
+#[allow(dead_code)]
 const ATA_PRIMARY_CONTROL:    u16 = 0x3F6;  // Control (for reset)
 
 const ATA_STATUS_BSY: u8 = 0x80;

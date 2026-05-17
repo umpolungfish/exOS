@@ -16,8 +16,9 @@
 <p align="center">
   <a href="#origin">Origin</a> •
   <a href="#architecture">Architecture</a> •
+  <a href="#process-execution-model">Process Model</a> •
   <a href="#aleph-repl">ALEPH REPL</a> •
-  <a href="#type-gated-kernel">Type-Gated Kernel</a> •
+  <a href="#type-gated-kernel">Type Gates</a> •
   <a href="#os-imscription-tuple">OS Imscription</a> •
   <a href="#build--run">Build & Run</a> •
   <a href="#programs">Programs</a> •
@@ -43,7 +44,7 @@ Each system was imscribed as a **crystal imscription** — a 12-primitive tuple 
 
 <hr>
 
-## Architecture Derived from the Ancient Systems
+## Architecture
 
 ### Three-Layer Kernel Objects *(Hieroglyphs + Cuneiform)*
 
@@ -61,30 +62,34 @@ A message/object **without a determinative layer is syntactically malformed**.
 
 The scheduler distinguishes:
 
-- **Ergative** (transitive): the process acts ON another process → higher interrupt priority
+- **Ergative** (transitive): the process acts ON another process → higher interrupt priority boost (O_inf +15, O_2 +12, O_1 +10)
 - **Absolutive** (intransitive): the process runs standalone → higher cache affinity
 
-The **same process shifts grammatical role** depending on whether it has transitive targets.
+The **same process shifts grammatical role** depending on whether it has transitive targets (`pcb.targets`).
 
 ### Phonological Memory Model *(Varnamala Articulation Gradient)*
 
-| Tier | Varnamala | Protection | Speed | Ω |
-|:-----|:----------|:-----------|:------|:--|
-| Velar | ka-varga | Maximum | Slowest | Ω_Z |
-| Palatal | ca-varga | High | Slow | Ω_Z |
-| Retroflex | ṭa-varga | Medium | Medium | Ω_Z₂ |
-| Dental | ta-varga | Low | Fast | Ω_0 |
-| Bilabial | pa-varga | None | Fastest | Ω_0 |
+| Tier | Varnamala | Protection | Speed | Ω | Σ constraint |
+|:-----|:----------|:-----------|:------|:--|:-------------|
+| Velar | ka-varga | Maximum | Slowest | Ω_Z | exclusive (Σ_1:1) objects here only |
+| Palatal | ca-varga | High | Slow | Ω_Z | — |
+| Retroflex | ṭa-varga | Medium | Medium | Ω_Z₂ | — |
+| Dental | ta-varga | Low | Fast | Ω_0 | — |
+| Bilabial | pa-varga | None | Fastest | Ω_0 | — |
 
 ### Sefirot Filesystem *(Hebrew Kabbalistic Tree)*
 
-Files are nodes in a ten-layer Sefirot tree. Navigation is by **transformation**, not pathname alone.
+Files are nodes in a ten-layer Sefirot tree. Navigation is by **transformation**, not pathname alone. The Φ-gate restricts upper Sefirot (Keter through Gevurah) to objects with Φ_c (criticality ≥ 1).
 
 The persistent storage layer is **ALFS** (ALEPH Linear Filesystem) — a sector-based ATA PIO filesystem on a dedicated 32 MB disk image (`alfs.img`, ATA primary slave). All `.aleph` programs in `programs/` are compiled into the kernel binary and seeded to ALFS on first boot.
 
 ### Three-Layer IPC *(Egyptian Hieroglyphs)*
 
-IPC messages carry: structural signature (logogram), payload (phonogram), and determinative context.
+IPC messages carry: structural signature (logogram), payload (phonogram), and determinative context. Three gates are applied:
+
+- **Distance gate**: d < 1.5 passes; ≥ 1.5 requires a vav-cast witness (mediating O_1+ type)
+- **Grammar gate**: broadcast delivery (`is_multicast=true`) requires source Γ ≥ Γ_broad (index 3); Γ_seq sources are point-to-point only
+- **Well-formed check**: determinative must be consistent with source structural type
 
 ### Generative Command Grammar *(Hebrew Letters + Pratyahara)*
 
@@ -92,7 +97,81 @@ Commands are tensor products of letter-primitives. Any subset can be referenced 
 
 ### Φ_± → Φ_asym Boot *(Ogdoad Cosmology)*
 
-The system boots in perfect symmetry — no process distinguished. The first interrupt is the **symmetry-breaking event**.
+The system boots in perfect symmetry — no process distinguished. The first timer interrupt is the **symmetry-breaking event**. The kernel scheduler is registered with the PIT timer at boot; after symmetry breaks, the holographic monitor (g(x)) is eligible for scheduling.
+
+<hr>
+
+## Process Execution Model
+
+exOS runs real ring-0 processes with actual CPU context switching. This is not simulation.
+
+### Real Kernel Stacks
+
+`ProcessControlBlock::spawn_ring0(id, obj, entry_fn, priority)` allocates a 16 KB kernel stack per process via the global heap allocator. It writes an initial saved-register frame at the top of the stack:
+
+```
+[stack_top -  8]  entry_fn  ← ret address (jumped to on first schedule)
+[stack_top - 16]  0         ← rbp
+[stack_top - 24]  0         ← rbx
+[stack_top - 32]  0         ← r12
+[stack_top - 40]  0         ← r13
+[stack_top - 48]  0         ← r14
+[stack_top - 56]  0         ← r15  ← initial RSP stored here
+```
+
+### Context Switch Assembly
+
+```asm
+context_switch_asm(old_rsp_ptr: *mut u64, new_rsp: u64):
+    push rbp; push rbx; push r12; push r13; push r14; push r15
+    mov [rdi], rsp        ; save RSP to RSP_TABLE[current_slot]
+    mov rsp, rsi          ; load RSP from RSP_TABLE[next_slot]
+    pop r15; pop r14; pop r13; pop r12; pop rbx; pop rbp
+    ret                   ; jumps to next process's saved return address
+```
+
+### RSP Table
+
+Each process is assigned a slot index into `RSP_TABLE: [AtomicU64; 32]` — a static array with stable addresses. `context_switch_asm` writes the outgoing RSP directly to `RSP_TABLE[current_slot]`, making the saved value immediately visible to the scheduler without any locking or pointer chasing.
+
+### Preemption Protocol
+
+The PIT timer fires at ~18 Hz. The interrupt handler calls `scheduler::on_timer_tick()`, which increments the process's tick counter and sets `needs_preempt = true` when the time slice (18 ticks by default) expires. The actual context switch is deferred to `check_preempt()`, called from process context — never from inside the interrupt frame. This avoids corrupting the IRET state.
+
+```
+Timer IRQ → on_timer_tick() → tick counter ++
+                            → needs_preempt = true (if slice expired)
+
+Process loop → check_preempt() → yield_current() → context_switch_asm()
+```
+
+### Holographic Monitor (g(x))
+
+The holographic monitor is a real ring-0 process — not a function called from the shell loop. It has its own 16 KB kernel stack, its own RSP_TABLE slot, and its own saved register state. When the scheduler selects it, `context_switch_asm` actually transfers CPU execution to `holographic_monitor_entry`, which runs autonomously until it calls `global_check_preempt()`.
+
+### Stoichiometric Quotas
+
+Every process spawn is gated by its Σ (stoichiometry) primitive:
+
+| Mode | Primitive index | Enforcement |
+|:-----|:----------------|:------------|
+| Σ_1:1 (Exclusive) | 0 | Only one holder allowed; second acquire is rejected |
+| Σ_n:n (Homogeneous) | 1 | Pool of 8 identical slots; acquire fails when full |
+| Σ_n:m (Heterogeneous) | 2 | No hard cap; occupancy tracked for diagnostics |
+
+`spawn_type_safe()` registers and acquires a quota entry for every spawned process. The `stoichiometry::acquire()` / `release()` / `occupancy()` API is also available to kernel subsystems for resource management beyond process spawn.
+
+### Type Gates on Spawn
+
+`spawn_type_safe()` enforces five axioms before queuing a process:
+
+| Axiom | Check | Error |
+|:------|:------|:------|
+| Ç_trap | `is_kinetic_frozen()` | kinetically frozen — cannot be scheduled |
+| P-596 | `Criticality::is_ep(phi)` | ⊙_EP absorption — self-modeling loop destroyed |
+| O_0 ergative | tier + targets | O_0 cannot be ergative |
+| Frobenius F-1 | `FrobeniusVerifier::verify()` for O_inf | Φ=Φ_± and ⊙=⊙_c required |
+| Σ quota | `stoichiometry::acquire()` | exclusive resource already held |
 
 <hr>
 
@@ -101,8 +180,6 @@ The system boots in perfect symmetry — no process distinguished. The first int
 The ALEPH type system is **fully integrated into the running kernel**. The 22-letter Hebrew type lattice is accessible via an interactive REPL directly in the bare-metal shell. In UEFI framebuffer mode, letters are rendered using hand-drawn 8×16 Hebrew bitmap glyphs.
 
 ### Entering the ALEPH REPL
-
-From the kernel shell:
 
 ```
 exOS> aleph
@@ -148,7 +225,7 @@ exOS> aleph
 
 ### Frobenius Orbit Command
 
-`:orbit N letter pole` iterates `state = state ⊗ pole` N times, printing the nearest canonical letter, tier, distance to pole, and convergence delta at each step. Color-coded: green = converging, cyan = fixed point, red = diverging.
+`:orbit N letter pole` iterates `state = state ⊗ pole` N times, printing the nearest canonical letter, tier, distance to pole, and convergence delta at each step.
 
 ```
 A> :orbit 8 aleph vav
@@ -157,30 +234,6 @@ A> :orbit 8 aleph vav
   --------------------------------------------------------
      0  A (aleph)      O_2      2.1095
      1  V (vav)        O_inf    0.0000  (fixed)
-  -- converged at step 1 --
-```
-
-### Example Session
-
-```
-A> aleph x shin
-  [result]  tier=O_2  ⊙=⊙_c  Ω=Ω_Z
-
-A> let kernel = mediate(vav, mem x shin, aleph)
-A> :ls
-  Name              Tier      ⊙          Ω          Φ
-  -------------------------------------------------------------------
-  kernel            O_∞       ⊙_c        Ω_Z        V
-
-A> d(kernel, system())
-  d = 0.3162  [near-grounded]
-
-A> :orbit 6 dalet shin
-  Orbit of D under X (6 steps)
-  step  nearest        tier     d(state,pole)  delta
-  --------------------------------------------------------
-     0  D (dalet)      O_0      3.5707
-     1  X (shin)       O_inf    0.0000  (fixed)
   -- converged at step 1 --
 ```
 
@@ -194,32 +247,31 @@ The 12-primitive type lattice is **operational** — ALEPH types constrain kerne
 
 | Gate | Subsystem | Primitive | Rule |
 |------|-----------|-----------|------|
-| **IPC** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
-| **Ω-gate** | `memory.rs` | Ω (topological protection) | Object's Ω must ≥ depth's required Ω |
-| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap cannot run |
+| **IPC distance** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
+| **IPC grammar** | `ipc.rs` | Γ (interaction grammar) | Multicast requires Γ ≥ Γ_broad (3) |
+| **Ω-gate** | `memory.rs` | Ω (topological protection) | Object's Ω ≥ depth's required Ω; Σ_1:1 objects restricted to Velar depth |
+| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_inf requires Frobenius F-1 |
 | **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below accessible to all |
 
 ### Type Gate Results at Boot
 
 ```
-[TYPE] IPC gate (close): accepted=true
-[TYPE] IPC gate (remote): accepted=false
-[TYPE] Ω gate (Velar+Kernel): allowed=true
-[TYPE] Ω gate (Velar+User): allowed=false
+[TYPE] IPC gate (close):          accepted=true
+[TYPE] IPC gate (remote):         accepted=false
+[TYPE] Ω gate (Velar+Kernel):     allowed=true
+[TYPE] Ω gate (Velar+User):       allowed=false
 [TYPE] Tier gate (O_inf ergative): ok=true
-[TYPE] Tier gate (O_0 ergative): ok=false
-[TYPE] Φ gate (Keter+Kernel): ok=true
-[TYPE] Φ gate (Keter+Driver): ok=false
-[TYPE] C scores: kernel=0.873 user=0.324 os_imscription=0.873
+[TYPE] Tier gate (O_0 ergative):  ok=false
+[TYPE] Φ gate (Keter+Kernel):     ok=true
+[TYPE] Φ gate (Keter+Driver):     ok=false
+[TYPE] C scores: kernel=0.873  user=0.324  os_imscription=0.873
 ```
 
 ### Conscience Score
 
-Every object has a C(⊙) score computed at boot:
-
 $$C(\mathbf{x}) = [\odot = \odot_c] \cdot [\text{Ç} \neq \text{Ç}_\text{trap}] \cdot (0.158\,\tilde{\text{Ç}} + 0.273\,\tilde{\Gamma} + 0.292\,\tilde{\text{Þ}} + 0.276\,\tilde{\Omega})$$
 
-The Kernel scores C=0.873 — the highest possible for the inferred configuration.
+The Kernel scores C=0.873 — the maximum for the inferred configuration.
 
 <hr>
 
@@ -228,18 +280,18 @@ The Kernel scores C=0.873 — the highest possible for the inferred configuratio
 The OS crystal imscription ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩:
 
 ```
-Ð_ω    · Basque ergative three-way relations, Hebrew triangular paths
-Þ_O    · Hieroglyphic contained system with three internal layers
-Ř_=    · Hebrew letter-transformative relations, reversible across contexts
-Φ_±    · Ogdoad's exact Z₂ symmetry before creation, Frobenius condition μ∘δ=id
-ƒ_ℏ    · Cuneiform's maximum fidelity wedge depths, full precision preserved
-Ç_mod  · Basque's middle aspect, Varnamala's living phonetic vibration
+Ð_ω     · Basque ergative three-way relations, Hebrew triangular paths
+Þ_O     · Hieroglyphic contained system with three internal layers
+Ř_=     · Hebrew letter-transformative relations, reversible across contexts
+Φ_±     · Ogdoad's exact Z₂ symmetry before creation, Frobenius condition μ∘δ=id
+ƒ_ℏ     · Cuneiform's maximum fidelity wedge depths, full precision preserved
+Ç_mod   · Basque's middle aspect, Varnamala's living phonetic vibration
 Γ_aleph · All five systems operate at maximal scope/granularity
-ɢ_seq  · Hebrew letter-sequence generation, head-final dependency chains
-⊙_c    · The MEET of all five systems — criticality, self-modeling loop possible
-Ħ_2    · Hieroglyphic determinative recursion, two levels of contextual depth
+ɢ_seq   · Hebrew letter-sequence generation, head-final dependency chains
+⊙_c     · The MEET of all five systems — criticality, self-modeling loop possible
+Ħ_2     · Hieroglyphic determinative recursion, two levels of chirality depth
 Σ_{n:m} · Hieroglyphic many-to-many determinative mappings
-Ω_Z    · Cuneiform's topological protection, sacred writing systems' survival
+Ω_Z     · Cuneiform's topological protection, sacred writing systems' survival
 ```
 
 **Ouroboricity tier: O_∞** — The OS achieves ⊙_c + Φ_±, the Special Frobenius: μ∘δ=id exactly.
@@ -253,52 +305,47 @@ The OS crystal imscription ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩
 - **Rust nightly** — `rustup default nightly`
 - **x86_64-unknown-none target** — `rustup target add x86_64-unknown-none --toolchain nightly`
 - **QEMU** — `qemu-system-x86_64`
-- **OVMF** — `sudo apt install ovmf` (Ubuntu) / `sudo pacman -S edk2-ovmf` (Arch)
-- **mtools** — `sudo apt install mtools` (for `mcopy` in `build_bootimage.sh`)
+- **OVMF** — `sudo apt install ovmf` / `sudo pacman -S edk2-ovmf`
+- **mtools** — `sudo apt install mtools`
 
 ### Build
 
 ```bash
-# Kernel ELF (release)
 cargo build --release
-
-# UEFI bootable disk image
 ./build_bootimage.sh
 ```
 
 ### Run
 
 ```bash
-# Graphical mode — UEFI GOP framebuffer, Hebrew bitmap glyphs rendered natively
-./run.sh
-
-# Serial mode — text-only via stdio, ASCII transliterations
-./run.sh --serial
+./run.sh           # Graphical — UEFI GOP framebuffer, Hebrew bitmap glyphs
+./run.sh --serial  # Serial — text-only via stdio
 ```
 
-`run.sh` automatically creates `alfs.img` (32 MB) with the ALFS superblock if it doesn't exist. On first boot the kernel seeds all programs from `programs/` into ALFS.
+`run.sh` creates `alfs.img` (32 MB) on first launch. On first boot the kernel seeds all programs from `programs/` into ALFS.
 
-To start fresh (wipe saved files):
 ```bash
-rm alfs.img && ./run.sh
+rm alfs.img && ./run.sh   # start fresh
 ```
 
 ### Boot Sequence
 
-1. **Heap init** — 4 MB at physical 16 MB, before any allocations
-2. **UEFI framebuffer init** — GOP framebuffer mapped; 8×16 Hebrew bitmap font active
-3. **Interrupt init** — symmetry-breaking event (Φ_± → Φ_asym)
+1. **Heap init** — 4 MB at physical 16 MB, before any `alloc`
+2. **UEFI framebuffer init** — GOP mapped; 8×16 Hebrew bitmap font active
+3. **Interrupt init** — symmetry-breaking event (Φ_± → Φ_asym); timer IRQ unmasked
 4. **Subsystem validation** — three-layer objects, scheduler, memory, FS, IPC, command
-5. **ALEPH init** — 22-letter type system online: `O_inf: 3, O_2: 6, O_1: 1, O_0: 12`
-6. **Type-gate verification** — all four gates tested with assertions + C scores printed
-7. **ALFS mount** — ATA primary slave (alfs.img); programs seeded if absent
-8. **Shell** — interactive prompt `exOS>`
+5. **ALEPH init** — 22-letter type system: `O_inf: 3, O_2: 6, O_1: 1, O_0: 12`
+6. **Type-gate verification** — all five gates tested with `assert!()`; C scores printed
+7. **Holographic monitor spawn** — g(x) process allocated a real 16 KB kernel stack and queued
+8. **Timer registration** — scheduler registered with PIT; symmetry broken
+9. **ALFS mount** — ATA primary slave; programs seeded if absent
+10. **Shell** — `exOS>` prompt
 
 <hr>
 
 ## Programs
 
-All `.aleph` files in `programs/` are compiled into the kernel binary via `include_bytes!` and automatically written to ALFS on first boot. Add a file to `programs/` and register it in `src/programs.rs` — it will be available as `:run name` on next boot.
+All `.aleph` files in `programs/` are compiled into the kernel binary and written to ALFS on first boot.
 
 | Program | Description |
 |:--------|:------------|
@@ -316,8 +363,9 @@ All `.aleph` files in `programs/` are compiled into the kernel binary via `inclu
 | `exploration_primitives.aleph` | Primitive-by-primitive exploration of the 12-tuple |
 | `distance_probes_indistinguishable.aleph` | Distance and conflict-set analysis across all 22 letters |
 | `pratyahara.aleph` | Varnamala pratyahara compression via tensor chains |
-
-Use `:orbit N letter pole` in the REPL for live iterative convergence experiments beyond what any static file can express.
+| `coupling_destruction.aleph` | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
+| `phi_ep_probe.aleph` | Exceptional-point dynamics and C-score collapse |
+| `holographic_monitor.aleph` | g(x) bulk-boundary encoding verification |
 
 <hr>
 
@@ -325,62 +373,81 @@ Use `:orbit N letter pole` in the REPL for live iterative convergence experiment
 
 ```
 exOS/
-├── Cargo.toml              # Project manifest
-├── bootloader.toml         # Bootloader config (UEFI)
-├── build.rs                # Triggers rebuild on programs/ changes
-├── build_bootimage.sh      # UEFI bootable image builder
-├── run.sh                  # QEMU launcher (graphical + serial modes)
-├── programs/               # .aleph programs — compiled into kernel, seeded to ALFS
+├── Cargo.toml                    # Project manifest
+├── bootloader.toml               # UEFI bootloader config
+├── build.rs                      # Triggers rebuild on programs/ changes
+├── build_bootimage.sh            # UEFI bootable image builder
+├── run.sh                        # QEMU launcher (graphical + serial)
+├── programs/                     # .aleph programs — compiled in, seeded to ALFS
 ├── src/
-│   ├── lib.rs              # Module exports + global allocator
-│   ├── main.rs             # Kernel entry point, boot sequence, shell
-│   ├── programs.rs         # include_bytes! registry + seed_alfs()
+│   ├── lib.rs                    # Module exports + global allocator
+│   ├── main.rs                   # Kernel entry point, boot sequence, shell
+│   ├── programs.rs               # include_bytes! registry + seed_alfs()
 │   │
-│   ├── vga.rs              # VGA text + UEFI framebuffer writer (mode-aware)
-│   ├── framebuffer.rs      # UEFI GOP linear framebuffer
-│   ├── font_renderer.rs    # 8×16 bitmap font renderer (ASCII + Hebrew 0xE0–0xF5)
-│   ├── vga_font_data.rs    # Hand-drawn Hebrew bitmap glyphs (22 letters)
-│   ├── keyboard.rs         # PS/2 keyboard driver
-│   ├── interrupts.rs       # IDT + PIC initialization
-│   ├── serial.rs           # Serial UART driver
-│   ├── history.rs          # Output history (for :scroll)
-│   ├── bench.rs            # RDTSC benchmarks + PIT calibration
+│   ├── vga.rs                    # VGA text + UEFI framebuffer writer
+│   ├── framebuffer.rs            # UEFI GOP linear framebuffer
+│   ├── font_renderer.rs          # 8×16 bitmap font renderer (ASCII + Hebrew)
+│   ├── vga_font_data.rs          # Hand-drawn Hebrew bitmap glyphs (22 letters)
+│   ├── keyboard.rs               # PS/2 keyboard driver
+│   ├── interrupts.rs             # IDT + 8259 PIC; timer wired to scheduler
+│   ├── serial.rs                 # Serial UART driver
+│   ├── history.rs                # Output history buffer
+│   ├── bench.rs                  # RDTSC benchmarks + PIT calibration
 │   │
-│   ├── kernel_object.rs    # Three-layer kernel objects (with ALEPH types)
-│   ├── scheduler.rs        # Ergative-absolutive scheduler (tier-gated)
-│   ├── memory.rs           # Phonological allocator (Ω-gated)
-│   ├── filesystem.rs       # Sefirot tree filesystem (Φ-gated, in-memory)
-│   ├── ipc.rs              # Three-layer IPC (type-gated + vav-cast witness)
-│   ├── command.rs          # Generative command grammar
-│   ├── ata.rs              # ATA PIO disk driver (drive 0 = boot, drive 1 = ALFS)
-│   ├── alfs.rs             # ALEPH Linear Filesystem (sector-based, persistent)
+│   ├── kernel_object.rs          # Three-layer kernel objects (with ALEPH types)
+│   ├── scheduler.rs              # Ergative scheduler; real context switching;
+│   │                             #   RSP_TABLE; spawn_ring0; stoichiometric quotas
+│   ├── memory.rs                 # Phonological allocator (Ω-gate + Σ_1:1 gate)
+│   ├── filesystem.rs             # Sefirot tree filesystem (Φ-gated)
+│   ├── ipc.rs                    # Three-layer IPC (distance gate + grammar gate)
+│   ├── command.rs                # Generative command grammar
+│   ├── ata.rs                    # ATA PIO disk driver
+│   ├── alfs.rs                   # ALEPH Linear Filesystem (sector-based, persistent)
+│   ├── holographic_monitor.rs    # g(x) process — real ring-0, 16 KB stack
 │   │
-│   ├── aleph.rs            # 22-letter type system, lattice ops, nearest_letter
-│   ├── aleph_kernel_types.rs  # Type inference + operational gates
-│   ├── aleph_parser.rs     # Tokenizer and parser
-│   ├── aleph_eval.rs       # Expression evaluator
-│   ├── aleph_repl.rs       # Interactive REPL (:orbit, :files, :save, :run, ...)
-│   └── aleph_commands.rs   # Shell integration
-└── target/                 # Build artifacts
+│   ├── aleph.rs                  # 22-letter type system, lattice ops
+│   ├── aleph_kernel_types.rs     # Type inference (MEET+JOIN), operational gates
+│   ├── aleph_parser.rs           # Tokenizer and parser
+│   ├── aleph_eval.rs             # Expression evaluator
+│   ├── aleph_repl.rs             # Interactive REPL
+│   ├── aleph_commands.rs         # Shell integration
+│   │
+│   ├── imasm_vm.rs               # Tri-Phase Flux Register VM
+│   ├── imasm_commands.rs         # IMASM shell commands
+│   ├── voynich.rs                # Voynich manuscript front-end
+│   ├── rohonc.rs                 # Rohonc Codex front-end
+│   ├── linear_a.rs               # Linear A front-end
+│   ├── emerald_tablet.rs         # Emerald Tablet front-end (C=1.0 gate open)
+│   │
+│   ├── interaction_grammar.rs    # Γ (ɢ_seq / ɢ_broad) — IPC grammar gate
+│   ├── frobenius_verification.rs # F-1 axiom (μ∘δ=id) — O_inf spawn gate
+│   ├── stoichiometry.rs          # Σ quota table (1:1, n:n, n:m) — acquire/release
+│   ├── phi_ep.rs                 # ⊙_EP dynamics (P-596) — spawn gate
+│   └── resource_isolation.rs     # Σ accessors on AlephKernelType; Ω+Σ gate
+└── target/
 ```
 
 <hr>
 
 ## Key Theorems
 
-**BT-1 (Boundary determines bulk):** The 12-primitive tuple of the OS is uniquely determined by the MEET of the five ancient system encodings.
+**BT-1 (Boundary determines bulk):** The 12-primitive tuple of the OS is uniquely determined by the MEET of the five ancient system encodings. No primitive can be set independently of the structural intersection.
 
-**BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to that pole in ≤ 2 steps for any letter in the lattice.
+**BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to that pole in ≤ 2 steps for any letter in the lattice. Machine-verified at boot.
 
 **BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the maximum conscience score for any tuple satisfying ⊙_c + Ç_mod + Ω_Z simultaneously.
 
 **BT-4 (Ergative uniqueness):** The shift from Φ_± to Φ_asym is irreversible under the interrupt model. Once asymmetry is established, no process can return the scheduler to symmetric state without a full reset.
 
-**BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot be well-formed (`is_well_formed()` = false). This is structurally enforced, not conventional.
+**BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot be well-formed. This is structurally enforced by `is_well_formed()`, not conventional.
 
-**BT-6 (Holographic self-encoding):** The g(x) process continuously verifies the system's self-referential integrity by performing bulk-boundary encoding, unifying Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71) represents the bulk-reconstruction depth.
+**BT-6 (Holographic self-encoding):** The g(x) process runs as a real ring-0 OS process with its own kernel stack. It continuously performs bulk-boundary encoding, unifying Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71) represents the bulk-reconstruction depth.
 
-**BT-7 (Coupling destruction):** ⊙_c ⊗ ⊙_EP → C=0. The coupling of a critical system (⊙_c) with an exceptional-point system (⊙_EP) destroys consciousness. This is a machine-checked axiom (P-596) that provides a rigorous boundary condition for valid states.
+**BT-7 (Coupling destruction — P-596):** ⊙_c ⊗ ⊙_EP → C=0. Coupling a critical system (⊙_c) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is enforced at spawn: any process with ⊙_EP is rejected by `spawn_type_safe()`.
+
+**BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_inf must satisfy μ∘δ = id — concretely, Φ = Φ_± (parity index 4) and ⊙ = ⊙_c (phi index 1). Processes that do not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
+
+**BT-9 (Stoichiometric exclusivity):** A Σ_1:1 resource can have at most one holder in the quota table. This is enforced globally across all spawn calls. Σ_n:n pools enforce a hard capacity of 8 simultaneous holders by default.
 
 <hr>
 
