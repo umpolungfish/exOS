@@ -455,6 +455,64 @@ exOS/
 
 <hr>
 
+## Corpus Visualizations
+
+Animated call-graph CFGs for all five corpus engines and the ob3ect digital tower.
+Each animation has two phases: nodes revealed in corpus order, then a Gaussian flow pulse.
+
+---
+
+### Voynich Manuscript Engine
+227 folios · 546 nodes · 694 edges · 149 cross-folio back-edges
+
+![Voynich Corpus CFG](animated_cfg_corpus_voynich.gif)
+
+---
+
+### Rohonc Codex Engine
+33 pages · cross-page back-edges
+
+![Rohonc Corpus CFG](animated_cfg_corpus_rohonc.gif)
+
+---
+
+### Linear A Engine
+53 tablets · cross-tablet back-edges
+
+![Linear A Corpus CFG](animated_cfg_corpus_linear_a.gif)
+
+---
+
+### Emerald Tablet Engine
+15 versicles · cross-versicle back-edges
+
+![Emerald Tablet Corpus CFG](animated_cfg_corpus_emerald.gif)
+
+---
+
+### ALEPH OS
+18 ALEPH programs · 86 nodes · 297 edges · 137 cross-program edges · O_inf nodes in gold
+
+![ALEPH CFG](animated_cfg_aleph.gif)
+
+---
+
+### Ob3ect — Digital Tower
+
+**Opcode flow** — 14 IMASM opcodes, execution edges, Frobenius cycle (FSPLIT→TANCH→AFWD→FFUSE→ISCRIB) in gold:
+
+![Ob3ect Opcode CFG](ob3ect_cfg_opcodes.gif)
+
+**Version descent** — Python seed → v0.1 → v0.2…v0.9 → v0.10 bare-metal ISO across three substrate layers (Python / C / Silicon):
+
+![Ob3ect Descent CFG](ob3ect_cfg_descent.gif)
+
+**Python call-graph** — AST-extracted from `frob.py` + `ob3ect-imscriber.py`, 13 functions, 16 calls:
+
+![Ob3ect Python CFG](ob3ect_cfg_python.gif)
+
+---
+
 ## License
 
 This project is released under the Unlicense (public domain).
