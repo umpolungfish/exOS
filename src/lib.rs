@@ -10,6 +10,7 @@ pub mod kernel_object;
 pub mod scheduler;
 pub mod memory;
 pub mod filesystem;
+pub mod filesystem_13;
 pub mod ipc;
 pub mod command;
 pub mod interrupts;

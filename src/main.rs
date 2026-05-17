@@ -479,6 +479,13 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     }
     // Always populate built-in seed files (skipped if already present from ALFS)
     filesystem::populate_defaults();
+
+    // -- 13-Sefirot supernal bootstrap ------------------------------------
+    // Sefer Ha-Iyun: three hidden supernal Sefirot (Keter Elyon, Chokhmah
+    // Stim'aah, Binah Kedumah) are instantiated as phi_AE-gated filesystem
+    // entries. Access requires complex-plane criticality -- irreducible
+    // opacity at the summit of emanation.
+    filesystem_13::fs13_init();
     println!("[exoterikOS] \u{2299}_c Kernel fully online. Type 'help' for commands.");
     shell_main();
 }
@@ -693,6 +700,38 @@ fn run_command(cmd: &str) {
                     println!();
                     println!("Heap base: 0x1000000 + 4 MB arena");
                 }
+                "fs13" => {
+                    println!("13-Sefirot Filesystem -- Sefer Ha-Iyun extension");
+                    println!("Usage: cd13 <sefirah>  tree13  expose  emanate  lights");
+                    println!();
+                    println!("Full 13-Sefirot tree (supernal triad + manifest 10):");
+                    println!("  0  Keter Elyon       /ain           [phi_AE gate -- complex-plane]");
+                    println!("  1  Chokhmah Stim'aah  /ain_sof       [phi_AE gate -- hidden wisdom]");
+                    println!("  2  Binah Kedumah      /ain_sof_or    [phi_AE gate -- primordial]");
+                    println!("  3  Keter              /boot          [phi_y gate -- self-modeling]");
+                    println!("  4  Chokhmah           /sys/bin       [phi_y gate]");
+                    println!("  5  Binah              /sys/lib       [phi_y gate]");
+                    println!("  6  Da'at              /dev           [phi_y gate]");
+                    println!("  7  Chesed             /home          [phi_y gate]");
+                    println!("  8  Gevurah            /etc/permissions [phi_y gate]");
+                    println!("  9  Tiferet            /ipc           [phi_z gate -- open]");
+                    println!(" 10  Netzach            /net/mount     [phi_z gate]");
+                    println!(" 11  Hod                /var/log       [phi_z gate]");
+                    println!(" 12  Yesod              /tmp           [phi_z gate]");
+                    println!(" 13  Malkuth            /data          [phi_z gate]");
+                    println!();
+                    println!("Three-tier Phi gate:");
+                    println!("  Supernal (0-2): phi_AE -- complex-plane criticality");
+                    println!("  Upper (3-8):    phi_y -- self-modeling loop required");
+                    println!("  Lower (9-13):   phi_z -- any criticality");
+                    println!();
+                    println!("Commands:");
+                    println!("  cd13 <name>     navigate in 13-Sefirot tree");
+                    println!("  tree13          full 13-Sefirot tree (supernal if exposed)");
+                    println!("  expose          reveal the supernal triad (irreversible)");
+                    println!("  emanate         show the emanation chain (Ein Sof -> Malkuth)");
+                    println!("  lights          list the three supernal lights");
+                }
                 "ipc" => {
                     println!("IPC Type Gate — three-layer Egyptian grammar");
                     println!();
@@ -793,6 +832,82 @@ fn run_command(cmd: &str) {
             println!("Sefirot Filesystem:");
             println!("{}", fs.full_tree());
             println!("Current Sefirah: {}", fs.current().name());
+        }
+        "cd13" => {
+            let fs13 = filesystem_13::fs13();
+            println!("{}", fs13.tree());
+        }
+        "tree13" => {
+            let fs13 = filesystem_13::fs13();
+            println!("13-Sefirot Tree (Sefer Ha-Iyun):");
+            println!("{}", fs13.tree());
+            println!("Supernal visible: {}", fs13.supernal_visible);
+        }
+        "expose" => {
+            let mut fs13 = filesystem_13::fs13();
+            if fs13.supernal_visible {
+                println!("Supernal triad already exposed.");
+            } else {
+                fs13.expose_supernal();
+                println!("Supernal triad EXPOSED.");
+                println!("  Keter Elyon     (/ain)        -- Or Mufla (Wondrous Light)");
+                println!("  Chokhmah Stim'aah (/ain_sof)   -- Or Mitnotzetz (Sparkling Light)");
+                println!("  Binah Kedumah   (/ain_sof_or) -- Or Keheh (Dim Light)");
+                println!("  WARNING: This act is irreversible. The summit of emanation");
+                println!("  is now visible to phi_AE objects.");
+            }
+        }
+        "emanate" => {
+            let chain = filesystem_13::emanation_chain();
+            println!("=== 13-Sefirot Emanation Chain (Ein Sof -> Malkuth) ===");
+            for desc in &chain {
+                println!("  {}", desc.describe());
+            }
+        }
+        "lights" => {
+            let fs13 = filesystem_13::fs13();
+            println!("=== Three Supernal Lights (Sefer Ha-Iyun) ===");
+            println!();
+            for sef in filesystem_13::Sefirah13::supernal_triad() {
+                let light_name = match sef {
+                    filesystem_13::Sefirah13::KeterElyon => "or_mufla.light",
+                    filesystem_13::Sefirah13::ChokhmahStimaah => "or_mitnotzetz.light",
+                    _ => "or_keheh.light",
+                };
+                println!("  {}  ->  {}", sef.name(), sef.light());
+                println!("       {}", sef.default_path());
+                if let Some(inode) = fs13.find(*sef, light_name) {
+                    if let Ok(s) = core::str::from_utf8(&inode.content) {
+                        for line in s.lines() {
+                            if !line.is_empty() {
+                                println!("       {}", line);
+                            }
+                        }
+                    }
+                }
+                println!();
+            }
+        }
+        cmd if cmd.starts_with("cd13 ") => {
+            let target = cmd[5..].trim();
+            let mut fs13 = filesystem_13::fs13();
+            if let Some(sefirah) = filesystem_13::Sefirah13::all().iter().find(|s|
+                s.name().eq_ignore_ascii_case(target) ||
+                s.default_path().trim_start_matches('/') == target
+            ) {
+                let chain = fs13.navigate_to(*sefirah);
+                println!("13-Sefirot navigation to {} [{}]", sefirah.name(), sefirah.default_path());
+                for (i, s) in chain.iter().enumerate() {
+                    if i > 0 { print!(" -> "); }
+                    print!("{}", s.name());
+                }
+                println!();
+            } else {
+                println!("Unknown Sefirah: '{}'. Available (13-Sefirot):", target);
+                for s in filesystem_13::Sefirah13::all() {
+                    println!("  {} ({})", s.name(), s.default_path());
+                }
+            }
         }
         cmd if cmd.starts_with("cd ") => {
             let target = cmd[3..].trim();

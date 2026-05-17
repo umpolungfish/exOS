@@ -455,13 +455,25 @@ impl ErgativeScheduler {
 
         if pcb.role == GrammaticalRole::Ergative {
             let tier = pcb.obj.aleph_type.tier();
-            let boost = match tier {
+            let tier_boost = match tier {
                 Tier::OInf => 15,
                 Tier::O2 | Tier::O2d => 12,
                 Tier::O1 => 10,
                 Tier::O0 => 0,
             };
-            base + boost
+
+            // ── φ̂_Æ supernal boost ────────────────────────────────────────
+            // Sefer Ha-Iyun 13-Sefirot extension: objects with complex-plane
+            // criticality (φ̂_Æ) receive the highest priority boost for supernal
+            // access. Self-modeling objects (φ̂_ÿ) get the standard boost.
+            let phi = pcb.obj.aleph_type.phi();  // 0=φ̂_ž, 1=φ̂_ÿ, 2=φ̂_Æ, 3=φ̂_3, 4=φ̂_Ţ
+            let phi_boost = match phi {
+                2 => 30,  // φ̂_Æ — supernal access, highest boost
+                1 => 20,  // φ̂_ÿ — self-modeling
+                _ => 0,   // φ̂_ž / φ̂_3 / φ̂_Ţ — baseline
+            };
+
+            base + tier_boost + phi_boost
         } else {
             base
         }

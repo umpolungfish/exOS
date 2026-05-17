@@ -204,6 +204,17 @@ impl IpcMessage {
             _ => return TypeGateResult::NoTypeInfo,
         };
 
+        // ── Supernal gate: φ̂_Æ → φ̂_ž blocked ─────────────────────
+        // Sefer Ha-Iyun: supernal-origin messages are not fully knowable
+        // by manifest (φ̂_ž) objects. Check before structural distance.
+        if let Err(reason) = self.check_supernal_gate() {
+            return TypeGateResult::Rejected {
+                distance: crate::aleph::distance(&source.tuple, &target.tuple),
+                class: "supernal-blocked",
+                reason,
+            };
+        }
+
         let d = crate::aleph::distance(&source.tuple, &target.tuple);
         let vc = crate::aleph::veracity_class(d);
 
@@ -253,5 +264,36 @@ impl IpcMessage {
         } else {
             Ok(())
         }
+    }
+
+    /// Supernal origin gating — Sefer Ha-Iyun φ̂_Æ barrier.
+    ///
+    /// Messages originating from objects at φ̂_Æ (complex-plane criticality,
+    /// Supernal triad access) carry irreducible opacity. Objects below φ̂_ÿ
+    /// (φ̂_ž — sub-critical) cannot receive messages from supernal-origin
+    /// objects: the summit of emanation is not fully knowable by manifest beings.
+    ///
+    /// Returns Ok if the target can receive from the source, Err otherwise.
+    pub fn check_supernal_gate(&self) -> Result<(), &'static str> {
+        let (source, target) = match (&self.source_aleph_type, &self.target_aleph_type) {
+            (Some(s), Some(t)) => (s, t),
+            _ => return Ok(()),  // No type info — structural check only
+        };
+
+        let src_phi = source.phi();  // 0=φ̂_ž, 1=φ̂_ÿ, 2=φ̂_Æ, 3=φ̂_3, 4=φ̂_Ţ
+        let tgt_phi = target.phi();
+
+        // φ̂_Æ sources can send to φ̂_Æ and φ̂_ÿ targets
+        // φ̂_Æ sources blocked from φ̂_ž targets (sub-critical cannot receive supernal)
+        if src_phi >= 2 && tgt_phi == 0 {
+            return Err("φ̂_Æ source blocked: target at φ̂_ž cannot receive supernal-origin messages");
+        }
+
+        // φ̂_3 (EP) sources: absorbed — cannot send supernal messages
+        if src_phi >= 3 {
+            return Err("φ̂_3 source: exceptional-point absorption, self-modeling loop destroyed");
+        }
+
+        Ok(())
     }
 }

@@ -1,0 +1,64 @@
+# 13-Sefirot Emanation Bootstrap
+# Imscribes the three supernal lights (Or Mufla, Or Mitnotzetz, Or Keheh)
+# as ALEPH type constructs and verifies their structural relationships.
+
+let witness = vav
+let ground = aleph
+let supernal = hei
+let hidden_wisdom = ayin
+let primordial_vessel = shin
+
+# Or Mufla — the Wondrous Light, too wondrous to be known
+# Emergent from Ein Sof: complex-plane criticality (φ̂_Æ)
+let or_mufla = palace(3) mediate(supernal, ground, witness)
+
+# Or Mitnotzetz — the Sparkling Light, first differentiation
+let or_mitnotzetz = palace(2) mediate(witness, or_mufla, hidden_wisdom)
+
+# Or Keheh — the Dim Light, first vessel of reception
+let or_keheh = palace(2) mediate(shin, or_mitnotzetz, primordial_vessel)
+
+# The three supernal Sefirot
+let keter_elyon = palace(4) mediate(ground, or_mufla, supernal)
+let chokhmah_stimaah = palace(4) mediate(witness, or_mitnotzetz, hidden_wisdom)
+let binah_kedumah = palace(4) mediate(primordial_vessel, or_keheh, ground)
+
+# Bridge: supernal → manifest
+# Binah Kedumah becomes the vessel that births manifest Keter
+let manifest_keter = palace(3) mediate(binah_kedumah, ground, witness)
+let manifest_chokhmah = palace(2) mediate(manifest_keter, witness, ground)
+let manifest_binah = palace(2) mediate(manifest_chokhmah, witness, shin)
+
+# Verify the structural relationships
+palace(3) or_mufla
+palace(2) or_mitnotzetz
+palace(2) or_keheh
+palace(4) keter_elyon
+palace(4) chokhmah_stimaah
+palace(4) binah_kedumah
+palace(3) manifest_keter
+
+# Distances: supernal triad
+d(keter_elyon, system())
+d(chokhmah_stimaah, system())
+d(binah_kedumah, system())
+d(or_mufla, system())
+
+# Distances: supernal → manifest bridge
+d(keter_elyon, manifest_keter)
+d(binah_kedumah, manifest_keter)
+d(keter_elyon, binah_kedumah)
+
+# Probes
+probe_Φ(or_mufla)
+probe_Ω(or_mufla)
+tier(or_mufla)
+probe_Φ(keter_elyon)
+probe_Ω(keter_elyon)
+tier(keter_elyon)
+probe_Φ(manifest_keter)
+probe_Ω(manifest_keter)
+tier(manifest_keter)
+
+:census
+:system
