@@ -27,6 +27,199 @@
 
 <hr>
 
+## Corpus Visualizations
+
+Animated call-graph CFGs for all five corpus engines and the ob3ect digital tower.
+Each animation has two phases: Phase 1 (build) reveals nodes in corpus order with
+back-edges flashing purple on first appearance; Phase 2 (flow) sends a Gaussian
+pulse through the graph, brightening nodes and edges near the peak.
+
+All graphs are rendered on a dark (#0a0a15) background. Node size scales with degree.
+Cross-system edges are highlighted in amber or purple.
+
+---
+
+### Voynich Manuscript Engine
+
+**Nodes:** 546 — one per folio section across all 227 folios (f1r through f116v).
+Color encodes manuscript section: botanical (green), biological (teal), balneological
+(blue), cosmological (purple), zodiac (orange), recipes (amber).
+
+**Edges:** 694 directed structural-dependency edges. An edge u → v means section u's
+compiled IMASM grammar rule set is a structural prerequisite for section v — they share
+glyph families, co-occurrence patterns, or grammar rules that the engine maps to an
+IMASM caller/callee relationship.
+
+**Back-edges:** 149 cross-folio back-edges (later folio → earlier folio), forming cycles
+in the manuscript graph. These mark recursive or self-referential structures — places
+where the Voynich grammar refers back to an earlier section. Flash purple on Phase 1
+reveal.
+
+**Phase 1:** Folios appear in manuscript order; back-edges flash purple.
+**Phase 2:** Gaussian pulse (σ ≈ N/6) travels the corpus; nodes near peak enlarge and
+brighten toward white; Frobenius-family edges glow gold.
+
+![Voynich Corpus CFG](animated_cfg_corpus_voynich.gif)
+
+---
+
+### Rohonc Codex Engine
+
+**Nodes:** One per page section across all 33 pages of the Rohonc Codex. Color encodes
+the four structural sections identified by the engine: liturgical (amber), pictographic
+(green), astronomical (blue), mixed/undetermined (grey).
+
+**Edges:** Directed structural-dependency edges: the 12 IMASM opcodes are mapped to
+Rohonc visual-glyph families and the call-graph encodes which page sections are
+grammatically prerequisite to which others.
+
+**Back-edges:** Cross-page back-edges encoding recursive grammar structures — places
+where a later page's visual grammar depends on a structural pattern first defined in
+an earlier page. Flash purple on Phase 1 reveal.
+
+**Phase 1:** Pages appear in manuscript order; back-edges flash purple.
+**Phase 2:** Gaussian pulse travels page-by-page; active nodes brighten; title shows
+μ∘δ = id.
+
+![Rohonc Corpus CFG](animated_cfg_corpus_rohonc.gif)
+
+---
+
+### Linear A Engine
+
+**Nodes:** One per tablet section across all 53 Linear A tablets (Haghia Triada, Zakros,
+Khania, and other Minoan palatial sites). Color encodes find-site provenance: Haghia
+Triada (amber), Zakros (green), Khania (blue), other (grey).
+
+**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes
+onto Linear A sign families and administrative formula patterns. An edge u → v means
+section u's sign-family grammar is structurally prerequisite to section v's — they share
+phonetic or logographic rule structures compiled as caller/callee relationships.
+
+**Back-edges:** Cross-tablet back-edges where sign-family patterns recur across site
+boundaries — a Zakros tablet's grammar depending on a structural pattern first seen in
+Haghia Triada, for instance. Flash purple on Phase 1 reveal.
+
+**Phase 1:** Tablets appear in corpus order; back-edges flash purple.
+**Phase 2:** Gaussian pulse travels tablet-by-tablet; active nodes brighten.
+
+![Linear A Corpus CFG](animated_cfg_corpus_linear_a.gif)
+
+---
+
+### Emerald Tablet Engine
+
+**Nodes:** 15 — one per versicle of the Emerald Tablet (*Tabula Smaragdina*, Ruska/Holmyard
+edition). Color encodes thematic section: the descent (versicles 1–5, amber), the work
+(versicles 6–10, green), the return (versicles 11–15, gold).
+
+**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes onto
+the tablet's Hermetic formula pairs (as above/so below; solve/coagula; descent/return).
+The primary FSPLIT/FFUSE pair maps to versicle 1 (solve) and versicle 13 (coagula),
+encoding the Hermetic roundtrip as the Frobenius condition μ∘δ = id.
+
+**Back-edges:** Cross-versicle back-edges encoding the tablet's self-referential Hermetic
+structure — later sayings invoking structural conditions of earlier ones. The
+descent/return symmetry produces the primary back-edges (versicles 11–15 referencing
+versicles 1–5). Flash purple on Phase 1 reveal.
+
+**Phase 1:** Versicles appear in tablet order (V1 → V15); back-edges flash purple.
+**Phase 2:** Gaussian pulse wraps cyclically from V15 back to V1 — enacting the
+as-above-so-below identity as a literal loop. Gold (return) versicles pulse brightest.
+Title shows μ∘δ = id.
+
+![Emerald Tablet Corpus CFG](animated_cfg_corpus_emerald.gif)
+
+---
+
+### ALEPH OS
+
+**Nodes:** 86 — one per named binding (`let x = expr`) across all 18 `.aleph` programs.
+Color encodes ouroboricity tier: O_0 (dim grey), O_1 (mid blue), O_2 (bright cyan),
+O_inf (gold). Size scales with in-degree (number of bindings that depend on this one).
+
+**Edges:** 297 directed dataflow edges. An edge u → v means binding v consumes u:
+`let v = op(u, ...)`. The six ALEPH operation types produce semantically distinct edges:
+`tensor` (⊗) = composition, `join`/`meet` = lattice, `mediate` = bridging,
+`d()` = exterior derivative, `palace()` = Hekhalot ascent.
+
+**Cross-program edges:** 137 edges crossing `.aleph` file boundaries — bindings from one
+program referenced by another, forming the ALEPH OS as a unified system. Flash amber
+on Phase 1 reveal.
+
+**Phase 1:** Programs appear file-by-file; within each, bindings appear in definition
+order. Cross-program edges flash amber.
+**Phase 2:** Gaussian pulse travels all 86 nodes. O_inf (gold) nodes pulse brightest.
+Cross-program edges glow amber near the peak; intra-program edges glow by source-program
+color.
+
+![ALEPH CFG](animated_cfg_aleph.gif)
+
+---
+
+### Ob3ect — Opcode Flow CFG
+
+**Nodes:** 14 IMASM opcodes. Color encodes family: logical (purple: VINIT, TANCH, AFWD,
+AREV, CLINK, ISCRIB), Frobenius (gold: FSPLIT, FFUSE), dialetheia (green/red/white:
+EVALT, EVALF, ENGAGR), linear (cyan: IFIX). Size scales with degree.
+
+**Edges:** Directed execution-flow edges: valid sequential transitions between opcodes in
+a compiled IMASM program. The Frobenius cycle FSPLIT → TANCH → AFWD → FFUSE → ISCRIB
+is drawn in gold at linewidth 3.0, alpha 0.95.
+
+**Phase 1:** Opcodes appear in pipeline order (logical → Frobenius → dialetheia → linear).
+**Phase 2:** Gaussian pulse travels the execution graph; Frobenius-cycle edges glow gold;
+other edges glow purple. Title shows the active opcode and μ∘δ = id.
+
+![Ob3ect Opcode CFG](ob3ect_cfg_opcodes.gif)
+
+---
+
+### Ob3ect — Version Descent CFG
+
+**Nodes:** 11 version nodes in three horizontal substrate bands.
+- **Python band (green, y=0.85):** `seed` (frob.py — Frobenius check seed) and `v0.1`
+  (ob3ect-imscriber.py — Python compiler, Closure: True)
+- **C/ELF band (orange, y=0.50):** `v0.2` (.o grammar → C binary), `v0.3` (quine
+  embedding), `v0.4` (quine extraction), `v0.5` (QUINE opcode), `v0.6` (MACRO opcode),
+  `v0.7` (entropy pass, ΔS ≈ 0), `v0.8` (C self-hosting), `v0.9` (pre-silicon)
+- **Silicon band (gold, y=0.12):** `v0.10` — bare-metal x86 bootloader ISO
+
+**Edges:** Directed imscription edges (parent → child). The two cross-substrate leaps —
+`v0.1 → v0.2` (Python → C) and `v0.9 → v0.10` (C → Silicon) — are highlighted purple
+in Phase 1 and amber in Phase 2.
+
+**Phase 1:** Versions appear in imscription order. When `v0.10` appears, it flashes gold
+and the title reads "← bare metal!" Phase 2: Gaussian pulse travels seed → v0.10. Silicon
+node pulses brightest. Title: "10 generations · μ∘δ = id."
+
+![Ob3ect Descent CFG](ob3ect_cfg_descent.gif)
+
+---
+
+### Ob3ect — Python Call-Graph CFG
+
+**Nodes:** 13 Python functions statically extracted by `ast.walk` from `frob.py` and
+`ob3ect-imscriber.py`. Color encodes file and role: purple (frob.py), orange
+(ob3ect-imscriber.py), gold (FSPLIT/FFUSE/frobenius_phase), green (EVALT), red (EVALF),
+cyan (bootstrap_* entry points), magenta (ISCRIB).
+
+**Edges:** 16 directed call edges extracted by walking each function's AST for `ast.Call`
+nodes whose callee is another defined function in the same file.
+
+**Cross-file edges: 0.** Both files are structurally self-contained closed programs —
+successive generations of the same ob3ect with no mutual imports. Each generation is a
+closed Frobenius algebra in Prog/~.
+
+**Phase 1:** Functions appear in definition order (frob.py first, then ob3ect-imscriber.py).
+**Phase 2:** Gaussian pulse travels the call graph. Frobenius nodes pulse gold at peak.
+Title shows the current function and μ∘δ = id.
+
+![Ob3ect Python CFG](ob3ect_cfg_python.gif)
+
+
+---
+
 ## Origin
 
 exoterik_OS is the synthesis of a **seven-stage inquiry** into the structural invariants shared by five ancient writing systems spanning 5,000+ years of human symbolic thought:
@@ -454,198 +647,6 @@ exOS/
 > *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\odot_c$ phase boundary."*
 
 <hr>
-
-## Corpus Visualizations
-
-Animated call-graph CFGs for all five corpus engines and the ob3ect digital tower.
-Each animation has two phases: Phase 1 (build) reveals nodes in corpus order with
-back-edges flashing purple on first appearance; Phase 2 (flow) sends a Gaussian
-pulse through the graph, brightening nodes and edges near the peak.
-
-All graphs are rendered on a dark (#0a0a15) background. Node size scales with degree.
-Cross-system edges are highlighted in amber or purple.
-
----
-
-### Voynich Manuscript Engine
-
-**Nodes:** 546 — one per folio section across all 227 folios (f1r through f116v).
-Color encodes manuscript section: botanical (green), biological (teal), balneological
-(blue), cosmological (purple), zodiac (orange), recipes (amber).
-
-**Edges:** 694 directed structural-dependency edges. An edge u → v means section u's
-compiled IMASM grammar rule set is a structural prerequisite for section v — they share
-glyph families, co-occurrence patterns, or grammar rules that the engine maps to an
-IMASM caller/callee relationship.
-
-**Back-edges:** 149 cross-folio back-edges (later folio → earlier folio), forming cycles
-in the manuscript graph. These mark recursive or self-referential structures — places
-where the Voynich grammar refers back to an earlier section. Flash purple on Phase 1
-reveal.
-
-**Phase 1:** Folios appear in manuscript order; back-edges flash purple.
-**Phase 2:** Gaussian pulse (σ ≈ N/6) travels the corpus; nodes near peak enlarge and
-brighten toward white; Frobenius-family edges glow gold.
-
-![Voynich Corpus CFG](animated_cfg_corpus_voynich.gif)
-
----
-
-### Rohonc Codex Engine
-
-**Nodes:** One per page section across all 33 pages of the Rohonc Codex. Color encodes
-the four structural sections identified by the engine: liturgical (amber), pictographic
-(green), astronomical (blue), mixed/undetermined (grey).
-
-**Edges:** Directed structural-dependency edges: the 12 IMASM opcodes are mapped to
-Rohonc visual-glyph families and the call-graph encodes which page sections are
-grammatically prerequisite to which others.
-
-**Back-edges:** Cross-page back-edges encoding recursive grammar structures — places
-where a later page's visual grammar depends on a structural pattern first defined in
-an earlier page. Flash purple on Phase 1 reveal.
-
-**Phase 1:** Pages appear in manuscript order; back-edges flash purple.
-**Phase 2:** Gaussian pulse travels page-by-page; active nodes brighten; title shows
-μ∘δ = id.
-
-![Rohonc Corpus CFG](animated_cfg_corpus_rohonc.gif)
-
----
-
-### Linear A Engine
-
-**Nodes:** One per tablet section across all 53 Linear A tablets (Haghia Triada, Zakros,
-Khania, and other Minoan palatial sites). Color encodes find-site provenance: Haghia
-Triada (amber), Zakros (green), Khania (blue), other (grey).
-
-**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes
-onto Linear A sign families and administrative formula patterns. An edge u → v means
-section u's sign-family grammar is structurally prerequisite to section v's — they share
-phonetic or logographic rule structures compiled as caller/callee relationships.
-
-**Back-edges:** Cross-tablet back-edges where sign-family patterns recur across site
-boundaries — a Zakros tablet's grammar depending on a structural pattern first seen in
-Haghia Triada, for instance. Flash purple on Phase 1 reveal.
-
-**Phase 1:** Tablets appear in corpus order; back-edges flash purple.
-**Phase 2:** Gaussian pulse travels tablet-by-tablet; active nodes brighten.
-
-![Linear A Corpus CFG](animated_cfg_corpus_linear_a.gif)
-
----
-
-### Emerald Tablet Engine
-
-**Nodes:** 15 — one per versicle of the Emerald Tablet (*Tabula Smaragdina*, Ruska/Holmyard
-edition). Color encodes thematic section: the descent (versicles 1–5, amber), the work
-(versicles 6–10, green), the return (versicles 11–15, gold).
-
-**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes onto
-the tablet's Hermetic formula pairs (as above/so below; solve/coagula; descent/return).
-The primary FSPLIT/FFUSE pair maps to versicle 1 (solve) and versicle 13 (coagula),
-encoding the Hermetic roundtrip as the Frobenius condition μ∘δ = id.
-
-**Back-edges:** Cross-versicle back-edges encoding the tablet's self-referential Hermetic
-structure — later sayings invoking structural conditions of earlier ones. The
-descent/return symmetry produces the primary back-edges (versicles 11–15 referencing
-versicles 1–5). Flash purple on Phase 1 reveal.
-
-**Phase 1:** Versicles appear in tablet order (V1 → V15); back-edges flash purple.
-**Phase 2:** Gaussian pulse wraps cyclically from V15 back to V1 — enacting the
-as-above-so-below identity as a literal loop. Gold (return) versicles pulse brightest.
-Title shows μ∘δ = id.
-
-![Emerald Tablet Corpus CFG](animated_cfg_corpus_emerald.gif)
-
----
-
-### ALEPH OS
-
-**Nodes:** 86 — one per named binding (`let x = expr`) across all 18 `.aleph` programs.
-Color encodes ouroboricity tier: O_0 (dim grey), O_1 (mid blue), O_2 (bright cyan),
-O_inf (gold). Size scales with in-degree (number of bindings that depend on this one).
-
-**Edges:** 297 directed dataflow edges. An edge u → v means binding v consumes u:
-`let v = op(u, ...)`. The six ALEPH operation types produce semantically distinct edges:
-`tensor` (⊗) = composition, `join`/`meet` = lattice, `mediate` = bridging,
-`d()` = exterior derivative, `palace()` = Hekhalot ascent.
-
-**Cross-program edges:** 137 edges crossing `.aleph` file boundaries — bindings from one
-program referenced by another, forming the ALEPH OS as a unified system. Flash amber
-on Phase 1 reveal.
-
-**Phase 1:** Programs appear file-by-file; within each, bindings appear in definition
-order. Cross-program edges flash amber.
-**Phase 2:** Gaussian pulse travels all 86 nodes. O_inf (gold) nodes pulse brightest.
-Cross-program edges glow amber near the peak; intra-program edges glow by source-program
-color.
-
-![ALEPH CFG](animated_cfg_aleph.gif)
-
----
-
-### Ob3ect — Opcode Flow CFG
-
-**Nodes:** 14 IMASM opcodes. Color encodes family: logical (purple: VINIT, TANCH, AFWD,
-AREV, CLINK, ISCRIB), Frobenius (gold: FSPLIT, FFUSE), dialetheia (green/red/white:
-EVALT, EVALF, ENGAGR), linear (cyan: IFIX). Size scales with degree.
-
-**Edges:** Directed execution-flow edges: valid sequential transitions between opcodes in
-a compiled IMASM program. The Frobenius cycle FSPLIT → TANCH → AFWD → FFUSE → ISCRIB
-is drawn in gold at linewidth 3.0, alpha 0.95.
-
-**Phase 1:** Opcodes appear in pipeline order (logical → Frobenius → dialetheia → linear).
-**Phase 2:** Gaussian pulse travels the execution graph; Frobenius-cycle edges glow gold;
-other edges glow purple. Title shows the active opcode and μ∘δ = id.
-
-![Ob3ect Opcode CFG](ob3ect_cfg_opcodes.gif)
-
----
-
-### Ob3ect — Version Descent CFG
-
-**Nodes:** 11 version nodes in three horizontal substrate bands.
-- **Python band (green, y=0.85):** `seed` (frob.py — Frobenius check seed) and `v0.1`
-  (ob3ect-imscriber.py — Python compiler, Closure: True)
-- **C/ELF band (orange, y=0.50):** `v0.2` (.o grammar → C binary), `v0.3` (quine
-  embedding), `v0.4` (quine extraction), `v0.5` (QUINE opcode), `v0.6` (MACRO opcode),
-  `v0.7` (entropy pass, ΔS ≈ 0), `v0.8` (C self-hosting), `v0.9` (pre-silicon)
-- **Silicon band (gold, y=0.12):** `v0.10` — bare-metal x86 bootloader ISO
-
-**Edges:** Directed imscription edges (parent → child). The two cross-substrate leaps —
-`v0.1 → v0.2` (Python → C) and `v0.9 → v0.10` (C → Silicon) — are highlighted purple
-in Phase 1 and amber in Phase 2.
-
-**Phase 1:** Versions appear in imscription order. When `v0.10` appears, it flashes gold
-and the title reads "← bare metal!" Phase 2: Gaussian pulse travels seed → v0.10. Silicon
-node pulses brightest. Title: "10 generations · μ∘δ = id."
-
-![Ob3ect Descent CFG](ob3ect_cfg_descent.gif)
-
----
-
-### Ob3ect — Python Call-Graph CFG
-
-**Nodes:** 13 Python functions statically extracted by `ast.walk` from `frob.py` and
-`ob3ect-imscriber.py`. Color encodes file and role: purple (frob.py), orange
-(ob3ect-imscriber.py), gold (FSPLIT/FFUSE/frobenius_phase), green (EVALT), red (EVALF),
-cyan (bootstrap_* entry points), magenta (ISCRIB).
-
-**Edges:** 16 directed call edges extracted by walking each function's AST for `ast.Call`
-nodes whose callee is another defined function in the same file.
-
-**Cross-file edges: 0.** Both files are structurally self-contained closed programs —
-successive generations of the same ob3ect with no mutual imports. Each generation is a
-closed Frobenius algebra in Prog/~.
-
-**Phase 1:** Functions appear in definition order (frob.py first, then ob3ect-imscriber.py).
-**Phase 2:** Gaussian pulse travels the call graph. Frobenius nodes pulse gold at peak.
-Title shows the current function and μ∘δ = id.
-
-![Ob3ect Python CFG](ob3ect_cfg_python.gif)
-
----
 
 ## License
 
