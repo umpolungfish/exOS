@@ -13,6 +13,7 @@ use alloc::string::ToString;
 use crate::vga::{self, Color, WRITER};
 use crate::keyboard;
 use crate::aleph;
+use crate::aleph_sefirot;
 use crate::aleph_parser;
 use crate::aleph_eval::{self, Evaluator, EvalResult};
 
@@ -115,6 +116,10 @@ impl AlephRepl {
         w.write_string("  :tips                   quick start tips\n");
         w.write_string("  :quit  / :q             exit\n");
         w.write_string("  :census                 tier distribution (alias)\n");
+        w.write_string("  :sefirot                14-Sefirot structural ladder (Sefer Ha-Iyun)\n");
+        w.write_string("  :emanation              show 14-step emanation chain\n");
+        w.write_string("  :sefirah <name>         full tuple for a Sefirah\n");
+        w.write_string("  :ladder                 alias for :sefirot\n");
         w.write_string("  :system                 22-letter language JOIN\n");
         w.write_string("  :tier <name>            type of a single letter\n");
         w.write_string("  :tuple <name>           full 12-primitive tuple (visual)\n");
@@ -561,6 +566,40 @@ impl AlephRepl {
             self.print_census();
             return;
         }
+        if src == ":sefirot" || src == ":ladder" {
+            let mut w = WRITER.lock();
+            w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+            w.write_string(aleph_sefirot::format_ladder().as_str());
+            return;
+        }
+        if src == ":sefirot_census" {
+            let mut w = WRITER.lock();
+            w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+            w.write_string(aleph_sefirot::format_sefirah_census().as_str());
+            return;
+        }
+        if src == ":emanation" {
+            let mut w = WRITER.lock();
+            w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+            w.write_string(aleph_sefirot::format_emanation_chain().as_str());
+            return;
+        }
+        if src.starts_with(":sefirah ") {
+            let name = src[9..].trim();
+            if let Some(s) = aleph_sefirot::resolve_sefirah(name) {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+                w.write_string(aleph_sefirot::format_sefirah(s).as_str());
+            } else {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                w.write_string(&format!("  [ERROR] Unknown Sefirah: '{}'\n", name));
+                w.write_string("  Available Sefirot: ein_sof, keter_elyon, chokhmah_stimaah, binah_kedumah,\n");
+                w.write_string("    keter, chokhmah, binah, daat, chesed, gevurah,\n");
+                w.write_string("    tiferet, netzach, hod, yesod, malkuth\n");
+            }
+            return;
+        }
         if src == ":system" {
             let t = aleph::system_language();
             let matched = Self::find_best(&t);
@@ -571,6 +610,15 @@ impl AlephRepl {
         }
         if src.starts_with(":tier ") {
             let name = src[6..].trim();
+            // Try Sefirah first
+            if let Some(s) = aleph_sefirot::resolve_sefirah(name) {
+                let tier = aleph::compute_tier(&s.t);
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+                w.write_string(&format!("  {} (d={}) -> {}  gate={}\n",
+                    s.name, s.depth, aleph::tier_name(tier), aleph_sefirot::phi_gate_name(s.phi_gate)));
+                return;
+            }
             if let Some(l) = aleph::resolve_letter(name) {
                 let tier = aleph::compute_tier(&l.t);
                 let mut w = WRITER.lock();
@@ -579,12 +627,19 @@ impl AlephRepl {
             } else {
                 let mut w = WRITER.lock();
                 w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
-                w.write_string(&format!("  [ERROR] Unknown letter: '{}'\n", name));
+                w.write_string(&format!("  [ERROR] Unknown: '{}' (not a letter or Sefirah)\n", name));
             }
             return;
         }
         if src.starts_with(":tuple ") {
             let name = src[7..].trim();
+            // Try Sefirah first
+            if let Some(s) = aleph_sefirot::resolve_sefirah(name) {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+                w.write_string(aleph_sefirot::format_sefirah(s).as_str());
+                return;
+            }
             if let Some(l) = aleph::resolve_letter(name) {
                 let mut w = WRITER.lock();
                 w.color_code = vga::ColorCode::new(Color::White, Color::Black);
@@ -592,12 +647,19 @@ impl AlephRepl {
             } else {
                 let mut w = WRITER.lock();
                 w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
-                w.write_string(&format!("  [ERROR] Unknown letter: '{}'\n", name));
+                w.write_string(&format!("  [ERROR] Unknown: '{}'\n", name));
             }
             return;
         }
         if src.starts_with(":explain ") {
             let name = src[9..].trim();
+            // Try Sefirah
+            if let Some(s) = aleph_sefirot::resolve_sefirah(name) {
+                let mut w = WRITER.lock();
+                w.color_code = vga::ColorCode::new(Color::White, Color::Black);
+                w.write_string(aleph_sefirot::format_sefirah(s).as_str());
+                return;
+            }
             self.print_explain(name);
             return;
         }
@@ -675,6 +737,32 @@ impl AlephRepl {
                                     _ => {}
                                 }
                                 w.write_string(aleph::format_letter(l).as_str());
+                            }
+                            EvalResult::Sefirah(s) => {
+                                self.last_result = Some(s.t);
+                                match ast_clone {
+                                    aleph_parser::Expr::ProbePhi(_) => {
+                                        w.write_string(aleph_eval::format_sefirah_probe_phi(s).as_str());
+                                    }
+                                    aleph_parser::Expr::ProbeOmega(_) => {
+                                        w.write_string(aleph_eval::format_sefirah_probe_omega(s).as_str());
+                                    }
+                                    aleph_parser::Expr::Tier(_) => {
+                                        w.write_string(aleph_eval::format_sefirah_tier(s).as_str());
+                                    }
+                                    aleph_parser::Expr::SefirotLadder => {
+                                        w.write_string(aleph_sefirot::format_ladder().as_str());
+                                    }
+                                    _ => {}
+                                }
+                                w.write_string(aleph_sefirot::format_sefirah_short(s).as_str());
+                                w.write_string("\n");
+                            }
+                            EvalResult::Emanation(ref _chain) => {
+                                w.write_string(aleph_sefirot::format_emanation_chain().as_str());
+                            }
+                            EvalResult::SefirahCensus(_census) => {
+                                w.write_string(aleph_sefirot::format_sefirah_census().as_str());
                             }
                             EvalResult::Unit => {}
                             EvalResult::Distance(d, cs) => {

@@ -589,7 +589,7 @@ fn run_command(cmd: &str) {
         }
         cmd if cmd.starts_with("help ") => {
             match cmd["help ".len()..].trim() {
-                "aleph" => {
+                "aleph" | "sefirot" => {
                     aleph_commands::print_aleph_help();
                     println!("Letter tokens (22 Hebrew letters):");
                     println!("  aleph  bet    gimel  dalet  hei    vav");
@@ -1015,6 +1015,10 @@ fn run_command(cmd: &str) {
         cmd if cmd.starts_with("aleph") => {
             let args = cmd.strip_prefix("aleph").unwrap_or("").trim();
             aleph_commands::handle_aleph(args);
+        }
+        cmd if cmd.starts_with("sefirot") => {
+            let args = cmd.strip_prefix("sefirot").unwrap_or("").trim();
+            aleph_commands::handle_sefirot(args);
         }
         cmd if cmd.starts_with("imasm") => {
             let args = cmd.strip_prefix("imasm").unwrap_or("").trim();

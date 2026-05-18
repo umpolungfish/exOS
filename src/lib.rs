@@ -32,6 +32,11 @@ pub mod aleph_eval;
 pub mod aleph_repl;
 pub mod aleph_commands;
 
+// ── 14-Sefirot Structural Types ──────────────────────────────────────────────
+// Full Sefer Ha-Iyun emanation chain as first-class ALEPH types.
+
+pub mod aleph_sefirot;
+
 // ── Type-System Bridge ───────────────────────────────────────────────────────
 // Operationalizes the 12-primitive type lattice: makes ALEPH types constrain
 // kernel object behavior (IPC, memory, scheduling, filesystem).

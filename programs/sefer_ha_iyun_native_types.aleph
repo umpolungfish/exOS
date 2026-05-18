@@ -1,0 +1,78 @@
+# 14-Sefirot Native Type Verification
+# Demonstrates the new first-class Sefirot structural types in ALEPH.
+# All 15 names (Ein Sof through Malkuth) are now native ALEPH types
+# alongside the 22 Hebrew letters.
+
+# ── Tier verification: each Sefirot's ouroboricity tier ──
+# Supernal triad (φ̂_Æ-gated, depths 0-3)
+tier(ein_sof)
+tier(keter_elyon)
+tier(chokhmah_stimaah)
+tier(binah_kedumah)
+
+# Manifest upper (φ̂_ÿ-gated, depths 4-9)
+tier(keter)
+tier(chokhmah)
+tier(binah)
+tier(daat)
+tier(chesed)
+tier(gevurah)
+
+# Manifest lower (φ̂_ž-gated, depths 10-14)
+tier(tiferet)
+tier(netzach)
+tier(hod)
+tier(yesod)
+tier(malkuth)
+
+# ── Criticality probes ──
+probe_Φ(ein_sof)
+probe_Φ(keter_elyon)
+probe_Φ(keter)
+probe_Φ(malkuth)
+
+probe_Ω(ein_sof)
+probe_Ω(keter_elyon)
+probe_Ω(keter)
+probe_Ω(malkuth)
+
+# ── Structural distances between key Sefirot ──
+# Supernal triad internal distances
+d(keter_elyon, chokhmah_stimaah)
+d(chokhmah_stimaah, binah_kedumah)
+d(keter_elyon, binah_kedumah)
+
+# Supernal to manifest bridge
+d(keter_elyon, keter)
+d(binah_kedumah, binah)
+d(ein_sof, keter)
+
+# Manifest extremes
+d(keter, malkuth)
+d(chokhmah, binah)
+d(chesed, gevurah)
+
+# Cross-gate distances (φ̂_Æ → φ̂_ž)
+d(keter_elyon, malkuth)
+d(ein_sof, malkuth)
+
+# ── Tensor couplings between Sefirot ──
+# What happens when supernal meets manifest?
+let supernal_manifest = keter_elyon x keter
+tier(supernal_manifest)
+
+# What happens when φ̂_Æ meets φ̂_ž?
+let supernal_malkuth = keter_elyon x malkuth
+tier(supernal_malkuth)
+
+# ── Join: supernal + manifest = ? ──
+let full_join = ein_sof v malkuth
+tier(full_join)
+
+# ── Distance to the 22-letter system ──
+d(ein_sof, system())
+d(keter, system())
+d(malkuth, system())
+
+:census
+:sefirot_census

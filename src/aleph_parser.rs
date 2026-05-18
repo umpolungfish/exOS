@@ -203,6 +203,10 @@ pub enum Expr {
     Mediate(Box<Expr>, Box<Expr>, Box<Expr>), // witness, a, b
     System,
     Census,
+    // ── 14-Sefirot built-ins ──────────────────────────────────────────
+    SefirotCensus,             // sefirot_census()
+    Emanation,                 // emanation()
+    SefirotLadder,             // sefirot_ladder()
     Let(String, Box<Expr>),   // name = expr
     Palace(u8, Box<Expr>),    // palace(n) expr — Kabbalistic palace modifier
     Match(Box<Expr>, Vec<MatchArm>),  // match expr { arms }
@@ -398,6 +402,27 @@ impl Parser {
                 self.eat(None)?;
                 self.maybe_unit()?;
                 return Ok(Expr::Census);
+            }
+
+            // sefirot_census()
+            if name == "sefirot_census" || name == "sefiros" {
+                self.eat(None)?;
+                self.maybe_unit()?;
+                return Ok(Expr::SefirotCensus);
+            }
+
+            // emanation()
+            if name == "emanation" {
+                self.eat(None)?;
+                self.maybe_unit()?;
+                return Ok(Expr::Emanation);
+            }
+
+            // sefirot_ladder() or ladder()
+            if name == "sefirot_ladder" || name == "ladder" {
+                self.eat(None)?;
+                self.maybe_unit()?;
+                return Ok(Expr::SefirotLadder);
             }
 
             // palace(n) expr — prefix modifier

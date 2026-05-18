@@ -23,6 +23,7 @@ pub static PROGRAMS: &[BuiltinProgram] = &[
     BuiltinProgram { name: "phi_ep_probe.aleph", data: include_bytes!("../programs/phi_ep_probe.aleph") },
     BuiltinProgram { name: "pratyahara.aleph", data: include_bytes!("../programs/pratyahara.aleph") },
     BuiltinProgram { name: "sefer_ha_iyun_emanations.aleph", data: include_bytes!("../programs/sefer_ha_iyun_emanations.aleph") },
+    BuiltinProgram { name: "sefer_ha_iyun_native_types.aleph", data: include_bytes!("../programs/sefer_ha_iyun_native_types.aleph") },
     BuiltinProgram { name: "selfreplicating_light.aleph", data: include_bytes!("../programs/selfreplicating_light.aleph") },
     BuiltinProgram { name: "tikkun_construction_full.aleph", data: include_bytes!("../programs/tikkun_construction_full.aleph") },
     BuiltinProgram { name: "tikkun_construction_partial.aleph", data: include_bytes!("../programs/tikkun_construction_partial.aleph") },

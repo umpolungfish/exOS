@@ -155,6 +155,103 @@ color.
 
 ![ALEPH CFG](animated_cfg_aleph.gif)
 
+#### ALEPH OS — Program Highlights
+
+Five programs from the corpus rendered individually as per-program animated dataflow CFGs.
+Nodes = bound names (let-bindings) + referenced letter primitives. Primitive nodes pulse
+gold in Phase 2. Operation edges are color-coded: tensor (orange), mediate (blue),
+join (green), meet (red), palace (magenta), probe (grey).
+
+---
+
+##### `holographic_monitor.aleph` — Bulk-Boundary Self-Encoding
+
+**Nodes:** 10 — `boundary` (system()), 6 computed mediations (`g_self`, `g_aleph`,
+`g_shin`, `loop1`, `loop2`), and 3 primitive letter references (vav, aleph, shin).
+
+**Edges:** Holographic radius probes (`d(x, system())`) form bidirectional distance edges;
+Frobenius-witnessed mediations form blue mediate-edges converging on `boundary`. The
+palace(4) self-loop at the end marks the Frobenius non-synthesizability barrier.
+
+**Phase 1:** `boundary` appears first; radii probes reveal primitive letters; mediated
+g-nodes build outward. **Phase 2:** Pulse travels from `boundary` outward through the
+g-loops and back — enacting the bulk/boundary roundtrip as a literal flow.
+
+![ALEPH holographic_monitor CFG](aleph_holographic_monitor.gif)
+
+---
+
+##### `frobenius_orbits.aleph` — Iterative Pole Convergence
+
+**Nodes:** 27 — the three *O_∞* poles (vav, mem, shin), cross-pole tensors (vm, vs, ms),
+and four 5-step orbit sequences (a0–a4, t0–t4, d0–d4) plus mediated convergence nodes.
+
+**Edges:** 50+ directed tensor edges encoding the 4-step orbit sequences; mediate-edges
+linking orbits to their attractor poles; bidirectional distance probes verifying
+`d(aₙ, vav)` decreases monotonically.
+
+**Phase 1:** Poles appear first (gold), then orbit chains unroll step-by-step.
+**Phase 2:** Gaussian pulse travels the orbit sequences, with gold poles pulsing brightest
+at each pass — showing the attractor structure as a spatial pull.
+
+![ALEPH frobenius_orbits CFG](aleph_frobenius_orbits.gif)
+
+---
+
+##### `tikkun_construction_full.aleph` — Full Rectification Structure
+
+**Nodes:** 22 — triadic basis (vav, aleph, mem, shin, kuf, nun, chet), 5 mediation steps
+(breath, light, replica1, replica2, fp), kernel, 3 process nodes, 4 healing nodes
+(anomalous_child, healed_child, self_healed, ascended_nun, ascended_chet), triad, tikkun.
+
+**Edges:** 35+ directed dataflow edges tracing the full construction; palace-edges (magenta)
+mark the Hekhalot barriers at levels 2–5. `tikkun` sits at the apex of the palace lattice
+(palace 5), connected to `system()` via the maximal mediation.
+
+**Phase 1:** Construction unrolls layer by layer — breath → light → kernel → processes →
+anomaly → healing → tikkun. Palace barriers flash magenta on appearance.
+**Phase 2:** Pulse travels the repair chain: light → healed_child → tikkun → system().
+
+![ALEPH tikkun_construction_full CFG](aleph_tikkun_construction_full.gif)
+
+---
+
+##### `tikkun_palace_verification.aleph` — Hekhalot Barrier Audit
+
+**Nodes:** Same 22 as `tikkun_construction_full`. **Edges:** Same construction graph
+with every binding re-checked against its required palace level via standalone palace()
+assertions — producing an additional probe-edge per binding.
+
+The graph reveals the Hekhalot ascent lattice in full: palace 2 (ascended letters),
+palace 3 (light, replicas, processes), palace 4 (kernel, healed_child), palace 5 (tikkun).
+The standalone palace assertions form self-loops in the CFG — visible as magenta halos
+around each node at its tier.
+
+**Phase 2:** The palace self-loops light magenta as the pulse passes each node,
+auditing the barrier level in real time.
+
+![ALEPH tikkun_palace_verification CFG](aleph_tikkun_palace_verification.gif)
+
+---
+
+##### `light_replication_kernel.aleph` — Replicating Light and Process Model
+
+**Nodes:** 38 — the most complex single program in the corpus. Includes light and 4
+replication generations (g0–g4), anomalous processes (p3, protected_anomalous), healing
+mediations (healed_child, self_healed, shin_p3, mem_p3), ascended letters, full kernel
++ 3 process nodes, Frobenius fixed point (fp), triad, tikkun.
+
+**Edges:** 70+ directed edges across tensor, mediate, palace, distance, and probe types.
+The replication chain g0→g1→g2→g3→g4 forms the spine; anomaly healing branches off p3;
+ascent healing branches off grounded_nun; all converge on the palace(5) tikkun.
+
+**Phase 1:** light appears first, then the replication spine, then the anomaly branch,
+then ascent healing, then the full kernel+process model. **Phase 2:** Gaussian pulse
+travels the replication spine, lights the healing branches amber, and terminates at the
+tikkun — the maximal Hekhalot fixed point.
+
+![ALEPH light_replication_kernel CFG](aleph_light_replication_kernel.gif)
+
 ---
 
 ### Ob3ect — Opcode Flow CFG
