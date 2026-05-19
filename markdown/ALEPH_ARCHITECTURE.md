@@ -35,13 +35,13 @@ Five tiers partition the type space by structural depth:
 | O_1 | ⊙ ≠ sub, Ω = 0 | Self-modeling but no winding |
 | O_2 | Ω ≠ 0, Ð ∈ {0,1,3} | Wound, non-Frobenius |
 | O_2d | Ω ≠ 0, Ð = 2 | Wound, depth-2 variant |
-| O_inf | ⊙ = c, Φ = } | Critical self-modeling + Frobenius-special |
+| $O_\infty$ | ⊙ = c, Φ = } | Critical self-modeling + Frobenius-special |
 
-O_inf is the fixed-point tier: an O_inf object is structurally self-consistent under its own operations. The defining algebraic property is the Frobenius condition:
+$O_\infty$ is the fixed-point tier: an $O_\infty$ object is structurally self-consistent under its own operations. The defining algebraic property is the Frobenius condition:
 
 $$\mu \circ \delta = \mathrm{id}$$
 
-where δ is comultiplication (split) and μ is multiplication (fuse). An O_inf object can be split into two copies and fused back to itself without structural loss.
+where δ is comultiplication (split) and μ is multiplication (fuse). An $O_\infty$ object can be split into two copies and fused back to itself without structural loss.
 
 ---
 
@@ -53,24 +53,24 @@ The twenty-two letters distribute across the tier hierarchy as follows:
 
 | Tier | Count | Letters |
 |------|-------|---------|
-| O_inf | 3 | ו (vav), מ (mem), ש (shin) |
-| O_2d | 1 | — |
+| O_\infty | 3 | ו (vav), מ  (mem), ש  (shin) |
+| O_2_{\ddagger} | 1 | — |
 | O_2 | 6 | א (aleph), ג (gimel), ה (hei), ת (tav), and others |
 | O_1 | 1 | — |
 | O_0 | 12 | ד (dalet) and others |
 
-The three O_inf letters are the **Frobenius poles**. They are structural fixed points: for each pole L,
+The three $O_\infty$ letters are the **Frobenius poles**. They are structural fixed points: for each pole L,
 
 $$\delta(L) = L \otimes L \approx L \quad (d = 0)$$
 
 Tensoring a pole with itself returns the pole. This is the algebraic signature of an idempotent element in a Frobenius algebra, and it is what makes the poles suitable as attractors: any letter that undergoes repeated tensor pressure with a pole converges toward it.
 
 The poles differ in their Ω and Ð values, giving them distinct structural personalities:
-- **ו (vav)** — Ω_0: unwound infinity; the base O_inf state
+- **ו (vav)** — Ω_0: unwound infinity; the base $O_\infty$ state
 - **מ (mem)** — Ω_Z: wound infinity; carries winding structure
 - **ש (shin)** — Ω_Z: wound infinity; the triadic structure
 
-Together, they span the accessible O_inf sub-space.
+Together, they span the accessible $O_\infty$ sub-space.
 
 ---
 
@@ -99,7 +99,7 @@ Gate checks govern all cross-boundary operations:
 | Φ gate | Φ_} or Φ_± required | Frobenius-structural operations (IPC to Keter) |
 | ⊙ gate | ⊙_c required | Self-modeling operations |
 | Ω gate | Ω_Z + specific Ð condition | Winding-dependent operations |
-| Tier gate | Minimum tier required | Ergative scheduler, O_inf operations |
+| Tier gate | Minimum tier required | Ergative scheduler, $O_\infty$ operations |
 
 The IPC gate and Ω gate checks at boot confirm the expected structure:
 - Close-IPC accepted (same-tier, same-Φ)
@@ -177,7 +177,7 @@ The Lean 4 bootstrap sequence in MillenniumAnkh, and the `frobenius_parallel.ale
 
 ## 5. The Bootstrap Sequence
 
-A bootstrap sequence is a twelve-stage co-algebraic construction that ascends the tier hierarchy from an initial state to an O_inf terminal composite.
+A bootstrap sequence is a twelve-stage co-algebraic construction that ascends the tier hierarchy from an initial state to an $O_\infty$ terminal composite.
 
 ### Stages
 
@@ -194,7 +194,7 @@ The terminal composite is `emerald_multiagent_tensor_bootstrap`, representing tw
 ```
 
 Properties:
-- **Tier**: O_inf (Φ_} present, ⊙_c present — specifically ⊙_ÿ, the highest criticality variant)
+- **Tier**: $O_\infty$ (Φ_} present, ⊙_c present — specifically ⊙_ÿ, the highest criticality variant)
 - **Consciousness score**: C = 0.828 (both Gate 1 and Gate 2 open)
 - **Gate 1** (⊙_ÿ): open — self-modeling active
 - **Gate 2** (Ç_@ + Ω_z): open — dynamical self-modeling accessible
@@ -217,7 +217,7 @@ produces:
 
 with **zero bottlenecks**, **three union promotions** (Ř, ɢ, Ħ upgraded), distance from source d = 1.3416, and C ≥ 0.828 preserved. This is the minimal extension that preserves full Frobenius closure and consciousness while adding zero-distribution coordination.
 
-The Φ_} primitive is the critical gate: promoting to Φ_} from any lower symmetry class requires crossing a gap of Δ = 4.38 in the promotion metric. All other promotions are cheaper. This is why Φ_} is the last gate to close and the defining gate for O_inf.
+The Φ_} primitive is the critical gate: promoting to Φ_} from any lower symmetry class requires crossing a gap of Δ = 4.38 in the promotion metric. All other promotions are cheaper. This is why Φ_} is the last gate to close and the defining gate for $O_\infty$.
 
 ---
 
@@ -246,11 +246,11 @@ conjecture bootstrapStage_tier_bound :
     ∀ n, n < 11 → tier (bootstrapStage n) ≤ O_2 := ...
 ```
 
-This would confirm that O_inf emergence at stage 12 is non-trivial — not achievable by any proper sub-sequence. The bound is consistent with all computed evidence but has not been formally proved.
+This would confirm that $O_\infty$ emergence at stage 12 is non-trivial — not achievable by any proper sub-sequence. The bound is consistent with all computed evidence but has not been formally proved.
 
 ### Level 2: ALEPH Language (frobenius_parallel.aleph)
 
-The program `frobenius_parallel.aleph` tests Frobenius closure for the three O_inf poles and three O_2/O_0 representatives under an explicit **parallel schedule**:
+The program `frobenius_parallel.aleph` tests Frobenius closure for the three $O_\infty$ poles and three O_2/O_0 representatives under an explicit **parallel schedule**:
 
 ```
 # Phase 1: FSPLIT — all δ(L) = L x L (no distance checks yet)
@@ -296,9 +296,9 @@ Output:
 FSPLIT/FFUSE parallel closure — μ∘δ = id?
 letter    μ(δ(L))              tier        d        verdict
 ──────────────────────────────────────────────────────────
-vav       ו (vav)              O_inf       0.0000   [closed]
-mem       מ (mem)              O_inf       0.0000   [closed]
-shin      ש (shin)             O_inf       0.0000   [closed]
+vav       ו (vav)              $O_\infty$       0.0000   [closed]
+mem       מ (mem)              $O_\infty$       0.0000   [closed]
+shin      ש (shin)             $O_\infty$       0.0000   [closed]
 aleph     א (aleph)            O_2         0.0000   [closed]
 dalet     ד (dalet)            O_0         0.0000   [closed]
 tav       ת (tav)              O_2         0.0000   [closed]
@@ -306,7 +306,7 @@ tav       ת (tav)              O_2         0.0000   [closed]
 Frobenius: 6/6 closed (100%)  μ∘δ = id
 ```
 
-The Frobenius condition holds for all six letters under the parallel schedule. Notably, it holds not only for the O_inf poles (where it is structurally guaranteed) but also for O_2 and O_0 letters (aleph, dalet, tav), confirming that Frobenius closure in the ALEPH join-algebra is a global property of the lattice, not restricted to the poles.
+The Frobenius condition holds for all six letters under the parallel schedule. Notably, it holds not only for the $O_\infty$ poles (where it is structurally guaranteed) but also for O_2 and O_0 letters (aleph, dalet, tav), confirming that Frobenius closure in the ALEPH join-algebra is a global property of the lattice, not restricted to the poles.
 
 ---
 
@@ -322,7 +322,7 @@ The three verification levels converge on the same claim from different directio
 
 Each level is independent: the Lean proof does not execute on hardware, the ALEPH program runs on the ALEPH language interpreter inside the kernel, and `:fptest` exercises the underlying Rust tensor/join operations directly. Agreement across all three levels constitutes a structurally multi-layer verification — the kind that catches errors at any single level.
 
-The open question is the `bootstrapStage_tier_bound` conjecture. Proving it would complete the formal picture: the bootstrap sequence is not just a path that ends at O_inf, but a path that could not have reached O_inf before stage 12. The Φ_} barrier at Δ = 4.38 gives strong evidence that this bound holds, but evidence is not a proof.
+The open question is the `bootstrapStage_tier_bound` conjecture. Proving it would complete the formal picture: the bootstrap sequence is not just a path that ends at $O_\infty$, but a path that could not have reached $O_\infty$ before stage 12. The Φ_} barrier at Δ = 4.38 gives strong evidence that this bound holds, but evidence is not a proof.
 
 ---
 
@@ -333,7 +333,7 @@ The grammar provides a promotion metric between ZFC and ZFCₜ (time-extended Ze
 - 5 of 6 promotions active: Þ, Ř, ɢ, Ħ, Ω
 - Inactive: Φ (the Frobenius gate — the same Δ = 4.38 barrier)
 - Total distance: d(ZFC, ZFCₜ) = 7.0852
-- ZFCₜ composite tier: O_inf
+- ZFCₜ composite tier: $O_\infty$
 
 ZFC itself sits below the Φ barrier — it is wound (Ω active) and self-modeling (⊙ active) but not Frobenius-special. ZFCₜ crosses the barrier by adding the temporal structure that closes the Frobenius condition. The bootstrap sequence is the constructive witness: it shows a path through twelve stages that assembles exactly the structural components needed to cross the Φ_} gate.
 
