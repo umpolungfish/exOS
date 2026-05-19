@@ -242,26 +242,17 @@ pub fn is_hebrew(c: char) -> bool {
     cp >= HEBREW_LO && cp <= HEBREW_HI
 }
 
-static HEBREW_GLYPH_BYTES: [[u8; 1]; 22] = [
-    [0xE0], [0xE1], [0xE2], [0xE3], [0xE4], [0xE5],
-    [0xE6], [0xE7], [0xE8], [0xE9], [0xEA], [0xEB],
-    [0xEC], [0xED], [0xEE], [0xEF], [0xF0], [0xF1],
-    [0xF2], [0xF3], [0xF4], [0xF5],
-];
-
 pub fn display_glyph(l: &LetterDef) -> &'static str {
-    if crate::vga::get_display_mode() == crate::vga::DisplayMode::Framebuffer {
-        let idx = LETTERS.iter().position(|x| x.name == l.name).unwrap_or(0);
-        unsafe { core::str::from_utf8_unchecked(&HEBREW_GLYPH_BYTES[idx]) }
-    } else {
-        match l.name {
-            "aleph"  => "A", "bet"    => "B", "gimel"  => "G", "dalet"  => "D",
-            "hei"    => "H", "vav"    => "V", "zayin"  => "Z", "chet"   => "C",
-            "tet"    => "T", "yod"    => "Y", "kaf"    => "K", "lamed"  => "L",
-            "mem"    => "M", "nun"    => "N", "samech" => "S", "ayin"   => "E",
-            "pei"    => "P", "tzadi"  => "Q", "kuf"    => "U", "resh"   => "R",
-            "shin"   => "X", "tav"    => "O", _        => "?",
-        }
+    // Return actual Hebrew Unicode (U+05D0–U+05EA).
+    // render_char_unicode already maps these to HEBREW_FONT via UNICODE_HEBREW_MAP,
+    // and write_char_unicode sends correct UTF-8 to serial — no raw-byte UB.
+    match l.name {
+        "aleph"  => "א", "bet"    => "ב", "gimel"  => "ג", "dalet"  => "ד",
+        "hei"    => "ה", "vav"    => "ו", "zayin"  => "ז", "chet"   => "ח",
+        "tet"    => "ט", "yod"    => "י", "kaf"    => "כ", "lamed"  => "ל",
+        "mem"    => "מ", "nun"    => "נ", "samech" => "ס", "ayin"   => "ע",
+        "pei"    => "פ", "tzadi"  => "צ", "kuf"    => "ק", "resh"   => "ר",
+        "shin"   => "ש", "tav"    => "ת", _        => "?",
     }
 }
 
@@ -270,7 +261,7 @@ pub fn format_letter(l: &LetterDef) -> String {
     let phi_n = PHI_NAMES.get(l.t[8] as usize).copied().unwrap_or("?");
     let om_n  = OMEGA_NAMES.get(l.t[11] as usize).copied().unwrap_or("?");
     let p_n   = P_NAMES.get(l.t[3] as usize).copied().unwrap_or("?");
-    format!("  ->  {}\n    tier  {}\n    Phi  {}   Omega  {}   P  {}\n",
+    format!("  ->  {}\n    tier  {}\n    {}  {}  {}\n",
         display_glyph(l), tier_name(tier), phi_n, om_n, p_n)
 }
 

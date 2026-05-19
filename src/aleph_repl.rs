@@ -130,6 +130,7 @@ impl AlephRepl {
         w.write_string("  :scroll [N]             replay last N lines of output (default 40)\n");
         w.write_string("  :files                  list ALFS files\n");
         w.write_string("  :orbit N letter pole    convergence orbit under repeated tensor\n");
+        w.write_string("  :fptest [letters...]    parallel FSPLIT/FFUSE closure test (μ∘δ=id?)\n");
         w.write_string("  :save name              save last result as name.aleph\n");
         w.write_string("  :save name expr         save expression as name.aleph\n");
         w.write_string("  :load name              load and bind an .aleph file\n");
@@ -330,6 +331,91 @@ impl AlephRepl {
         }
         w.color_code = vga::ColorCode::new(Color::White, Color::Black);
         w.write_string("\n");
+    }
+
+    /// :fptest [letter ...]
+    /// Parallel FSPLIT/FFUSE Frobenius closure test.
+    /// Schedule: all δ(L)=L⊗L first, then all μ(δ(L))=δ(L)∨L, then distance check.
+    /// O_inf poles should close exactly (d=0); O_2/O_0 letters show residual gap.
+    fn print_fptest(&self, args: &str) {
+        const DEFAULT_NAMES: &[&str] = &["vav", "mem", "shin", "aleph", "dalet", "tav"];
+
+        let names: alloc::vec::Vec<&str> = if args.is_empty() {
+            DEFAULT_NAMES.to_vec()
+        } else {
+            args.split_whitespace().collect()
+        };
+
+        let mut resolved = alloc::vec::Vec::new();
+        for &name in &names {
+            match aleph::resolve_letter(name) {
+                Some(l) => resolved.push((name, l)),
+                None => {
+                    let mut w = WRITER.lock();
+                    w.color_code = vga::ColorCode::new(Color::LightRed, Color::Black);
+                    w.write_string(&format!("  [ERROR] unknown letter: {}\n", name));
+                    return;
+                }
+            }
+        }
+
+        // Phase 1 — FSPLIT: δ(L) = L⊗L  (all splits before any fuse)
+        let mut splits = alloc::vec::Vec::new();
+        for &(_, l) in &resolved {
+            splits.push(aleph::tensor(&l.t, &l.t));
+        }
+
+        // Phase 2 — FFUSE: μ(δ(L)) = δ(L) ∨ L  (all fuses on stored splits)
+        let mut fused = alloc::vec::Vec::new();
+        for (i, split) in splits.iter().enumerate() {
+            let (_, l) = resolved[i];
+            fused.push(aleph::join(split, &l.t));
+        }
+
+        // Phase 3 — closure check
+        let mut w = WRITER.lock();
+        w.color_code = vga::ColorCode::new(Color::LightCyan, Color::Black);
+        w.write_string("  FSPLIT/FFUSE parallel closure — μ∘δ = id?\n");
+        w.write_string("  letter    μ(δ(L))              tier        d        verdict\n");
+        w.write_string("  ──────────────────────────────────────────────────────────\n");
+
+        let mut closed = 0usize;
+        for (i, (name, original)) in resolved.iter().enumerate() {
+            let fuse_t = &fused[i];
+            let d = aleph::distance(fuse_t, &original.t);
+            let tier = aleph::tier_name(aleph::compute_tier(fuse_t));
+            let nearest = aleph::nearest_letter(fuse_t);
+            let is_closed = d < 0.0001;
+            if is_closed { closed += 1; }
+
+            w.color_code = if is_closed {
+                vga::ColorCode::new(Color::LightGreen, Color::Black)
+            } else if d < 1.0 {
+                vga::ColorCode::new(Color::Yellow, Color::Black)
+            } else {
+                vga::ColorCode::new(Color::LightRed, Color::Black)
+            };
+            w.write_string(&format!("  {:8}  {:<21}{:<12}{:.4}   {}\n",
+                name,
+                &format!("{} ({})", aleph::display_glyph(nearest), nearest.name),
+                tier, d,
+                if is_closed { "[closed]" } else { "[open]" }
+            ));
+        }
+
+        let total = resolved.len();
+        let pct = if total > 0 { (closed * 100) / total } else { 0 };
+        w.color_code = vga::ColorCode::new(Color::LightCyan, Color::Black);
+        w.write_string("  ──────────────────────────────────────────────────────────\n");
+        w.color_code = if closed == total {
+            vga::ColorCode::new(Color::LightGreen, Color::Black)
+        } else {
+            vga::ColorCode::new(Color::Yellow, Color::Black)
+        };
+        w.write_string(&format!("  Frobenius: {}/{} closed ({}%)  μ∘δ {}= id\n",
+            closed, total, pct,
+            if closed == total { "" } else { "≠ " }
+        ));
     }
 
     /// Print command history (:history).
@@ -708,6 +794,10 @@ impl AlephRepl {
         }
         if src.starts_with(":orbit ") {
             self.print_orbit(src[7..].trim());
+            return;
+        }
+        if src == ":fptest" || src.starts_with(":fptest ") {
+            self.print_fptest(src[7..].trim());
             return;
         }
 

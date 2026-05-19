@@ -1,0 +1,47 @@
+# frobenius_parallel.aleph
+# Parallel FSPLIT / FFUSE Frobenius closure test
+#
+# Tests mu o delta = id for the O_inf poles and three O_2 representatives.
+# Parallel schedule: ALL delta(L) = L x L computed and stored before any
+# mu(delta(L)) = delta(L) v L step begins.  Mirrors the exOS agent session
+# where 12 agents FSPLIT simultaneously, then all FFUSE simultaneously.
+#
+# For Frobenius-closed letters: d(mu(delta(L)), L) == 0.000
+# For non-closed letters: the distance measures the closure gap.
+#
+# Run with: :run frobenius_parallel
+
+# ── Phase 1: FSPLIT — delta(L) = L x L ────────────────────────────────
+# All splits complete before any fuse.  No distance checks here.
+let s_vav   = vav x vav
+let s_mem   = mem x mem
+let s_shin  = shin x shin
+let s_aleph = aleph x aleph
+let s_dalet = dalet x dalet
+let s_tav   = tav x tav
+
+# ── Phase 2: FFUSE — mu(delta(L)) = delta(L) v L ─────────────────────
+# All fuses on stored splits.  No distance checks yet.
+let r_vav   = s_vav v vav
+let r_mem   = s_mem v mem
+let r_shin  = s_shin v shin
+let r_aleph = s_aleph v aleph
+let r_dalet = s_dalet v dalet
+let r_tav   = s_tav v tav
+
+# ── Phase 3: Closure check — d(mu(delta(L)), L) ──────────────────────
+# O_inf poles should give d = 0.000 (mu o delta = id exactly).
+# O_2 / O_0 letters show the residual closure gap.
+d(r_vav, vav)     tier(r_vav)
+d(r_mem, mem)     tier(r_mem)
+d(r_shin, shin)   tier(r_shin)
+d(r_aleph, aleph) tier(r_aleph)
+d(r_dalet, dalet) tier(r_dalet)
+d(r_tav, tav)     tier(r_tav)
+
+# ── Cross-pole closure: FSPLIT result tier ────────────────────────────
+# A pole's split should stay O_inf (fixed point confirms Frobenius status)
+tier(s_vav) tier(s_mem) tier(s_shin)
+
+# ── Final census ──────────────────────────────────────────────────────
+:census

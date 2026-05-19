@@ -16,6 +16,7 @@ pub static PROGRAMS: &[BuiltinProgram] = &[
     BuiltinProgram { name: "exploration_primitives.aleph", data: include_bytes!("../programs/exploration_primitives.aleph") },
     BuiltinProgram { name: "frobenius.aleph", data: include_bytes!("../programs/frobenius.aleph") },
     BuiltinProgram { name: "frobenius_orbits.aleph", data: include_bytes!("../programs/frobenius_orbits.aleph") },
+    BuiltinProgram { name: "frobenius_parallel.aleph", data: include_bytes!("../programs/frobenius_parallel.aleph") },
     BuiltinProgram { name: "holographic_monitor.aleph", data: include_bytes!("../programs/holographic_monitor.aleph") },
     BuiltinProgram { name: "light_replication_kernel.aleph", data: include_bytes!("../programs/light_replication_kernel.aleph") },
     BuiltinProgram { name: "light_stability.aleph", data: include_bytes!("../programs/light_stability.aleph") },
