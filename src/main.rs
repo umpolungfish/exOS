@@ -572,6 +572,7 @@ fn run_command(cmd: &str) {
             println!("  ipc               send test IPC message");
             println!("  aleph [expr]      ALEPH REPL / inline expression");
             println!("  imasm <sub> ...   IMASM VM (4 script engines)");
+            println!("  para  <sub> ...   ParaASM VM (Belnap FOUR paraconsistent)");
             println!("  type <X>          ALEPH type of kernel object X");
             println!("  type-check        all gate verification tests");
             println!("  type-infer        type inference table");
@@ -1023,6 +1024,11 @@ fn run_command(cmd: &str) {
         cmd if cmd.starts_with("imasm") => {
             let args = cmd.strip_prefix("imasm").unwrap_or("").trim();
             let out = imasm_commands::handle(args);
+            println!("{}", out);
+        }
+        cmd if cmd.starts_with("para") => {
+            let args = cmd.strip_prefix("para").unwrap_or("").trim();
+            let out = para_commands::handle(args);
             println!("{}", out);
         }
         "type-check" => {

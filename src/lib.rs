@@ -57,6 +57,13 @@ pub mod rohonc;
 pub mod linear_a;
 pub mod emerald_tablet;
 pub mod imasm_commands;
+
+// ── ParaASM VM — Belnap FOUR paraconsistent machine ──────────────────────────
+// Full ParaASM ISA (ENGAGR/FSPLIT/FFUSE/IFIX + control flow + stack + I/O),
+// text assembler, and kernel shell handler. EMIT → serial; READ → N.
+
+pub mod para_vm;
+pub mod para_commands;
 // ── Stub modules integrated into IPC/scheduler/aleph ──────────────────
 pub mod interaction_grammar;
 pub mod frobenius_verification;

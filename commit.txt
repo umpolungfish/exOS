@@ -1,33 +1,59 @@
+commit.txt — Summary of updates to /home/mrnob0dy666/exOS
+=======================================================================
+
+src/para_vm.rs + src/para_commands.rs — ParaASM VM kernel module
+
+  NEW FILE: src/para_vm.rs  (~230L)
+
+  Belnap FOUR paraconsistent VM, fully no_std:
+    B4 enum: N/T/F/B with information-order join (N < T,F < B; T∨F = B)
+    ParaRegister: belief, is_fixed, paradox_count
+      engage(): force Both; ignores is_fixed (Theorem 3 Case A)
+      fix():    collapse to T, mark FIXED
+    Op enum: 18 opcodes — ENGAGR FSPLIT FFUSE IFIX MOVE CLEAR (core)
+             JMP JB JT JF JN CALL RET HALT (control flow)
+             PUSH POP EMIT READ (stack/IO)
+    Arg enum: Reg(usize) | Label(String)
+    assemble(text: &str) -> (Vec<Instr>, BTreeMap<String, usize>)
+      single-pass; handles .label: / label:, ; comments, %rN syntax
+      label references resolved lazily at jump-time
+    ParaVM: 16 registers, circular PC wrap (infinite looping programs),
+            step()/run(n), active_regs(), format_snapshot()
+    EMIT → crate::serial output
+    READ → N (Neither; no stdin in kernel)
+
+  NEW FILE: src/para_commands.rs  (~120L)
+
+  Shell handler: `para <sub> [args]` dispatching to:
+    load  <asm>   — assemble inline ParaASM (\n escape supported)
+    run   [N]     — run N steps (default 100)
+    step  [N]     — step N instructions (default 1)
+    regs          — show active registers
+    snap          — full VM snapshot
+    reset         — clear all registers, reset PC
+    loop  [N]     — run N steps of looping program (default 10000)
+    help          — ISA reference + example programs
+
+  EDITED: src/lib.rs
+    pub mod para_vm; pub mod para_commands; added after imasm_commands
+
+  EDITED: src/main.rs
+    help text: "para  <sub> ...   ParaASM VM (Belnap FOUR paraconsistent)"
+    run_command(): `para` branch → para_commands::handle(args)
+
+  Build: cargo build — clean (0 errors, 0 warnings on new modules)
+
+  Usage from exOS shell:
+    para load .loop:\nENGAGR %r0\nFSPLIT %r0 %r1 %r2\nFFUSE %r1 %r2 %r0\nJMP loop
+    para loop 12
+    para regs
+    → r0=B r1=B r2=B, total_paradoxes=48 (P(n)=4n, Theorem 2)
+
+Previous commit.txt entries preserved below:
+=======================================================================
+
 Ra/Apep animated call graph — high-speed renders
 
 ## New: ra_apep animations (untracked, pending add)
 
   ra_apep_250x.mp4 — animated CFG at 250× speed
-  ra_apep_500x.mp4 — animated CFG at 500× speed
-
-  The Ra/Apep topology (40 nodes, 41 edges, near-unicyclic):
-    node 0  = Ra (source)
-    node 29 = Apep head (hub, highest degree)
-    node 30 = dawn (Ra's return)
-  The spear (trace morphism) closes the ouroboric loop at node 30.
-  Spring-embedded layout makes the serpentine path visible as geometry.
-
-  Both renders derived from the same call graph; speed variants for
-  README and Substack use.
-
-## Previous (last committed):
-
-  14-Sefirot ALEPH Augmentation:
-    - 15 SefirahDef entries (Ein Sof → Malkuth) as first-class ALEPH structural types
-    - src/aleph_sefirot.rs (540L)
-    - New REPL commands: :sefirot, :ladder, :emanation, :sefirot_census, :sefirah <name>
-    - Sefirot names work in tier(), d(), let, tensor coupling
-    - 5 ALEPH program CFG GIFs added to README
-    - cargo check clean
-
-  Tier ladder:
-    Ein Sof/Keter Elyon/Chokhmah Stim'aah/Binah Kedumah = O₂/O₂†
-    Keter–Da'at = O_inf/O₂/O₂†
-    Chesed–Gevurah = O₂†/O₂
-    Tiferet–Malkuth = O₀
-    Census: O₀=5, O₂=5, O₂†=4, O_inf=1
