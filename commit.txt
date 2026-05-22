@@ -56,11 +56,46 @@ src/para_shor_commands.rs — new file:
 src/lib.rs:
   Added `pub mod para_shor_commands;` after para_wasm_commands
 
+src/para_shor_commands.rs — richer visual output + loop subcommand:
+  Full rewrite with box-drawing ASCII pipeline diagram
+  pipeline_diagram(n): ┌─┐ → H⊗n → ┌─┐ → ModExp → ┌─┐ → B-bias/T-bias split
+  sic_block(): bordered SIC-POVM axiom table with ✓/✗ markers
+  shor_table_header/row/footer(): formatted table with borders and column alignment
+  New: run_loop_n(N): coherence accumulator — cycles 8-instance table for N iterations
+    Prints running total with cycle, N, a, n, r, H, B-meas, T-meas, ratio, accum columns
+    LOOP_TABLE: 8 entries N=15..221
+    parse: `para shor loop [N]` routes to run_loop_n (default N=40)
+
 src/para_commands.rs:
   Added `use crate::para_shor_commands;`
   Added `"shor" => para_shor_commands::handle(parts.next().unwrap_or(""))` routing
-  Updated comment header and help text with `para shor [N a]` entry
-  Added `shor  [N a]` line to help string
+  Updated comment header and help text with `para shor [N a | loop [N]]` entry
+  Added `shor  [N a]` and `shor  loop [N]` lines to help string
+
+programs/shor_loop.asm — new file:
+  Indefinitely running ParaASM Shor coherence cycle
+  Stages: ENGAGR (H, cost 1) → FSPLIT+FFUSE (B-bias, cost 2) → IFIX (T-bias, collapse)
+  Paradox count = 4 per cycle (matches Theorem 2 P(n)=4n)
+  JMP .init restarts after each T-bias collapse
+
+programs/belnap_shor_orbit.aleph — new file:
+  Orbit analysis for the Shor structural tier
+  Tier survey of all 22 Hebrew letters
+  Orbit depth to each O_inf pole (vav, mem, shin) in 1 and 2 tensor steps
+  Shows which letters converge immediately (O_inf) vs require ≥1 step (O_1)
+  probe_Φ / probe_Ω for Shor-related structural positions
+  Models the Φ_υ gap as orbit depth in the ALEPH lattice
+
+programs/paraconsistent_witness.aleph — new file:
+  Witnesses the B-state structure via meet/join/tensor
+  Maps B₄ lattice properties to ALEPH lattice structure:
+    O_inf poles ↔ B (join-absorbing, self-adjoint, d(p x p, p)=0)
+    O_1 letters  ↔ T/F (designated but not self-adjoint)
+    far letters  ↔ N (far from all poles)
+  Frobenius self-adjoint test: d(x x x, x) = 0 iff x is B-analogue (O_inf)
+
+src/programs.rs:
+  Added belnap_shor_orbit.aleph and paraconsistent_witness.aleph to PROGRAMS
 
 README.md:
   Added "Belnap Shor Pipeline" section with shell demo output, pipeline table,

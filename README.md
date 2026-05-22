@@ -656,6 +656,8 @@ All `.aleph` files in `programs/` are compiled into the kernel binary and writte
 | `coupling_destruction.aleph` | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
 | `phi_ep_probe.aleph` | Exceptional-point dynamics and C-score collapse |
 | `holographic_monitor.aleph` | g(x) bulk-boundary encoding verification |
+| `belnap_shor_orbit.aleph` | Orbit analysis for the Shor structural tier — tier survey of all 22 letters, orbit depth to O_inf poles, Φ_υ gap visualization |
+| `paraconsistent_witness.aleph` | Witness B-state structure via meet/join/tensor — ALEPH analogue of DialetheicAlignment.lean: only O_inf poles are self-adjoint (¬B=B) |
 
 <hr>
 
@@ -692,9 +694,32 @@ Shor coherence invariants (H=n, ModExp=0, B-bias=2n, T-bias=n):
 Single instance:
 ```
 exOS> para shor 15 7
-  N=15 a=7 [PASS]
-    r=4, H=4, B-meas=8, T-meas=4, ratio=2:1
+  ┌───────┬──────┬─────┬────┬─────┬───┬────────┬────────┬───────┐
+  │ label │   N  │  a  │  n │  r  │ H │ B-meas │ T-meas │ ratio │
+  ├───────┼──────┼─────┼────┼─────┼───┼────────┼────────┼───────┤
+  │  N=15 │   15 │   7 │  4 │   4 │ 4 │      8 │      4 │   2:1 │ ✓
+  └───────┴──────┴─────┴────┴─────┴───┴────────┴────────┴───────┘
 ```
+
+Coherence accumulator (indefinitely cycling 8-instance table):
+```
+exOS> para shor loop 20
+  cycle │   N │  a │  n │  r  │  H │ B-meas │ T-meas │ ratio │  accum
+  ──────┼─────┼────┼────┼─────┼────┼────────┼────────┼───────┼────────
+      1 │  15 │  7 │  4 │   4 │  4 │      8 │      4 │   2:1 │     16
+      2 │  21 │  5 │  5 │   6 │  5 │     10 │      5 │   2:1 │     31
+      3 │  35 │  2 │  6 │  12 │  6 │     12 │      6 │   2:1 │     49
+      ...
+  cycles=20  total_coherence_accumulated=1400
+  average per cycle: 70.0  (formula: H+2n+n = 4n per instance)
+```
+
+Indefinite Shor ParaASM loop program:
+```
+exOS> :load programs/shor_loop.asm
+exOS> para loop 100
+```
+Runs the H → B-bias → T-bias cycle in ParaASM indefinitely, accumulating paradoxes at 4 per cycle. Matches Theorem 2 P(n)=4n.
 
 **Pipeline:**
 

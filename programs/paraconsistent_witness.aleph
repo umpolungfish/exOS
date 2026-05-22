@@ -1,0 +1,78 @@
+# paraconsistent_witness.aleph
+# Witness the B-state structure — DialetheicAlignment.lean in the ALEPH lattice
+#
+# The Belnap B4 lattice has B = join(T, F) = bnot-fixed = information top.
+# In the ALEPH lattice, this structure appears as: certain tensor products reach
+# a "both-and" region where meet and join act like B's absorbtion properties.
+# This program traces those structural witnesses:
+#   - The O_inf poles are ALEPH's B: self-adjoint (d(p x p, p) = 0), join-absorbing
+#   - The Frobenius identity (μ∘δ=id) is the ALEPH analog of ¬B=B (self-adjoint)
+#   - Letters at O_1 are like T or F: one tensor step from the B-region
+#
+# Run with: :run paraconsistent_witness
+
+# ── The B-analogue: O_inf poles as "both-and" elements ───────────────────────
+# In B4: join(B,x) = B for all x.  In ALEPH: vav x x converges to vav quickly.
+let w_vav_aleph = vav x aleph
+let w_vav_nun   = vav x nun
+let w_vav_tav   = vav x tav
+tier(w_vav_aleph) d(w_vav_aleph, vav)
+tier(w_vav_nun)   d(w_vav_nun,   vav)
+tier(w_vav_tav)   d(w_vav_tav,   vav)
+
+# ── The T-analogue: letters that collapse toward truth ────────────────────────
+# In B4: T v N = T, T ^ B = T.  In ALEPH: letters that absorb O_inf join cleanly.
+let t_join = aleph v vav
+let t_meet = aleph ^ vav
+tier(t_join) tier(t_meet)
+d(t_join, vav) d(t_meet, aleph)
+
+# ── The N-analogue: letters at maximum distance from all poles ────────────────
+# In B4: N is information bottom (join(N,x) = x).  In ALEPH: letters far from
+# all three O_inf poles with minimal structural information.
+let n_meet = aleph ^ tav
+tier(n_meet) d(n_meet, vav) d(n_meet, mem) d(n_meet, shin)
+d(aleph, tav)
+
+# ── The ¬B = B fixed point: Frobenius self-adjoint ──────────────────────────
+# In B4: bnot(B) = B (self-adjoint).
+# In ALEPH: the Frobenius identity μ∘δ = id means vav x vav = vav exactly.
+# Any deviation from this means the letter is NOT the B-analogue.
+let frob_vav   = vav x vav
+let frob_mem   = mem x mem
+let frob_shin  = shin x shin
+let frob_aleph = aleph x aleph
+d(frob_vav,   vav)    # expect 0 — vav is self-adjoint (¬B=B analog)
+d(frob_mem,   mem)    # expect 0
+d(frob_shin,  shin)   # expect 0
+d(frob_aleph, aleph)  # expect > 0 — aleph is not self-adjoint
+
+# ── Dialetheic witness: "both true and false" ─────────────────────────────────
+# In B4: b4_dialetheic(B) iff designated(B) ∧ designated(¬B).
+# In ALEPH: a letter is "dialetheic" if it has maximal designation AND
+# its structure is preserved under the full Frobenius roundtrip.
+# The O_inf poles are the ALEPH dialetheic witnesses.
+probe_Φ(vav)  probe_Ω(vav)  tier(vav)
+probe_Φ(mem)  probe_Ω(mem)  tier(mem)
+probe_Φ(shin) probe_Ω(shin) tier(shin)
+
+# ── Non-dialetheic witnesses: O_1 letters ────────────────────────────────────
+# In B4: only B is dialetheic. In ALEPH: only O_inf letters satisfy both conditions.
+# O_1 letters (one step below O_inf) are the ALEPH analogue of T or F:
+# designated, but NOT self-adjoint under tensor.
+probe_Φ(aleph) probe_Ω(aleph) tier(aleph)
+probe_Φ(tav)   probe_Ω(tav)   tier(tav)
+probe_Φ(nun)   probe_Ω(nun)   tier(nun)
+
+# ── Approximation order witness ───────────────────────────────────────────────
+# In B4 ApproxLE: N ≤ everything, everything ≤ B.
+# In ALEPH: d(x, O_inf_pole) is the "approximation distance" — how far x is from
+# the information-top (B-analogue). The smallest d across all three poles is the
+# ApproxLE measure.
+d(aleph, shin) d(aleph, mem) d(aleph, vav)
+d(tav,   shin) d(tav,   mem) d(tav,   vav)
+d(gimel, shin) d(gimel, mem) d(gimel, vav)
+d(zayin, shin) d(zayin, mem) d(zayin, vav)
+
+# ── Full landscape summary ────────────────────────────────────────────────────
+system()

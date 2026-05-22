@@ -1,0 +1,71 @@
+# belnap_shor_orbit.aleph
+# Structural orbit analysis for the Shor pipeline tier
+#
+# The Shor pipeline (FullPipeline.lean) sits at tier O_1: Frobenius-special
+# but not O_inf. The Φ_υ → Φ_} gap is the promotion that closes the bottleneck.
+# O_inf poles (vav, mem, shin) are the fixed points under tensor self-action.
+# This program maps out the tier landscape and shows orbit convergence speeds.
+#
+# Run with: :run belnap_shor_orbit
+
+# ── The three O_inf poles ────────────────────────────────────────────────────
+# Each pole is self-idempotent: d(pole x pole, pole) = 0
+
+let vv = vav x vav
+let mm = mem x mem
+let ss = shin x shin
+tier(vav) tier(mem) tier(shin)
+d(vv, vav) d(mm, mem) d(ss, shin)
+
+# ── Orbit step 1: non-O_inf letters tensored with each pole ──────────────────
+# These show the single-step convergence distance toward each pole.
+# Letters far from all poles occupy the Φ_υ region (O_1 or below).
+
+let aleph_v = aleph x vav
+let aleph_m = aleph x mem
+let aleph_s = aleph x shin
+tier(aleph_v) tier(aleph_m) tier(aleph_s)
+d(aleph_v, vav) d(aleph_m, mem) d(aleph_s, shin)
+
+let nun_v = nun x vav
+let nun_m = nun x mem
+let nun_s = nun x shin
+tier(nun_v) tier(nun_m) tier(nun_s)
+d(nun_v, vav) d(nun_m, mem) d(nun_s, shin)
+
+# ── Orbit step 2: one more tensor with the nearest pole ──────────────────────
+# If step-2 reaches d=0, the letter has O_1 orbit depth (converges in 1 tensor).
+# If step-2 is still positive, orbit depth > 1 → deeper Φ_υ region.
+
+let av2 = aleph_v x vav
+let am2 = aleph_m x mem
+tier(av2) tier(am2)
+d(av2, vav) d(am2, mem)
+
+# ── Cross-pole distances: the "phase space" of the gap ───────────────────────
+# The Φ_υ → Φ_} promotion is reflected in how far the Shor structural tier sits
+# from the O_inf surface in each dimension of the primitive lattice.
+
+d(aleph, vav) d(aleph, mem) d(aleph, shin)
+d(nun,   vav) d(nun,   mem) d(nun,   shin)
+d(tav,   vav) d(tav,   mem) d(tav,   shin)
+d(dalet, vav) d(dalet, mem) d(dalet, shin)
+
+# ── Tier survey: all simple letters ─────────────────────────────────────────
+tier(aleph) tier(bet)  tier(gimel) tier(dalet)
+tier(hei)   tier(vav)  tier(zayin) tier(chet)
+tier(tet)   tier(yod)  tier(kaf)   tier(lamed)
+tier(mem)   tier(nun)  tier(samech) tier(ayin)
+tier(pei)   tier(tzadi) tier(kuf)  tier(resh)
+tier(shin)  tier(tav)
+
+# ── Shor imscription approximant ─────────────────────────────────────────────
+# The Shor pipeline tuple: K_slow × G_aleph gives a specific region of the lattice.
+# We probe the closest named letter to get its tier and distances.
+probe_Φ(aleph) probe_Ω(aleph)
+probe_Φ(nun)   probe_Ω(nun)
+
+# ── System anchor ────────────────────────────────────────────────────────────
+d(aleph, system())
+d(nun,   system())
+system()

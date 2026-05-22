@@ -9,6 +9,7 @@ pub struct BuiltinProgram {
 }
 
 pub static PROGRAMS: &[BuiltinProgram] = &[
+    BuiltinProgram { name: "belnap_shor_orbit.aleph", data: include_bytes!("../programs/belnap_shor_orbit.aleph") },
     BuiltinProgram { name: "coupling_destruction.aleph", data: include_bytes!("../programs/coupling_destruction.aleph") },
     BuiltinProgram { name: "creation.aleph", data: include_bytes!("../programs/creation.aleph") },
     BuiltinProgram { name: "creation_liturgy.aleph", data: include_bytes!("../programs/creation_liturgy.aleph") },
@@ -21,6 +22,7 @@ pub static PROGRAMS: &[BuiltinProgram] = &[
     BuiltinProgram { name: "light_replication_kernel.aleph", data: include_bytes!("../programs/light_replication_kernel.aleph") },
     BuiltinProgram { name: "light_stability.aleph", data: include_bytes!("../programs/light_stability.aleph") },
     BuiltinProgram { name: "meditation.aleph", data: include_bytes!("../programs/meditation.aleph") },
+    BuiltinProgram { name: "paraconsistent_witness.aleph", data: include_bytes!("../programs/paraconsistent_witness.aleph") },
     BuiltinProgram { name: "phi_ep_probe.aleph", data: include_bytes!("../programs/phi_ep_probe.aleph") },
     BuiltinProgram { name: "pratyahara.aleph", data: include_bytes!("../programs/pratyahara.aleph") },
     BuiltinProgram { name: "sefer_ha_iyun_emanations.aleph", data: include_bytes!("../programs/sefer_ha_iyun_emanations.aleph") },

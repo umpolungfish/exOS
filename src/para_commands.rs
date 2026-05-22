@@ -116,7 +116,8 @@ fn help() -> String {
      snap            full VM snapshot\n\
      reset           clear registers, reset PC\n\
      loop  [N]       run N steps of a looping program (default 10000)\n\
-     shor  [N a]     Belnap Shor pipeline — full suite or single instance\n\
+     shor  [N a]     Belnap Shor pipeline — full visual suite or single instance\n\
+     shor  loop [N]  coherence accumulator — N cycles (default 40), 8-instance table\n\
      \n\
      ParaASM ISA:\n\
        ENGAGR  %rN             band(r,bnot(r)): B stays B; T/F collapse\n\
