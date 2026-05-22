@@ -61,7 +61,7 @@ reveal.
 **Phase 2:** Gaussian pulse (σ ≈ N/6) travels the corpus; nodes near peak enlarge and
 brighten toward white; Frobenius-family edges glow gold.
 
-![Voynich Corpus CFG](gifs/animated_cfg_corpus_voynich.gif)
+![Voynich Corpus CFG](./vids/animated_cfg_corpus_voynich.gif)
 
 ---
 
@@ -83,7 +83,7 @@ an earlier page. Flash purple on Phase 1 reveal.
 **Phase 2:** Gaussian pulse travels page-by-page; active nodes brighten; title shows
 μ∘δ = id.
 
-![Rohonc Corpus CFG](gifs/animated_cfg_corpus_rohonc.gif)
+![Rohonc Corpus CFG](./vids/animated_cfg_corpus_rohonc.gif)
 
 ---
 
@@ -105,7 +105,7 @@ Haghia Triada, for instance. Flash purple on Phase 1 reveal.
 **Phase 1:** Tablets appear in corpus order; back-edges flash purple.
 **Phase 2:** Gaussian pulse travels tablet-by-tablet; active nodes brighten.
 
-![Linear A Corpus CFG](gifs/animated_cfg_corpus_linear_a.gif)
+![Linear A Corpus CFG](./vids/animated_cfg_corpus_linear_a.gif)
 
 ---
 
@@ -130,7 +130,7 @@ versicles 1–5). Flash purple on Phase 1 reveal.
 as-above-so-below identity as a literal loop. Gold (return) versicles pulse brightest.
 Title shows μ∘δ = id.
 
-![Emerald Tablet Corpus CFG](gifs/animated_cfg_corpus_emerald.gif)
+![Emerald Tablet Corpus CFG](./vids/animated_cfg_corpus_emerald.gif)
 
 ---
 
@@ -155,7 +155,7 @@ order. Cross-program edges flash amber.
 Cross-program edges glow amber near the peak; intra-program edges glow by source-program
 color.
 
-![ALEPH CFG](gifs/animated_cfg_aleph.gif)
+![ALEPH CFG](./vids/animated_cfg_aleph.gif)
 
 #### ALEPH OS — Program Highlights
 
@@ -179,7 +179,7 @@ palace(4) self-loop at the end marks the Frobenius non-synthesizability barrier.
 g-nodes build outward. **Phase 2:** Pulse travels from `boundary` outward through the
 g-loops and back — enacting the bulk/boundary roundtrip as a literal flow.
 
-![ALEPH holographic_monitor CFG](gifs/aleph_holographic_monitor.gif)
+![ALEPH holographic_monitor CFG](./vids/aleph_holographic_monitor.gif)
 
 ---
 
@@ -196,7 +196,7 @@ linking orbits to their attractor poles; bidirectional distance probes verifying
 **Phase 2:** Gaussian pulse travels the orbit sequences, with gold poles pulsing brightest
 at each pass — showing the attractor structure as a spatial pull.
 
-![ALEPH frobenius_orbits CFG](gifs/aleph_frobenius_orbits.gif)
+![ALEPH frobenius_orbits CFG](./vids/aleph_frobenius_orbits.gif)
 
 ---
 
@@ -214,7 +214,7 @@ mark the Hekhalot barriers at levels 2–5. `tikkun` sits at the apex of the pal
 anomaly → healing → tikkun. Palace barriers flash magenta on appearance.
 **Phase 2:** Pulse travels the repair chain: light → healed_child → tikkun → system().
 
-![ALEPH tikkun_construction_full CFG](gifs/aleph_tikkun_construction_full.gif)
+![ALEPH tikkun_construction_full CFG](./vids/aleph_tikkun_construction_full.gif)
 
 ---
 
@@ -232,7 +232,7 @@ around each node at its tier.
 **Phase 2:** The palace self-loops light magenta as the pulse passes each node,
 auditing the barrier level in real time.
 
-![ALEPH tikkun_palace_verification CFG](gifs/aleph_tikkun_palace_verification.gif)
+![ALEPH tikkun_palace_verification CFG](./vids/aleph_tikkun_palace_verification.gif)
 
 ---
 
@@ -252,7 +252,7 @@ then ascent healing, then the full kernel+process model. **Phase 2:** Gaussian p
 travels the replication spine, lights the healing branches amber, and terminates at the
 tikkun — the maximal Hekhalot fixed point.
 
-![ALEPH light_replication_kernel CFG](gifs/aleph_light_replication_kernel.gif)
+![ALEPH light_replication_kernel CFG](./vids/aleph_light_replication_kernel.gif)
 
 ---
 
@@ -270,7 +270,7 @@ is drawn in gold at linewidth 3.0, alpha 0.95.
 **Phase 2:** Gaussian pulse travels the execution graph; Frobenius-cycle edges glow gold;
 other edges glow purple. Title shows the active opcode and μ∘δ = id.
 
-![Ob3ect Opcode CFG](gifs/ob3ect_cfg_opcodes.gif)
+![Ob3ect Opcode CFG](./vids/ob3ect_cfg_opcodes.gif)
 
 ---
 
@@ -292,7 +292,7 @@ in Phase 1 and amber in Phase 2.
 and the title reads "← bare metal!" Phase 2: Gaussian pulse travels seed → v0.10. Silicon
 node pulses brightest. Title: "10 generations · μ∘δ = id."
 
-![Ob3ect Descent CFG](gifs/ob3ect_cfg_descent.gif)
+![Ob3ect Descent CFG](./vids/ob3ect_cfg_descent.gif)
 
 ---
 
@@ -314,7 +314,7 @@ closed Frobenius algebra in Prog/~.
 **Phase 2:** Gaussian pulse travels the call graph. Frobenius nodes pulse gold at peak.
 Title shows the current function and μ∘δ = id.
 
-![Ob3ect Python CFG](gifs/ob3ect_cfg_python.gif)
+![Ob3ect Python CFG](./vids/ob3ect_cfg_python.gif)
 
 
 ---
