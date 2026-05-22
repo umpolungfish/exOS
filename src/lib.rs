@@ -65,6 +65,7 @@ pub mod imasm_commands;
 pub mod para_vm;
 pub mod para_commands;
 pub mod para_shor_commands;
+pub mod para_align_commands;
 pub mod para_wasm;
 pub mod para_wasm_commands;
 // ── Stub modules integrated into IPC/scheduler/aleph ──────────────────

@@ -21,6 +21,7 @@ use lazy_static::lazy_static;
 
 use crate::para_vm::ParaVM;
 use crate::para_shor_commands;
+use crate::para_align_commands;
 
 lazy_static! {
     static ref PARA_VM: Mutex<ParaVM> = Mutex::new(ParaVM::new());
@@ -37,6 +38,7 @@ pub fn handle(args: &str) -> String {
         "reset" => reset(),
         "loop"  => run_loop(parts.next().unwrap_or("10000")),
         "shor"  => para_shor_commands::handle(parts.next().unwrap_or("")),
+        "align" => para_align_commands::handle(parts.next().unwrap_or("")),
         "help" | "" => help(),
         other => format!("para: unknown subcommand '{}'. Try 'para help'.", other),
     }
@@ -118,6 +120,11 @@ fn help() -> String {
      loop  [N]       run N steps of a looping program (default 10000)\n\
      shor  [N a]     Belnap Shor pipeline — full visual suite or single instance\n\
      shor  loop [N]  coherence accumulator — N cycles (default 40), 8-instance table\n\
+     align           Dialetheic Alignment Theorem — DAT + seq algebra + P vs NP\n\
+     align bifur     bifurcation point + DAT tri-equivalence\n\
+     align seq       measurement sequence algebra (QCI_Sequences.lean)\n\
+     align pvsnp     P vs NP bridge (BelnapCircuit + one-way barrier)\n\
+     align shor N a  dialetheicShor framing for one instance\n\
      \n\
      ParaASM ISA:\n\
        ENGAGR  %rN             band(r,bnot(r)): B stays B; T/F collapse\n\

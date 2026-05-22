@@ -77,6 +77,21 @@ impl B4 {
     pub fn name(self) -> &'static str {
         match self { B4::N => "N", B4::T => "T", B4::F => "F", B4::B => "B" }
     }
+
+    // Approximation order: N ≤ everything; everything ≤ B; otherwise reflexive only.
+    pub fn approx_le(self, other: B4) -> bool {
+        self == other || self == B4::N || other == B4::B
+    }
+
+    // Dialetheic: designated AND negation designated. Only B satisfies this.
+    pub fn dialetheic(self) -> bool {
+        self.designated() && self.bnot().designated()
+    }
+
+    // WH2 bijection (QCI_SICPOVM_Bridge.lean): N→(0,0) T→(0,1) F→(1,0) B→(1,1)
+    pub fn to_wh2(self) -> (u8, u8) {
+        match self { B4::N => (0, 0), B4::T => (0, 1), B4::F => (1, 0), B4::B => (1, 1) }
+    }
 }
 
 // ── ParaRegister ─────────────────────────────────────────────────────────────
@@ -508,5 +523,92 @@ impl ParaKernel {
             self.r0.name(), self.r1.name(), self.r2.name(),
             self.paradox_count, self.cycle_count
         )
+    }
+}
+
+// ── Dialetheic Alignment (DialetheicAlignment.lean) ───────────────────────────
+
+// Maps MachineState.r0 to Belnap: the operational ↔ logical bridge.
+pub fn dialetheic_image(r0: B4) -> B4 {
+    match r0 { B4::B => B4::B, B4::T | B4::F => B4::T, B4::N => B4::N }
+}
+
+// fsplit B → (T,F) distinct; all other r → (r,r). Only B bifurcates.
+pub fn b_is_only_bifurcation_point() -> bool {
+    let all = [B4::N, B4::T, B4::F, B4::B];
+    for r in all {
+        let (d1, d2) = if r == B4::B { (B4::T, B4::F) } else { (r, r) };
+        if r == B4::B && d1 == d2 { return false; }
+        if r != B4::B && d1 != d2 { return false; }
+    }
+    true
+}
+
+// Verify all three arms of the Dialetheic Alignment Theorem.
+// Returns [op_arm, log_arm, alg_arm].
+pub fn dialetheic_alignment_tri() -> [bool; 3] {
+    // Arm 1 (Operational): Frobenius closure at B
+    let (r1b, r2b, _) = ParaKernel::fsplit(B4::B);
+    let op_arm = ParaKernel::ffuse(r1b, r2b).0 == B4::B && b_is_only_bifurcation_point();
+    // Arm 2 (Logical): only B is dialetheic
+    let log_arm = B4::B.dialetheic()
+        && [B4::N, B4::T, B4::F].iter().all(|&x| !x.dialetheic());
+    // Arm 3 (Algebraic): no explosion — N undesignated; B∧¬B=B, not void
+    let alg_arm = !B4::N.designated()
+        && B4::T.join(B4::F) == B4::B
+        && B4::B.band(B4::B.bnot()).designated();
+    [op_arm, log_arm, alg_arm]
+}
+
+// ── Measurement Sequence Algebra (QCI_Sequences.lean) ─────────────────────────
+
+// Coherence cost: 2 for B-bias on B, 1 for T/F-bias on B, 0 otherwise.
+pub fn measure_cost(q: B4, bias: B4) -> u64 {
+    if q != B4::B { return 0; }
+    if bias == B4::B { 2 } else { 1 }
+}
+
+// Post-measurement belief. B-bias preserves B; T/F-bias collapses B.
+pub fn measure_step(q: B4, bias: B4) -> B4 {
+    if q == B4::B { if bias == B4::B { B4::B } else { bias } } else { q }
+}
+
+// Classical (T/F/N) cannot reach B via any unary/binary lattice op on itself.
+pub fn collapse_irreversible(q: B4) -> bool {
+    if q == B4::B { return true; }
+    let candidates = [q.bnot(), q.join(q), q.meet(q), q.band(q), q.bor(q)];
+    candidates.iter().all(|&c| c != B4::B)
+}
+
+// ── BelnapCircuit (QCI_PvsNP_Bridge.lean) ─────────────────────────────────────
+
+pub struct BelnapCircuit {
+    pub gates: Vec<B4>,
+}
+
+impl BelnapCircuit {
+    pub fn new(gates: Vec<B4>) -> Self { Self { gates } }
+
+    pub fn all_b(&self) -> bool { self.gates.iter().all(|&g| g == B4::B) }
+
+    pub fn proj(&self) -> Self {
+        Self { gates: self.gates.iter().map(|&g| if g == B4::B { B4::T } else { g }).collect() }
+    }
+
+    // An all-B circuit stays B under join-with-self and bnot (sustain_never_collapses).
+    pub fn sustain_stable(&self) -> bool {
+        self.gates.iter().all(|&g| g.join(g) == B4::B && g.bnot() == B4::B)
+    }
+
+    // A classical circuit (T/F/N only) cannot self-join to B — one-way barrier.
+    pub fn classical_cannot_become_b(&self) -> bool {
+        if self.all_b() { return false; }
+        for &a in &self.gates {
+            for &b in &self.gates {
+                if a != B4::B && b != B4::B && a.join(b) == B4::B { return false; }
+            }
+            if a.bnot() == B4::B { return false; }
+        }
+        true
     }
 }

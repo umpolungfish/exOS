@@ -1,6 +1,33 @@
 commit.txt — Summary of updates to /home/mrnob0dy666/exOS
 =======================================================================
 
+src/para_vm.rs
+- Added B4::approx_le, B4::dialetheic, B4::to_wh2 methods
+- Added dialetheic_image free fn: r0 ↦ Belnap tag (operational ↔ logical bridge)
+- Added b_is_only_bifurcation_point: fsplit B→(T,F); all others→(r,r)
+- Added dialetheic_alignment_tri: DAT tri-equivalence [op_arm, log_arm, alg_arm]
+- Added measure_cost, measure_step: coherence cost and post-measurement state
+- Added collapse_irreversible: classical values cannot reach B via self-ops
+- Added BelnapCircuit struct: gate list with all_b, proj, sustain_stable, classical_cannot_become_b
+
+src/para_shor_commands.rs
+- Added period_of as pub wrapper (used by para_align_commands)
+
+src/para_align_commands.rs (new)
+- para align: full suite (DAT + measurement algebra + P vs NP + Shor framing)
+- para align bifur: bifurcation point + DAT tri-equivalence
+- para align seq: measurement sequence algebra (QCI_Sequences.lean)
+- para align pvsnp: P vs NP bridge (BelnapCircuit + one-way barrier)
+- para align shor N a: dialetheicShor framing for one instance
+
+src/para_commands.rs
+- Added "align" dispatch to para_align_commands::handle
+- Added use crate::para_align_commands
+- Updated help text with align subcommands
+
+src/lib.rs
+- Added pub mod para_align_commands
+
 Paraconsistent layer sync from MillenniumAnkh/Imscribing/Paraconsistent/
 
 src/para_vm.rs
