@@ -27,6 +27,8 @@
 
 <hr>
 
+*OMNIA SUNT PARACONSISTENTIA*
+
 ## Corpus Visualizations
 
 Animated call-graph CFGs for all five corpus engines and the ob3ect digital tower.
