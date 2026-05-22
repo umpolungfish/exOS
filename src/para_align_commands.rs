@@ -130,7 +130,7 @@ fn pvsnp_block() -> String {
     s += "  │  belnap_ktrap_statement:                                      │\n";
     s += "  │    An all-B BelnapCircuit cannot be produced by any           │\n";
     s += "  │    classical (T/F) circuit via lattice ops alone.             │\n";
-    s += "  │    (join_circuit_B_dominant: 1 sorry in Lean — open)         │\n";
+    s += "  │    (join_circuit_B_dominant: proved — foldl induction)        │\n";
     s += "  └──────────────────────────────────────────────────────────────┘\n";
     s
 }

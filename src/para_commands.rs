@@ -22,6 +22,9 @@ use lazy_static::lazy_static;
 use crate::para_vm::ParaVM;
 use crate::para_shor_commands;
 use crate::para_align_commands;
+use crate::para_rh_commands;
+use crate::para_ym_commands;
+use crate::para_nreg_commands;
 
 lazy_static! {
     static ref PARA_VM: Mutex<ParaVM> = Mutex::new(ParaVM::new());
@@ -39,6 +42,9 @@ pub fn handle(args: &str) -> String {
         "loop"  => run_loop(parts.next().unwrap_or("10000")),
         "shor"  => para_shor_commands::handle(parts.next().unwrap_or("")),
         "align" => para_align_commands::handle(parts.next().unwrap_or("")),
+        "rh"   => para_rh_commands::handle(parts.next().unwrap_or("")),
+        "ym"   => para_ym_commands::handle(parts.next().unwrap_or("")),
+        "nreg" => para_nreg_commands::handle(parts.next().unwrap_or("")),
         "help" | "" => help(),
         other => format!("para: unknown subcommand '{}'. Try 'para help'.", other),
     }
@@ -125,6 +131,15 @@ fn help() -> String {
      align seq       measurement sequence algebra (QCI_Sequences.lean)\n\
      align pvsnp     P vs NP bridge (BelnapCircuit + one-way barrier)\n\
      align shor N a  dialetheicShor framing for one instance\n\
+     rh              RH Bridge — functional eq ↔ bnot, strip map\n\
+     rh    frobenius  Frobenius fixed point analysis\n\
+     rh    strip      critical strip state map\n\
+     ym              YM Bridge — mass gap, BRST↔Frobenius, confinement\n\
+     ym    gap        covering relation and mass gap\n\
+     ym    brst       BRST ↔ Frobenius correspondence\n\
+     nreg            n-Register generalization — SIC tensor + ratio table\n\
+     nreg  ratio      coherence ratio table n=1..8\n\
+     nreg  sic        SIC-POVM per-qubit axioms\n\
      \n\
      ParaASM ISA:\n\
        ENGAGR  %rN             band(r,bnot(r)): B stays B; T/F collapse\n\
