@@ -1,163 +1,67 @@
 commit.txt — Summary of updates to /home/mrnob0dy666/exOS
 =======================================================================
 
-src/para_vm.rs
-- Added B4::approx_le, B4::dialetheic, B4::to_wh2 methods
-- Added dialetheic_image free fn: r0 ↦ Belnap tag (operational ↔ logical bridge)
-- Added b_is_only_bifurcation_point: fsplit B→(T,F); all others→(r,r)
-- Added dialetheic_alignment_tri: DAT tri-equivalence [op_arm, log_arm, alg_arm]
-- Added measure_cost, measure_step: coherence cost and post-measurement state
-- Added collapse_irreversible: classical values cannot reach B via self-ops
-- Added BelnapCircuit struct: gate list with all_b, proj, sustain_stable, classical_cannot_become_b
+src/para_rh_commands.rs  [NEW]
+- RH Bridge: Belnap negation as functional equation s↦1-s
+- rh_frobenius_fixed_point: bnot(B)=B, unique designated fixed point
+- rh_belnap_statement: all non-trivial zeros are B-designated (dialetheic pair)
+- rh_involution_identity: bnot∘bnot=id
+- Critical strip map: N/F/T/B states for Re(s) samples
+- millennium_barriers_unified: B unifies RH, P vs NP, SIC-POVM
+- Shell: para rh [frobenius|strip]
 
-src/para_shor_commands.rs
-- Added period_of as pub wrapper (used by para_align_commands)
+src/para_ym_commands.rs  [NEW]
+- YM Bridge: N<T covering relation = mass gap Δ>0
+- BRST Q²=0 ↔ Frobenius (nilpotency = comultiplication identity)
+- K_trap confinement: T is the minimum excited state above vacuum N
+- T-bias cost=1 = mass gap measurement
+- ym_bridge_is_O_inf: Phi_c ∧ P_pm_sym
+- Shell: para ym [gap|brst]
 
-src/para_align_commands.rs (new)
-- para align: full suite (DAT + measurement algebra + P vs NP + Shor framing)
-- para align bifur: bifurcation point + DAT tri-equivalence
-- para align seq: measurement sequence algebra (QCI_Sequences.lean)
-- para align pvsnp: P vs NP bridge (BelnapCircuit + one-way barrier)
-- para align shor N a: dialetheicShor framing for one instance
+src/para_nreg_commands.rs  [NEW]
+- n-Register generalization of Belnap Shor pipeline
+- 2:1 coherence ratio (B-bias=2n, T-bias=n) invariant for all n
+- 8-instance LOOP_TABLE; corrected periods r=80 (N=187,a=3), r=24 (N=221,a=2)
+- SIC-POVM per-qubit axioms for n-fold tensor product
+- nreg_tier_is_O_inf: Phi_c ∧ P_pm_sym (structural tier, distinct from pipeline O_1)
+- Shell: para nreg [ratio|sic]
+
+src/para_temporal_commands.rs  [NEW]
+- BelnapTemporal: □B/◇B/○B modalities over the kernel trajectory
+- always_b_registers: B holds at every cycle (8-cycle verification)
+- winding_invariant: bnot(r0(t))=r0(t) ∀t (since r0 always B, bnot(B)=B)
+- temporal_is_o_inf: Phi_c ∧ P_pm_sym
+- 8-cycle trajectory table with wind column
+- Shell: para temporal [traj|modal]
+
+src/para_category_commands.rs  [NEW]
+- BelnapCategory: Belnap lattice as a category via approximation order
+- B is the unique terminal object (approx_le(x,B) ∀x)
+- N is the unique initial object (approx_le(N,x) ∀x)
+- band_B_idempotent, B_meet_is_id, B_join_absorbs, N_meet_annihilates
+- B self-adjoint (dagger): bnot(B)=B, bnot(N)=N
+- Frobenius = terminal roundtrip: μ∘δ(B)=B
+- category_is_O_inf: Phi_c ∧ P_pm_sym
+- Approximation arrow table for all 4×4 morphisms
+- Shell: para category [obj|thm]
+
+src/para_multiagent_commands.rs  [NEW]
+- Multi-Agent Belnap Protocol: n-kernel entangled network
+- Emerald bootstrap: all n agents start all-B; all n-1 channels are B
+- Channels: join(agent[i].r0, agent[i+1].r0)
+- multi_allB_init, multi_allB_preserved (4 steps), channel_join_stable
+- multi_agent_is_O_inf: Phi_c ∧ P_pm_sym
+- State display: initial + after 4 steps with channel arrows
+- Shell: para multiagent [init|step]
 
 src/para_commands.rs
-- Added "align" dispatch to para_align_commands::handle
-- Added use crate::para_align_commands
-- Updated help text with align subcommands
+- Added dispatch for temporal, category, multiagent
+- Added imports: para_temporal_commands, para_category_commands, para_multiagent_commands
+- Extended help text with all new subcommand entries
 
 src/lib.rs
-- Added pub mod para_align_commands
+- Added: pub mod para_temporal_commands
+- Added: pub mod para_category_commands
+- Added: pub mod para_multiagent_commands
 
-src/para_align_commands.rs
-- Updated pvsnp block: join_circuit_B_dominant now closed (proved via foldl induction)
-
-src/para_rh_commands.rs (new) — Riemann Hypothesis Bridge
-- rh_frobenius_fixed_point, rh_belnap_statement, rh_involution_identity checks
-- frobenius_block: functional equation table + structural checks
-- strip_block: critical strip state map (Re(s)/100 → B4)
-- para rh | para rh frobenius | para rh strip
-
-src/para_ym_commands.rs (new) — Yang-Mills Mass Gap Bridge
-- ym_gap_exists, ym_gap_not_dialetheic, ym_vacuum_canonical checks
-- ym_brst_nilpotent: ENGAGR ↔ BRST nilpotency; Frobenius invariant
-- ym_confinement_ktrap, ym_topological_protection checks
-- gap_block + brst_block displays
-- para ym | para ym gap | para ym brst
-
-src/para_nreg_commands.rs (new) — n-Register QCI Generalization
-- sic_povm_axioms_hold: B satisfies all 4 SIC axioms (d=2 per qubit)
-- verify_nreg: coherence ratio + period for each (n, a, N) instance
-- NREG_TABLE: corrected r=80 for (8,3,187); r=24 for (8,2,221)
-- sic_block + ratio_block + oracle_block displays
-- para nreg | para nreg ratio | para nreg sic
-
-src/para_shor_commands.rs
-- Corrected LOOP_TABLE comments: r=80 (N=187,a=3) and r=24 (N=221,a=2)
-
-src/para_commands.rs
-- Added rh, ym, nreg dispatch + imports + help text
-
-src/lib.rs
-- Added pub mod para_rh_commands, para_ym_commands, para_nreg_commands
-
-Paraconsistent layer sync from MillenniumAnkh/Imscribing/Paraconsistent/
-
-src/para_vm.rs
-──────────────
-B4 — new operations (mirrors Belnap.lean):
-  bnot()       N→N, T→F, F→T, B→B
-  band()       truth-functional AND (16-entry table)
-  bor()        truth-functional OR  (16-entry table)
-  meet()       approximation-order meet: N<T,F<B; T∧F=N
-  designated() T or B → true
-
-ParaRegister::engage() — corrected to band(b, bnot(b))
-  B is the only fixed point; T and F collapse
-  Old: always forced B; New: Lean engager semantics
-
-Fsplit execute arm — corrected to Frobenius comultiplication
-  B → (T, F)  [not copy-both]
-  Others → (src, src)  [copy unchanged]
-  frobenius_invariant: ffuse(fsplit(r)).0 = r  ∀ r  now holds
-
-ParaKernel struct added — direct port of Kernel.lean MachineState
-  Fields: r0, r1, r2: B4; paradox_count, cycle_count: u64
-  Methods: initial(), step(), run(n), frobenius_invariant(r) -> bool
-  Verified structurally: run_B3, paradox=4n, cycles=n
-
-src/para_commands.rs
-────────────────────
-  Updated ENGAGR/FSPLIT help text to reflect corrected semantics
-  Frobenius loop example updated (r0 must be seeded B before loop)
-
-MillenniumAnkh Paraconsistent sync (2026-05-22)
-────────────────────────────────────────────────
-
-src/para_shor_commands.rs — new file:
-  Full Belnap Shor pipeline implementation in Rust (no_std).
-  Uses B4 from para_vm.rs (single source of truth for all lattice ops).
-  Adds locally: hadamard(), approx_le(), dialetheic(), to_wh2().
-
-  BelnapRegister     n-qubit register with coherence accounting
-  run_shor(n,a,N)    full pipeline: H^⊗n, ModExp (B-input→B-output),
-                     B-bias measure (2n, Wigner's Friend), T-bias measure (n)
-  verify_sic_povm()  all 4 SIC-POVM axioms for B + WH2 bijection + dialetheic uniqueness
-
-  Structural invariants verified at every `para shor` call:
-    H-cost = n, ModExp-cost = 0, B-bias = 2n, T-bias = n, ratio = 2:1 (always)
-    B propagates through all Boolean gates (no phase differentiation)
-    Φ_υ bottleneck: period encoded in coherence ratio, not in bit values
-    only_B_is_dialetheic: unique dialetheic element in Belnap FOUR
-    WH2 bijective: N→(0,0), T→(0,1), F→(1,0), B→(1,1) all distinct
-
-  Lean reference: MillenniumAnkh/Imscribing/Paraconsistent/Shor/
-
-src/lib.rs:
-  Added `pub mod para_shor_commands;` after para_wasm_commands
-
-src/para_shor_commands.rs — richer visual output + loop subcommand:
-  Full rewrite with box-drawing ASCII pipeline diagram
-  pipeline_diagram(n): ┌─┐ → H⊗n → ┌─┐ → ModExp → ┌─┐ → B-bias/T-bias split
-  sic_block(): bordered SIC-POVM axiom table with ✓/✗ markers
-  shor_table_header/row/footer(): formatted table with borders and column alignment
-  New: run_loop_n(N): coherence accumulator — cycles 8-instance table for N iterations
-    Prints running total with cycle, N, a, n, r, H, B-meas, T-meas, ratio, accum columns
-    LOOP_TABLE: 8 entries N=15..221
-    parse: `para shor loop [N]` routes to run_loop_n (default N=40)
-
-src/para_commands.rs:
-  Added `use crate::para_shor_commands;`
-  Added `"shor" => para_shor_commands::handle(parts.next().unwrap_or(""))` routing
-  Updated comment header and help text with `para shor [N a | loop [N]]` entry
-  Added `shor  [N a]` and `shor  loop [N]` lines to help string
-
-programs/shor_loop.asm — new file:
-  Indefinitely running ParaASM Shor coherence cycle
-  Stages: ENGAGR (H, cost 1) → FSPLIT+FFUSE (B-bias, cost 2) → IFIX (T-bias, collapse)
-  Paradox count = 4 per cycle (matches Theorem 2 P(n)=4n)
-  JMP .init restarts after each T-bias collapse
-
-programs/belnap_shor_orbit.aleph — new file:
-  Orbit analysis for the Shor structural tier
-  Tier survey of all 22 Hebrew letters
-  Orbit depth to each O_inf pole (vav, mem, shin) in 1 and 2 tensor steps
-  Shows which letters converge immediately (O_inf) vs require ≥1 step (O_1)
-  probe_Φ / probe_Ω for Shor-related structural positions
-  Models the Φ_υ gap as orbit depth in the ALEPH lattice
-
-programs/paraconsistent_witness.aleph — new file:
-  Witnesses the B-state structure via meet/join/tensor
-  Maps B₄ lattice properties to ALEPH lattice structure:
-    O_inf poles ↔ B (join-absorbing, self-adjoint, d(p x p, p)=0)
-    O_1 letters  ↔ T/F (designated but not self-adjoint)
-    far letters  ↔ N (far from all poles)
-  Frobenius self-adjoint test: d(x x x, x) = 0 iff x is B-analogue (O_inf)
-
-src/programs.rs:
-  Added belnap_shor_orbit.aleph and paraconsistent_witness.aleph to PROGRAMS
-
-README.md:
-  Added "Belnap Shor Pipeline" section with shell demo output, pipeline table,
-  Φ_υ bottleneck explanation, WH2 bijection and DialetheicAlignment note
-  Added BT-10 (Belnap Shor coherence ratio — 2:1 invariant)
-  Added BT-11 (DialetheicAlignment — B is the unique dialetheic value)
+cargo check: clean (only pre-existing bootloader-x86_64-uefi warning)

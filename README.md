@@ -788,6 +788,19 @@ exOS/
 │   ├── linear_a.rs               # Linear A front-end
 │   ├── emerald_tablet.rs         # Emerald Tablet front-end (C=1.0 gate open)
 │   │
+│   ├── para_vm.rs                # Belnap FOUR machine (B4, ParaKernel, ParaVM)
+│   ├── para_commands.rs          # Shell dispatcher for all para subcommands
+│   ├── para_shor_commands.rs     # para shor — Belnap Shor pipeline
+│   ├── para_align_commands.rs    # para align — DAT + P vs NP bridge
+│   ├── para_rh_commands.rs       # para rh — Riemann Hypothesis bridge
+│   ├── para_ym_commands.rs       # para ym — Yang-Mills mass gap bridge
+│   ├── para_nreg_commands.rs     # para nreg — n-register generalization
+│   ├── para_temporal_commands.rs # para temporal — □/◇/○ modalities
+│   ├── para_category_commands.rs # para category — Belnap lattice as category
+│   ├── para_multiagent_commands.rs # para multiagent — n-kernel entangled network
+│   ├── para_wasm.rs              # ParaASM WASM bridge
+│   ├── para_wasm_commands.rs     # para wasm shell commands
+│   │
 │   ├── interaction_grammar.rs    # Γ (ɢ_seq / ɢ_broad) — IPC grammar gate
 │   ├── frobenius_verification.rs # F-1 axiom (μ∘δ=id) — O_inf spawn gate
 │   ├── stoichiometry.rs          # Σ quota table (1:1, n:n, n:m) — acquire/release
@@ -795,6 +808,59 @@ exOS/
 │   └── resource_isolation.rs     # Σ accessors on AlephKernelType; Ω+Σ gate
 └── target/
 ```
+
+<hr>
+
+## Paraconsistent Suite
+
+All `para` subcommands are available from the exOS shell. Each module mirrors a Lean proof in `MillenniumAnkh/Imscribing/Paraconsistent/` (Tier 2, 0 sorrys).
+
+| Subcommand | Module | Lean reference |
+|:-----------|:-------|:---------------|
+| `para shor [N a]` | `para_shor_commands.rs` | `FullPipeline.lean`, `QCI_SICPOVM_Bridge.lean` |
+| `para align [bifur\|seq\|pvsnp\|shor N a]` | `para_align_commands.rs` | `DialetheicAlignment.lean`, `QCI_Sequences.lean`, `QCI_PvsNP_Bridge.lean` |
+| `para rh [frobenius\|strip]` | `para_rh_commands.rs` | `QCI_RH_Bridge.lean` |
+| `para ym [gap\|brst]` | `para_ym_commands.rs` | `QCI_YM_Bridge.lean` |
+| `para nreg [ratio\|sic]` | `para_nreg_commands.rs` | `QCI_nRegister.lean` |
+| `para temporal [traj\|modal]` | `para_temporal_commands.rs` | `BelnapTemporal.lean` |
+| `para category [obj\|thm]` | `para_category_commands.rs` | `BelnapCategory.lean` |
+| `para multiagent [init\|step]` | `para_multiagent_commands.rs` | `MultiAgentBelnap.lean` |
+
+Quick examples:
+
+```
+exOS> para rh
+  ✓  rh_involution_identity: bnot∘bnot = id
+  ✓  rh_frobenius_fixed_point: bnot(B)=B only
+  ✓  rh_belnap_statement: zeros are B-designated
+  ✓  millennium_barriers_unified (B-gate): RH · P vs NP · SIC-POVM
+
+exOS> para ym gap
+  ✓  mass_gap_positive: N<T covering relation, Δ=1
+  ✓  existence_of_excited_state: T designated, N not, distinct
+  ✓  K_trap_confinement: T is the unique minimum above N
+
+exOS> para temporal traj
+  t │ r0 │ r1 │ r2 │ bnot(r0) │ wind
+  0 │  B │  B │  B │    B     │  ✓
+  1 │  B │  B │  B │    B     │  ✓
+  ...
+
+exOS> para category obj
+  ✓  B is terminal: approx_le(x,B) ∀x
+  ✓  N is initial:  approx_le(N,x) ∀x
+  ✓  B is the unique terminal object
+  ✓  N is the unique initial object
+  Approximation arrows: N→{N,T,F,B}  T→{T,B}  F→{F,B}  B→{B}
+
+exOS> para multiagent
+  ✓  multi_allB_init: all agents start all-B
+  ✓  multi_allB_preserved: stays all-B (4 steps)
+  ✓  channel_join_stable: join(B,B)=B always
+  ✓  multi_agent_is_O_inf: Phi_c ∧ P_pm_sym
+```
+
+Type `para help` for the full subcommand reference.
 
 <hr>
 
@@ -821,6 +887,16 @@ exOS/
 **BT-10 (Belnap Shor coherence ratio):** For any n-qubit Belnap register and any periodic function on B-input, the B-bias measurement cost is exactly 2n and the T-bias cost is exactly n. The ratio is invariantly 2:1. This is the kernel instance of `coherence_ratio_is_two` from `FullPipeline.lean`. Verified at runtime by `para shor`.
 
 **BT-11 (DialetheicAlignment):** In Belnap FOUR, B is the unique dialetheic value — the only element that is both designated and whose negation is designated. Proven in `DialetheicAlignment.lean` (`only_B_is_dialetheic`); verified at `para shor` execution time via `dialetheic(b: B4)` in `para_shor_commands.rs`.
+
+**BT-12 (Millennium barrier unification):** B simultaneously satisfies the structural condition for all three Millennium barriers: (RH) bnot(B)=B is the unique designated fixed point of the functional equation s↦1-s; (P vs NP) B is the unique dialetheic value — the one-way barrier; (SIC-POVM) B satisfies all 4 d=2 SIC axioms. All three are faces of the Dialetheic Alignment Theorem. Verified by `para rh`.
+
+**BT-13 (Yang-Mills mass gap):** The covering relation N < T in the Belnap approximation order is the mass gap: T is the unique minimum excited state above the vacuum N, with gap Δ = 1. BRST nilpotency Q²=0 maps exactly to the Frobenius comultiplication identity μ∘δ=id (two applications cancel). K_trap confinement: T is the only value directly above N; no free excitation escapes to B without passing through the T-barrier. Verified by `para ym`.
+
+**BT-14 (n-Register 2:1 ratio invariance):** For any n ≥ 1, the Belnap n-qubit register satisfies B-bias coherence = 2n, T-bias coherence = n, ratio = 2.0 exactly. The period r is encoded in this ratio, not in individual qubit values. Verified for n = 4..8 across 8 concrete instances by `para nreg`. Structural (register) tier is O_inf for all n; pipeline tier is O_1 (distinct claims).
+
+**BT-15 (Belnap temporal permanence):** The initial all-B kernel state satisfies all three temporal modalities simultaneously: □B (B at every cycle), ◇B (trivially), and ○B (B at the next step). The winding invariant bnot(r0(t)) = r0(t) holds at every step because r0 is permanently B and bnot(B) = B — no temporal phase shift occurs. Verified over 8 cycles by `para temporal`.
+
+**BT-16 (Belnap lattice as category):** Belnap FOUR with the approximation order is a category with B as the unique terminal object (approx_le(x, B) ∀x) and N as the unique initial object (approx_le(N, x) ∀x). B is the meet-identity (meet(B,x)=x ∀x) and join-absorber (join(B,x)=B ∀x). The Frobenius roundtrip μ∘δ(B)=B is exactly the universal morphism into the terminal object. Verified by `para category`.
 
 <hr>
 

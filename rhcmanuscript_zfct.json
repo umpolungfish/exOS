@@ -1,0 +1,1003 @@
+{
+  "rohonc": {
+    "p1": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 6,
+        "EVALT": 7,
+        "AFWD": 9,
+        "ISCRIB": 8,
+        "TANCH": 5,
+        "IFIX": 5,
+        "FSPLIT": 4,
+        "FFUSE": 2,
+        "ENGAGR": 2,
+        "CLINK": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p10": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 9,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p100": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "FSPLIT": 9,
+        "FFUSE": 6,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "TANCH": 5,
+        "VINIT": 5,
+        "EVALT": 5,
+        "IFIX": 5,
+        "ENGAGR": 4
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p11": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "AFWD": 10,
+        "ISCRIB": 7,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p12": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 9,
+        "EVALT": 5,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p13": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "EVALT": 5,
+        "VINIT": 5,
+        "AFWD": 10,
+        "TANCH": 5,
+        "ISCRIB": 6,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p14": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 10,
+        "ISCRIB": 6,
+        "TANCH": 5,
+        "EVALT": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 6,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p15": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 9,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p150": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "FSPLIT": 9,
+        "FFUSE": 6,
+        "AFWD": 6,
+        "ENGAGR": 5,
+        "ISCRIB": 5,
+        "TANCH": 5,
+        "VINIT": 5,
+        "EVALT": 4,
+        "IFIX": 5
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p151": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_K",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "ENGAGR": 17,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "IFIX": 5,
+        "FSPLIT": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    sep f x  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p16": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "AFWD": 10,
+        "ISCRIB": 7,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p17": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 9,
+        "EVALT": 5,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p18": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "EVALT": 5,
+        "VINIT": 5,
+        "AFWD": 10,
+        "TANCH": 5,
+        "ISCRIB": 6,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p19": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 10,
+        "ISCRIB": 6,
+        "TANCH": 5,
+        "EVALT": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 6,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p2": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 9,
+        "ISCRIB": 5,
+        "TANCH": 6,
+        "EVALT": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p20": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 9,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p200": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_K",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "ENGAGR": 13,
+        "FSPLIT": 6,
+        "AFWD": 5,
+        "ISCRIB": 5,
+        "TANCH": 5,
+        "VINIT": 5,
+        "EVALT": 5,
+        "IFIX": 5,
+        "FFUSE": 1
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    sep f x  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p250": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_K",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "ENGAGR": 16,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "FSPLIT": 3,
+        "IFIX": 5
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    sep f x  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p3": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "EVALT": 5,
+        "VINIT": 5,
+        "AFWD": 10,
+        "TANCH": 5,
+        "ISCRIB": 6,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p300": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_K",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "ENGAGR": 12,
+        "FSPLIT": 7,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "IFIX": 5
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    sep f x  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 123
+    },
+    "p301": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 8,
+        "TANCH": 5,
+        "ISCRIB": 5,
+        "FSPLIT": 7,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 139
+    },
+    "p350": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "AFWD": 10,
+        "ISCRIB": 5,
+        "VINIT": 5,
+        "TANCH": 5,
+        "FSPLIT": 6,
+        "EVALT": 5,
+        "ENGAGR": 7,
+        "IFIX": 5,
+        "CLINK": 1,
+        "FFUSE": 1
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 139
+    },
+    "p4": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 10,
+        "EVALT": 5,
+        "TANCH": 5,
+        "ISCRIB": 6,
+        "ENGAGR": 5,
+        "FSPLIT": 6,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p400": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 8,
+        "EVALT": 5,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 6,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 139
+    },
+    "p448": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 10,
+        "TANCH": 5,
+        "ISCRIB": 5,
+        "ENGAGR": 7,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 139
+    },
+    "p5": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "EVALT": 5,
+        "AFWD": 9,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p51": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_˙",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "FSPLIT": 9,
+        "FFUSE": 7,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "TANCH": 5,
+        "VINIT": 5,
+        "EVALT": 4,
+        "IFIX": 5,
+        "ENGAGR": 4
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∀ f( bij f x x → ∀ y( y ∈ x ↔ f y ∈ x))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 148
+    },
+    "p52": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "FSPLIT": 9,
+        "FFUSE": 6,
+        "ENGAGR": 5,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "VINIT": 5,
+        "TANCH": 5,
+        "IFIX": 5,
+        "EVALT": 4
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p53": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "FSPLIT": 9,
+        "FFUSE": 5,
+        "AFWD": 6,
+        "ISCRIB": 5,
+        "TANCH": 5,
+        "VINIT": 5,
+        "ENGAGR": 5,
+        "EVALT": 5,
+        "IFIX": 5
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p6": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "AFWD": 10,
+        "ISCRIB": 7,
+        "VINIT": 5,
+        "TANCH": 5,
+        "EVALT": 5,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p7": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_F",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^ˌ",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 9,
+        "EVALT": 5,
+        "TANCH": 6,
+        "ISCRIB": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 5,
+        "IFIX": 5,
+        "CLINK": 3,
+        "FFUSE": 2
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ℤ₂ f ∧ ∃ f( bij f x x ∧ ∀ y( f( f y) = y))  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    seq! f g ∧ ⟨→⟩ f g τ ∧ ¬ ⟨→⟩ g f τ  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 150
+    },
+    "p8": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "EVALT": 5,
+        "VINIT": 5,
+        "AFWD": 10,
+        "TANCH": 5,
+        "ISCRIB": 6,
+        "FSPLIT": 6,
+        "ENGAGR": 5,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    },
+    "p9": {
+      "tuple": {
+        "Ð": "Ð_C",
+        "Þ": "Þ_¨",
+        "Ř": "Ř_Ť",
+        "Φ": "Φ_υ",
+        "ƒ": "ƒ^ì",
+        "Ç": "Ç^@",
+        "Γ": "Γ_ʔ",
+        "ɢ": "ɢ^Ş",
+        "⊙": "⊙_ÿ",
+        "Ħ": "Ħ_£",
+        "Σ": "Σ_ï",
+        "Ω": "Ω_z"
+      },
+      "n_instructions": 50,
+      "mnemonic_counts": {
+        "VINIT": 5,
+        "AFWD": 10,
+        "ISCRIB": 6,
+        "TANCH": 5,
+        "EVALT": 5,
+        "ENGAGR": 5,
+        "FSPLIT": 6,
+        "IFIX": 5,
+        "CLINK": 3
+      },
+      "expression": "∃ a( Ord a ∧ x ∈ rank a)  ∧\n    ∀ z( z ∈ x ↔ repl f z)  ∧\n    repl f x ∧ ∀ y( y ∈ repl f x → bij f x y)  ∧\n    ∃ y( y ∈ x ∧ ¬ y = x)  ∧\n    cls x  ∧\n    ∀ y( y ⊆ x → ∃ z( z ∈ x ∧ y ⊆ z))  ∧\n    ∀ a ∃ y( Card a → Card y ∧ a ⊆ y ∧ y ∈ x)  ∧\n    ∀ y( f y)  ∧\n    fixpt f  ∧\n    ∃ y( y ∈ x ∧ ¬ x ∈ y)  ∧\n    ∃ f( func f ∧ ¬ bij f x x)  ∧\n    ℤwind f x ∧ wind f x",
+      "token_count": 131
+    }
+  }
+}

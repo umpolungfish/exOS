@@ -69,6 +69,9 @@ pub mod para_align_commands;
 pub mod para_rh_commands;
 pub mod para_ym_commands;
 pub mod para_nreg_commands;
+pub mod para_temporal_commands;
+pub mod para_category_commands;
+pub mod para_multiagent_commands;
 pub mod para_wasm;
 pub mod para_wasm_commands;
 // ── Stub modules integrated into IPC/scheduler/aleph ──────────────────

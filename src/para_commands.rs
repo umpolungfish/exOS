@@ -25,6 +25,9 @@ use crate::para_align_commands;
 use crate::para_rh_commands;
 use crate::para_ym_commands;
 use crate::para_nreg_commands;
+use crate::para_temporal_commands;
+use crate::para_category_commands;
+use crate::para_multiagent_commands;
 
 lazy_static! {
     static ref PARA_VM: Mutex<ParaVM> = Mutex::new(ParaVM::new());
@@ -44,7 +47,10 @@ pub fn handle(args: &str) -> String {
         "align" => para_align_commands::handle(parts.next().unwrap_or("")),
         "rh"   => para_rh_commands::handle(parts.next().unwrap_or("")),
         "ym"   => para_ym_commands::handle(parts.next().unwrap_or("")),
-        "nreg" => para_nreg_commands::handle(parts.next().unwrap_or("")),
+        "nreg"       => para_nreg_commands::handle(parts.next().unwrap_or("")),
+        "temporal"   => para_temporal_commands::handle(parts.next().unwrap_or("")),
+        "category"   => para_category_commands::handle(parts.next().unwrap_or("")),
+        "multiagent" => para_multiagent_commands::handle(parts.next().unwrap_or("")),
         "help" | "" => help(),
         other => format!("para: unknown subcommand '{}'. Try 'para help'.", other),
     }
@@ -138,8 +144,17 @@ fn help() -> String {
      ym    gap        covering relation and mass gap\n\
      ym    brst       BRST ↔ Frobenius correspondence\n\
      nreg            n-Register generalization — SIC tensor + ratio table\n\
-     nreg  ratio      coherence ratio table n=1..8\n\
-     nreg  sic        SIC-POVM per-qubit axioms\n\
+     nreg  ratio          coherence ratio table n=1..8\n\
+     nreg  sic            SIC-POVM per-qubit axioms\n\
+     temporal             BelnapTemporal — □/◇/○ modalities + trajectory\n\
+     temporal traj        8-cycle kernel trajectory table\n\
+     temporal modal       modality checks (always_B, winding_invariant)\n\
+     category             BelnapCategory — B terminal, N initial, Frobenius\n\
+     category obj         object structure + approximation arrows\n\
+     category thm         key theorems (meet/join/Frobenius/O_inf)\n\
+     multiagent           Multi-Agent Belnap — n-kernel network checks\n\
+     multiagent init      initial state (emerald bootstrap)\n\
+     multiagent step      after 4 steps\n\
      \n\
      ParaASM ISA:\n\
        ENGAGR  %rN             band(r,bnot(r)): B stays B; T/F collapse\n\
