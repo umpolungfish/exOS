@@ -1,59 +1,69 @@
 commit.txt — Summary of updates to /home/mrnob0dy666/exOS
 =======================================================================
 
-src/para_vm.rs + src/para_commands.rs — ParaASM VM kernel module
+Paraconsistent layer sync from MillenniumAnkh/Imscribing/Paraconsistent/
 
-  NEW FILE: src/para_vm.rs  (~230L)
+src/para_vm.rs
+──────────────
+B4 — new operations (mirrors Belnap.lean):
+  bnot()       N→N, T→F, F→T, B→B
+  band()       truth-functional AND (16-entry table)
+  bor()        truth-functional OR  (16-entry table)
+  meet()       approximation-order meet: N<T,F<B; T∧F=N
+  designated() T or B → true
 
-  Belnap FOUR paraconsistent VM, fully no_std:
-    B4 enum: N/T/F/B with information-order join (N < T,F < B; T∨F = B)
-    ParaRegister: belief, is_fixed, paradox_count
-      engage(): force Both; ignores is_fixed (Theorem 3 Case A)
-      fix():    collapse to T, mark FIXED
-    Op enum: 18 opcodes — ENGAGR FSPLIT FFUSE IFIX MOVE CLEAR (core)
-             JMP JB JT JF JN CALL RET HALT (control flow)
-             PUSH POP EMIT READ (stack/IO)
-    Arg enum: Reg(usize) | Label(String)
-    assemble(text: &str) -> (Vec<Instr>, BTreeMap<String, usize>)
-      single-pass; handles .label: / label:, ; comments, %rN syntax
-      label references resolved lazily at jump-time
-    ParaVM: 16 registers, circular PC wrap (infinite looping programs),
-            step()/run(n), active_regs(), format_snapshot()
-    EMIT → crate::serial output
-    READ → N (Neither; no stdin in kernel)
+ParaRegister::engage() — corrected to band(b, bnot(b))
+  B is the only fixed point; T and F collapse
+  Old: always forced B; New: Lean engager semantics
 
-  NEW FILE: src/para_commands.rs  (~120L)
+Fsplit execute arm — corrected to Frobenius comultiplication
+  B → (T, F)  [not copy-both]
+  Others → (src, src)  [copy unchanged]
+  frobenius_invariant: ffuse(fsplit(r)).0 = r  ∀ r  now holds
 
-  Shell handler: `para <sub> [args]` dispatching to:
-    load  <asm>   — assemble inline ParaASM (\n escape supported)
-    run   [N]     — run N steps (default 100)
-    step  [N]     — step N instructions (default 1)
-    regs          — show active registers
-    snap          — full VM snapshot
-    reset         — clear all registers, reset PC
-    loop  [N]     — run N steps of looping program (default 10000)
-    help          — ISA reference + example programs
+ParaKernel struct added — direct port of Kernel.lean MachineState
+  Fields: r0, r1, r2: B4; paradox_count, cycle_count: u64
+  Methods: initial(), step(), run(n), frobenius_invariant(r) -> bool
+  Verified structurally: run_B3, paradox=4n, cycles=n
 
-  EDITED: src/lib.rs
-    pub mod para_vm; pub mod para_commands; added after imasm_commands
+src/para_commands.rs
+────────────────────
+  Updated ENGAGR/FSPLIT help text to reflect corrected semantics
+  Frobenius loop example updated (r0 must be seeded B before loop)
 
-  EDITED: src/main.rs
-    help text: "para  <sub> ...   ParaASM VM (Belnap FOUR paraconsistent)"
-    run_command(): `para` branch → para_commands::handle(args)
+MillenniumAnkh Paraconsistent sync (2026-05-22)
+────────────────────────────────────────────────
 
-  Build: cargo build — clean (0 errors, 0 warnings on new modules)
+src/para_shor_commands.rs — new file:
+  Full Belnap Shor pipeline implementation in Rust (no_std).
+  Uses B4 from para_vm.rs (single source of truth for all lattice ops).
+  Adds locally: hadamard(), approx_le(), dialetheic(), to_wh2().
 
-  Usage from exOS shell:
-    para load .loop:\nENGAGR %r0\nFSPLIT %r0 %r1 %r2\nFFUSE %r1 %r2 %r0\nJMP loop
-    para loop 12
-    para regs
-    → r0=B r1=B r2=B, total_paradoxes=48 (P(n)=4n, Theorem 2)
+  BelnapRegister     n-qubit register with coherence accounting
+  run_shor(n,a,N)    full pipeline: H^⊗n, ModExp (B-input→B-output),
+                     B-bias measure (2n, Wigner's Friend), T-bias measure (n)
+  verify_sic_povm()  all 4 SIC-POVM axioms for B + WH2 bijection + dialetheic uniqueness
 
-Previous commit.txt entries preserved below:
-=======================================================================
+  Structural invariants verified at every `para shor` call:
+    H-cost = n, ModExp-cost = 0, B-bias = 2n, T-bias = n, ratio = 2:1 (always)
+    B propagates through all Boolean gates (no phase differentiation)
+    Φ_υ bottleneck: period encoded in coherence ratio, not in bit values
+    only_B_is_dialetheic: unique dialetheic element in Belnap FOUR
+    WH2 bijective: N→(0,0), T→(0,1), F→(1,0), B→(1,1) all distinct
 
-Ra/Apep animated call graph — high-speed renders
+  Lean reference: MillenniumAnkh/Imscribing/Paraconsistent/Shor/
 
-## New: ra_apep animations (untracked, pending add)
+src/lib.rs:
+  Added `pub mod para_shor_commands;` after para_wasm_commands
 
-  ra_apep_250x.mp4 — animated CFG at 250× speed
+src/para_commands.rs:
+  Added `use crate::para_shor_commands;`
+  Added `"shor" => para_shor_commands::handle(parts.next().unwrap_or(""))` routing
+  Updated comment header and help text with `para shor [N a]` entry
+  Added `shor  [N a]` line to help string
+
+README.md:
+  Added "Belnap Shor Pipeline" section with shell demo output, pipeline table,
+  Φ_υ bottleneck explanation, WH2 bijection and DialetheicAlignment note
+  Added BT-10 (Belnap Shor coherence ratio — 2:1 invariant)
+  Added BT-11 (DialetheicAlignment — B is the unique dialetheic value)

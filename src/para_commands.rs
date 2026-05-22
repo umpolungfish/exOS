@@ -9,6 +9,7 @@
 //   para snap          full VM snapshot
 //   para reset         clear all registers and reset PC
 //   para loop  [N]     run N steps of a looping program (default 10000)
+//   para shor  [N a]   Belnap Shor pipeline (verification suite or single instance)
 //   para help          this message
 
 extern crate alloc;
@@ -19,6 +20,7 @@ use spin::Mutex;
 use lazy_static::lazy_static;
 
 use crate::para_vm::ParaVM;
+use crate::para_shor_commands;
 
 lazy_static! {
     static ref PARA_VM: Mutex<ParaVM> = Mutex::new(ParaVM::new());
@@ -34,6 +36,7 @@ pub fn handle(args: &str) -> String {
         "snap"  => snap(),
         "reset" => reset(),
         "loop"  => run_loop(parts.next().unwrap_or("10000")),
+        "shor"  => para_shor_commands::handle(parts.next().unwrap_or("")),
         "help" | "" => help(),
         other => format!("para: unknown subcommand '{}'. Try 'para help'.", other),
     }
@@ -113,10 +116,11 @@ fn help() -> String {
      snap            full VM snapshot\n\
      reset           clear registers, reset PC\n\
      loop  [N]       run N steps of a looping program (default 10000)\n\
+     shor  [N a]     Belnap Shor pipeline — full suite or single instance\n\
      \n\
      ParaASM ISA:\n\
-       ENGAGR  %rN             seed Both on register N\n\
-       FSPLIT  %src %d1 %d2    delta: copy src belief into d1 and d2\n\
+       ENGAGR  %rN             band(r,bnot(r)): B stays B; T/F collapse\n\
+       FSPLIT  %src %d1 %d2    delta: B→(T,F) comultiplication; others copy\n\
        FFUSE   %s1  %s2 %dst   mu:   Belnap join s1 v s2 -> dst\n\
        IFIX    %rN             collapse to T, mark FIXED\n\
        MOVE    %src %dst       copy register\n\
@@ -131,8 +135,8 @@ fn help() -> String {
        EMIT    %rN             print register state to serial\n\
        READ    %rN             read belief (returns N in kernel)\n\
      \n\
-     Frobenius loop (Theorem 1: B-state permanent, P(n)=4n):\n\
-       para load .loop:\\nENGAGR %r0\\nFSPLIT %r0 %r1 %r2\\nFFUSE %r1 %r2 %r0\\nJMP loop\n\
+     Frobenius loop (seed r0=B first; μ∘δ=id: B→(T,F)→B, P(n)=4n):\n\
+       para load ENGAGR %r0\\nFSPLIT %r0 %r1 %r2\\nFFUSE %r1 %r2 %r0\\nJMP .loop\n\
        para loop 12\n\
        para regs\n\
      \n\

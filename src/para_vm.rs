@@ -27,6 +27,53 @@ impl B4 {
         }
     }
 
+    // Information-order meet: N < T,F < B; T∧F = N
+    pub fn meet(self, other: B4) -> B4 {
+        match (self, other) {
+            (B4::N, _) | (_, B4::N)         => B4::N,
+            (B4::T, B4::F) | (B4::F, B4::T) => B4::N,
+            (B4::B, B4::T) | (B4::T, B4::B) => B4::T,
+            (B4::B, B4::F) | (B4::F, B4::B) => B4::F,
+            (B4::T, B4::T)                   => B4::T,
+            (B4::F, B4::F)                   => B4::F,
+            (B4::B, B4::B)                   => B4::B,
+        }
+    }
+
+    // Belnap negation: bnot N=N, T=F, F=T, B=B
+    pub fn bnot(self) -> B4 {
+        match self { B4::N => B4::N, B4::T => B4::F, B4::F => B4::T, B4::B => B4::B }
+    }
+
+    // Truth-functional AND
+    pub fn band(self, other: B4) -> B4 {
+        match (self, other) {
+            (B4::F, _) | (_, B4::F)                                             => B4::F,
+            (B4::B, B4::T) | (B4::T, B4::B) | (B4::B, B4::N) | (B4::N, B4::B) => B4::B,
+            (B4::T, B4::T)                                                       => B4::T,
+            (B4::T, B4::N) | (B4::N, B4::T)                                     => B4::N,
+            (B4::N, B4::N)                                                       => B4::N,
+            (B4::B, B4::B)                                                       => B4::B,
+        }
+    }
+
+    // Truth-functional OR
+    pub fn bor(self, other: B4) -> B4 {
+        match (self, other) {
+            (B4::T, _) | (_, B4::T)                                             => B4::T,
+            (B4::B, B4::F) | (B4::F, B4::B) | (B4::B, B4::N) | (B4::N, B4::B) => B4::B,
+            (B4::F, B4::F)                                                       => B4::F,
+            (B4::F, B4::N) | (B4::N, B4::F)                                     => B4::N,
+            (B4::N, B4::N)                                                       => B4::N,
+            (B4::B, B4::B)                                                       => B4::B,
+        }
+    }
+
+    // T or B count as "true" for paraconsistent consequence
+    pub fn designated(self) -> bool {
+        matches!(self, B4::T | B4::B)
+    }
+
     pub fn name(self) -> &'static str {
         match self { B4::N => "N", B4::T => "T", B4::F => "F", B4::B => "B" }
     }
@@ -46,11 +93,11 @@ impl ParaRegister {
         Self { belief: B4::N, is_fixed: false, paradox_count: 0 }
     }
 
-    // ENGAGR: force Both; ignore is_fixed (Case A of IFIX stability)
+    // ENGAGR: band(b, bnot(b)) — B is the only fixed point; T/F collapse
     pub fn engage(&mut self) {
-        let was_b = self.belief == B4::B;
-        self.belief = B4::B;
-        if !was_b { self.paradox_count += 1; }
+        let new_b = self.belief.band(self.belief.bnot());
+        if self.belief.designated() { self.paradox_count += 1; }
+        self.belief = new_b;
     }
 
     // IFIX: collapse to T, mark fixed
@@ -244,23 +291,27 @@ impl ParaVM {
                 }
             }
             Fsplit => {
-                // δ: copy src into d1 and d2 (inherits src's is_fixed and belief)
+                // δ: Frobenius comultiplication — B→(T,F); others copy
                 if let (Some(src), Some(d1), Some(d2)) = (
                     Self::reg(&instr.args, 0),
                     Self::reg(&instr.args, 1),
                     Self::reg(&instr.args, 2),
                 ) {
                     if src < NUM_REGS && d1 < NUM_REGS && d2 < NUM_REGS {
-                        let belief  = self.regs[src].belief;
-                        let paradox = self.regs[src].paradox_count;
-                        let fixed   = self.regs[src].is_fixed;
-                        let bump    = if belief == B4::B { 1 } else { 0 };
-                        self.regs[d1].belief = belief;
+                        let b     = self.regs[src].belief;
+                        let p     = self.regs[src].paradox_count;
+                        let fixed = self.regs[src].is_fixed;
+                        let (b1, b2, bump) = if b == B4::B {
+                            (B4::T, B4::F, 1u64)
+                        } else {
+                            (b, b, 0u64)
+                        };
+                        self.regs[d1].belief = b1;
                         self.regs[d1].is_fixed = fixed;
-                        self.regs[d1].paradox_count = paradox + bump;
-                        self.regs[d2].belief = belief;
+                        self.regs[d1].paradox_count = p + bump;
+                        self.regs[d2].belief = b2;
                         self.regs[d2].is_fixed = fixed;
-                        self.regs[d2].paradox_count = paradox + bump;
+                        self.regs[d2].paradox_count = p + bump;
                     }
                 }
             }
@@ -391,5 +442,71 @@ impl ParaVM {
         }
         s += &format!("  total_paradoxes={}  labels={}", self.total_paradoxes(), self.labels.len());
         s
+    }
+}
+
+// ── ParaKernel — 3-register kernel (mirrors Kernel.lean MachineState) ─────────
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ParaKernel {
+    pub r0: B4,
+    pub r1: B4,
+    pub r2: B4,
+    pub paradox_count: u64,
+    pub cycle_count: u64,
+}
+
+impl ParaKernel {
+    pub fn initial() -> Self {
+        Self { r0: B4::B, r1: B4::B, r2: B4::B, paradox_count: 0, cycle_count: 0 }
+    }
+
+    fn engager(r: B4) -> (B4, bool) {
+        (r.band(r.bnot()), r.designated())
+    }
+
+    // Frobenius comultiplication: B→(T,F); others→(r,r)
+    fn fsplit(r0: B4) -> (B4, B4, bool) {
+        if r0 == B4::B { (B4::T, B4::F, true) } else { (r0, r0, true) }
+    }
+
+    fn ffuse(r1: B4, r2: B4) -> (B4, bool) {
+        let j = r1.join(r2);
+        (j, j == B4::B)
+    }
+
+    pub fn step(&self) -> Self {
+        let (r0a, p1) = Self::engager(self.r0);
+        let (r1a, r2a, p2) = Self::fsplit(r0a);
+        let (r0b, p3) = Self::ffuse(r1a, r2a);
+        let pc = self.paradox_count + 1
+            + if p1 { 1 } else { 0 }
+            + if p2 { 1 } else { 0 }
+            + if p3 { 1 } else { 0 };
+        Self { r0: r0b, r1: r1a, r2: r2a, paradox_count: pc, cycle_count: self.cycle_count + 1 }
+    }
+
+    // run n cycles, resetting r1/r2 to B after each step (mirrors Lean `run`)
+    pub fn run(&self, n: u64) -> Self {
+        let mut s = self.clone();
+        for _ in 0..n {
+            let s2 = s.step();
+            s = Self { r1: B4::B, r2: B4::B, ..s2 };
+        }
+        s
+    }
+
+    // frobenius_invariant: ffuse(fsplit(r)).0 = r  ∀ r
+    pub fn frobenius_invariant(r: B4) -> bool {
+        let (r1, r2, _) = Self::fsplit(r);
+        Self::ffuse(r1, r2).0 == r
+    }
+
+    pub fn format(&self) -> String {
+        format!(
+            "ParaKernel  r0={}  r1={}  r2={}  paradox={}  cycles={}",
+            self.r0.name(), self.r1.name(), self.r2.name(),
+            self.paradox_count, self.cycle_count
+        )
     }
 }

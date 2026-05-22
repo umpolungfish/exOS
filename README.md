@@ -659,6 +659,60 @@ All `.aleph` files in `programs/` are compiled into the kernel binary and writte
 
 <hr>
 
+## Belnap Shor Pipeline
+
+`para_shor_commands.rs` implements Shor's algorithm in the Belnap four-valued lattice. All invariants match `FullPipeline.lean` / `BelnapModExp.lean` in MillenniumAnkh.
+
+```
+exOS> para shor
+Belnap Shor Pipeline — FullPipeline.lean / QCI_SICPOVM_Bridge.lean
+────────────────────────────────────────────────────────────────
+SIC-POVM axioms for B (d=2):
+  Axiom 1 meet(B,x)=x:    PASS
+  Axiom 3 join(B,x)=B:    PASS
+  Axiom 4 bnot(B)=B:      PASS
+  ApproxLE B is top:      PASS
+  only_B_is_dialetheic:   PASS
+  WH2 bijection:          PASS
+    N→(0,0) T→(0,1) F→(1,0) B→(1,1)
+
+Shor coherence invariants (H=n, ModExp=0, B-bias=2n, T-bias=n):
+  N=15 a=7 [PASS]
+    r=4, H=4, B-meas=8, T-meas=4, ratio=2:1
+  N=21 a=5 [PASS]
+    r=6, H=5, B-meas=10, T-meas=5, ratio=2:1
+  N=35 a=2 [PASS]
+    r=12, H=6, B-meas=12, T-meas=6, ratio=2:1
+
+Φ_υ bottleneck: B is the only superposition value.
+  Period r is in the 2:1 coherence ratio, not in bit values.
+  Φ_υ → Φ_} gap (B-only extraction) is the structural open problem.
+```
+
+Single instance:
+```
+exOS> para shor 15 7
+  N=15 a=7 [PASS]
+    r=4, H=4, B-meas=8, T-meas=4, ratio=2:1
+```
+
+**Pipeline:**
+
+| Step | Operation | Coherence cost |
+|------|-----------|---------------|
+| 1 | H^⊗n on \|T...T⟩ → \|B...B⟩ | n |
+| 2 | ModExp on B-input → B-output | 0 (B propagates through all Boolean gates) |
+| 3 | B-bias measurement — Wigner's Friend (preserves B) | 2n |
+| 4 | T-bias measurement — collapses B→T | n |
+
+The 2:1 B-bias:T-bias ratio is the structural invariant, provably constant for all n and any periodic function on B-input. The period r is encoded in this ratio, not in the bit values themselves (Φ_υ bottleneck).
+
+**WH2 bijection and DialetheicAlignment** are verified at every `para shor` call:
+- `belnapToWH2_bijective`: N→(0,0)=I, T→(0,1)=Z, F→(1,0)=X, B→(1,1)=XZ
+- `only_B_is_dialetheic`: B is the unique element that is both designated and ¬-designated
+
+<hr>
+
 ## Project Structure
 
 ```
@@ -738,6 +792,10 @@ exOS/
 **BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_inf must satisfy μ∘δ = id — concretely, Φ = Φ_± (parity index 4) and ⊙ = ⊙_c (phi index 1). Processes that do not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
 
 **BT-9 (Stoichiometric exclusivity):** A Σ_1:1 resource can have at most one holder in the quota table. This is enforced globally across all spawn calls. Σ_n:n pools enforce a hard capacity of 8 simultaneous holders by default.
+
+**BT-10 (Belnap Shor coherence ratio):** For any n-qubit Belnap register and any periodic function on B-input, the B-bias measurement cost is exactly 2n and the T-bias cost is exactly n. The ratio is invariantly 2:1. This is the kernel instance of `coherence_ratio_is_two` from `FullPipeline.lean`. Verified at runtime by `para shor`.
+
+**BT-11 (DialetheicAlignment):** In Belnap FOUR, B is the unique dialetheic value — the only element that is both designated and whose negation is designated. Proven in `DialetheicAlignment.lean` (`only_B_is_dialetheic`); verified at `para shor` execution time via `dialetheic(b: B4)` in `para_shor_commands.rs`.
 
 <hr>
 

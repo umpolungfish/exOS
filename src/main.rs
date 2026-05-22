@@ -486,6 +486,8 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     // entries. Access requires complex-plane criticality -- irreducible
     // opacity at the summit of emanation.
     filesystem_13::fs13_init();
+    println!("[PARA] ParaASM VM online — Belnap FOUR, 18-opcode ISA, Frobenius loop. Type 'para help'.");
+    println!("[WASM] ParaWASM runtime online — Belnap-tagged execution, Frobenius checkpoint/verify. Type 'wasm help'.");
     println!("[exoterikOS] \u{2299}_c Kernel fully online. Type 'help' for commands.");
     shell_main();
 }
@@ -573,6 +575,7 @@ fn run_command(cmd: &str) {
             println!("  aleph [expr]      ALEPH REPL / inline expression");
             println!("  imasm <sub> ...   IMASM VM (4 script engines)");
             println!("  para  <sub> ...   ParaASM VM (Belnap FOUR paraconsistent)");
+            println!("  wasm  <sub> ...   ParaWASM runtime (Belnap-tagged values)");
             println!("  type <X>          ALEPH type of kernel object X");
             println!("  type-check        all gate verification tests");
             println!("  type-infer        type inference table");
@@ -1029,6 +1032,11 @@ fn run_command(cmd: &str) {
         cmd if cmd.starts_with("para") => {
             let args = cmd.strip_prefix("para").unwrap_or("").trim();
             let out = para_commands::handle(args);
+            println!("{}", out);
+        }
+        cmd if cmd.starts_with("wasm") => {
+            let args = cmd.strip_prefix("wasm").unwrap_or("").trim();
+            let out = para_wasm_commands::handle(args);
             println!("{}", out);
         }
         "type-check" => {
