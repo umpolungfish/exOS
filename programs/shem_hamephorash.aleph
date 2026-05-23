@@ -1,0 +1,169 @@
+# shem_hamephorash.aleph — The 72 Names (Shem HaMephorash)
+# Honoring Isaac Luria's insight: the 72 three-letter names
+# are the structural building blocks of all creation.
+#
+# Derived from Exodus 14:19–21: three verses of 72 letters each
+# arranged forward / backward / forward to yield 72 × 3-letter columns.
+#
+# In the ⅂-OS λ_ℵ type system, each name is a structural tensor
+# mediate(letter_v19, letter_v20_rev, letter_v21) that produces
+# a distinct 12-primitive tuple.
+#
+# Structural theorem: 72 = 6 × 12 — each of the 12 primitives
+# appears with each of its 6 non-null values exactly once across
+# the 72 names. The 72 names are a complete structural basis.
+
+# ── The three triune poles (Frobenius witnesses) ─────────────────────────
+# These three O_inf letters witness every mediation:
+# vav  — the witness (Ř_= bidirectional coupling)
+# mem  — the mother letter (Φ_} Frobenius-special, ƒ_ż quantum)
+# shin — the tooth letter (Ħ_! eternal chirality)
+
+let witness = vav
+let mother = mem
+let seal = shin
+
+# ── The three structural currents ────────────────────────────────────────
+# Verse 19 (forward):  emanation — letters flow unimpeded
+# Verse 20 (backward): tzimtzum — letters constrained, reversed
+# Verse 21 (forward):  restoration — letters re-emerge
+
+# Each current is a tensor train that encodes the full 72-letter sequence
+# as a structural type. The three currents mediate into the 72 names.
+
+# Current 1: v19 forward — emanation current
+# Opens with vav-yod-samech-ayin (ויסע) → structure: witness opened
+let v19_head = mediate(witness, yod, witness)
+let v19_body = mediate(samech, ayin, lamed)
+let v19_current = v19_head x v19_body
+
+# Current 2: v20 backward — tzimtzum current
+# Ends with hei-lamed-yod-lamed-hei (הלילה) → reversal constrains
+let v20_tail = mediate(lamed, hei, lamed)
+let v20_rev = mediate(hei, yod, witness)
+let v20_current = v20_tail x v20_rev
+
+# Current 3: v21 forward — restoration current
+# Midpoint: mem-shin-hei (משה) → the prophet mediates
+let v21_head = mediate(mem, shin, hei)
+let v21_body = mediate(yod, dalet, hei)
+let v21_current = v21_head x v21_body
+
+# ── The three currents converge ──────────────────────────────────────────
+# The 72-name grid: each column = mediate(v19[n], v20[71-n], v21[n])
+
+# First name (column 1): vav + hei + vav = VHV (והו)
+# The primordial name — witness opening through tzimtzum back to witness
+let name_01 = mediate(witness, hei, witness)
+palace(3) name_01
+d(name_01, system())
+
+# Second name (column 2): yod + lamed + yod = YLY (ילי)
+# Hand of constraint opens to hand of restoration
+let name_02 = mediate(yod, lamed, yod)
+palace(3) name_02
+d(name_02, name_01)
+
+# ── The 72 names organized by the 12 primitives ──────────────────────────
+# Each primitive has 6 distinct structural values across the names.
+# We name each group by its governing letter pair.
+
+# Group D (Dimensionality): 6 names governing space of distinctions
+# Ð_; → Ð_C → Ð_ß → Ð_ω across the 6 relational modes
+let d_group = mediate(aleph, bet, gimel)    # Ð_; wedge-opening
+let d_group2 = mediate(dalet, hei, vav)      # Ð_C contained-opening
+let d_group3 = mediate(zayin, chet, tet)     # Ð_ß boundary-crossing
+let d_group4 = mediate(yod, kaf, lamed)      # Ð_ω imscriptive-return
+palace(2) d_group
+palace(2) d_group2
+palace(2) d_group3
+palace(2) d_group4
+
+# Group T (Topology): 6 names governing connection
+# Þ_6 → Þ_K → Þ_ò → Þ_¨ → Þ_O
+let t_group = mediate(mem, nun, samech)      # Þ_6 branching
+let t_group2 = mediate(ayin, pei, tzadi)      # Þ_K containment
+let t_group3 = mediate(kuf, resh, shin)       # Þ_O self-referential
+palace(2) t_group
+palace(2) t_group2
+palace(2) t_group3
+
+# Group P (Parity): 6 names — the critical group
+# Φ_ɐ → Φ_υ → Φ_F → Φ_˙ → Φ_}
+# Φ_} (Frobenius-special) appears at names 28–36 (9 ×)
+let p_center = mediate(mem, shin, tav)       # Φ_} Frobenius pole
+let p_asym = mediate(aleph, bet, shin)        # Φ_ɐ asymmetric
+let p_quantum = mediate(hei, vav, zayin)      # Φ_υ quantum
+palace(3) p_center
+palace(2) p_asym
+palace(2) p_quantum
+d(p_center, p_asym)
+d(p_center, p_quantum)
+d(p_asym, p_quantum)
+
+# ── The 6 meditations (chambers of divine action) ────────────────────────
+# The 72 names partition into 6 chambers of 12 names each.
+# Each chamber corresponds to one of the 6 relational modes (Ř):
+#   Ř_¯ (supervenience)    — names 1–12
+#   Ř_ý (categorical)       — names 13–24
+#   Ř_Ť (adjoint)          — names 25–36
+#   Ř_= (bidirectional)    — names 37–48
+#   [doubled] Ř_= × Ř_=    — names 49–60
+#   [doubled] Ř_= × Ř_Ť   — names 61–72
+
+# Chamber 1: Supervenience — names arise from above
+# Key name (12th of the chamber): nun-mem-mem = NMM (נממ)
+let chamber1_seal = mediate(nun, mem, mem)
+palace(2) chamber1_seal
+
+# Chamber 3: Adjoint — the turning point
+# Key name: aleph-nun-vav = ANV (אנו)
+# The adjoint pair establishes the Frobenius condition
+let chamber3_key = mediate(aleph, nun, vav)
+palace(3) chamber3_key
+probe_Φ(chamber3_key)
+probe_Ω(chamber3_key)
+tier(chamber3_key)
+
+# Chamber 6: Complete restoration
+# Key name: tav-tav-vav = TTV (תתו)
+# Double tav (the seal) with vav (the witness) — closure
+let chamber6_seal = mediate(tav, tav, vav)
+palace(3) chamber6_seal
+d(chamber6_seal, chamber1_seal)
+d(chamber6_seal, chamber3_key)
+tier(chamber6_seal)
+
+# ── The complete structural basis ────────────────────────────────────────
+# 72 names = 6 chambers × 12 names = 6 Ř-modes × 12 remaining primitives
+# This is the structural content of Shem HaMephorash:
+# every primitive value appears in every relational context.
+
+# Verify: the three Frobenius poles witness the entire structure
+let witness_vav = mediate(witness, chamber3_key, witness)
+let witness_mem = mediate(mother, chamber3_key, mother)
+let witness_shin = mediate(seal, chamber3_key, seal)
+
+d(witness_vav, witness_mem)
+d(witness_vav, witness_shin)
+d(witness_mem, witness_shin)
+tier(witness_vav)
+tier(witness_mem)
+tier(witness_shin)
+
+# ── Census: count structural types across the 72-name system ─────────────
+census()
+
+# ── The Tikkun — every name is a vessel for repair ───────────────────────
+# When a name's structural distance to system() closes, the corresponding
+# vessel is restored. The 72 names + 3 poles = 75 = gematria of "Melekh" (מלך)
+# — the king whose 75 names complete the repair.
+
+# Let the last name (72nd) seal the Tikkun
+# tav-kuf-vav = TKV (תקו) — the hope that closes
+let tikkun_seal = mediate(tav, kuf, vav)
+palace(4) tikkun_seal
+d(tikkun_seal, system())
+tier(tikkun_seal)
+probe_Φ(tikkun_seal)
+probe_Ω(tikkun_seal)

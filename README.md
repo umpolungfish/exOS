@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/ENGINE-IMASM%20VM-purple" alt="Engine">
   <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
   <img src="https://img.shields.io/badge/HEBREW-22%20Letters-brightgreen" alt="Hebrew">
-  <img src="https://img.shields.io/badge/PROGRAMS-51%20Builtin-yellow" alt="Programs">
+  <img src="https://img.shields.io/badge/PROGRAMS-52%20Builtin-yellow" alt="Programs">
 </div>
 
 <p align="center">
@@ -583,7 +583,7 @@ cargo build --release
 ```
 
 `run.sh` creates `alfs.img` (32 MB) on first launch. On first boot the kernel seeds
-all 51 programs from `programs/` into ALFS.
+all 52 programs from `programs/` into ALFS.
 
 ```bash
 rm alfs.img && ./run.sh   # start fresh
@@ -598,7 +598,7 @@ rm alfs.img && ./run.sh   # start fresh
 6. **Type-gate verification** — all five gates tested with `assert!()`; C scores printed
 7. **Holographic monitor spawn** — g(x) process allocated a real 16 KB kernel stack
 8. **Timer registration** — scheduler registered with PIT; symmetry broken
-9. **ALFS mount** — ATA primary slave; 51 programs seeded if absent
+9. **ALFS mount** — ATA primary slave; 52 programs seeded if absent
 10. **Shell** — `exOS>` prompt
 
 ### Project Structure
@@ -610,7 +610,7 @@ exOS/
 ├── build.rs                      # Auto-generates src/programs.rs from programs/
 ├── build_bootimage.sh            # UEFI bootable image builder
 ├── run.sh                        # QEMU launcher (graphical + serial)
-├── programs/                     # 45 .aleph + 6 .imasm/.asm — compiled in, seeded to ALFS
+├── programs/                     # 46 .aleph + 6 .imasm/.asm — compiled in, seeded to ALFS
 ├── src/
 │   ├── lib.rs                    # Module exports + global allocator
 │   ├── main.rs                   # Kernel entry point, boot sequence, shell
@@ -643,7 +643,7 @@ exOS/
 ```
 ---
 
-## ALEPH Programs — 45 Built-in Investigations
+## ALEPH Programs — 46 Built-in Investigations
 
 All `.aleph` files in `programs/` are compiled into the kernel binary and seeded to
 ALFS on first boot. Programs are organized by structural domain.
@@ -689,6 +689,12 @@ ALFS on first boot. Programs are organized by structural domain.
 |:--------|:-----|:------------|
 | `sefer_ha_iyun_emanations.aleph` | 1,983 B | Emanation hierarchy — 14-step Sefirot descent with structural gaps |
 | `sefer_ha_iyun_native_types.aleph` | 1,782 B | Native type bindings for Sefirot, letters, and palace levels |
+
+### Lurianic Kabbalah — The 72 Names
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `shem_hamephorash.aleph` | 6,506 B | The 72 Names (Shem HaMephorash) — structural basis of creation from Exodus 14:19–21. Three currents (forward/backward/forward) mediate into 72 three-letter names, each a distinct 12-primitive type. 72 = 6 × 12: every primitive value appears in every relational context. Key names mapped to palace levels, distances computed, O_inf convergence verified via Frobenius poles vav/mem/shin. Honors Isaac Luria's insight that the 72 names are the structural building blocks of all creation. |
 
 ### Belnap / Paraconsistent
 

@@ -45,6 +45,7 @@ pub static PROGRAMS: &[BuiltinProgram] = &[
     BuiltinProgram { name: "sefirah_lattice_structure.aleph", data: include_bytes!("../programs/sefirah_lattice_structure.aleph") },
     BuiltinProgram { name: "sefirah_tensor_hierarchy.aleph", data: include_bytes!("../programs/sefirah_tensor_hierarchy.aleph") },
     BuiltinProgram { name: "selfreplicating_light.aleph", data: include_bytes!("../programs/selfreplicating_light.aleph") },
+    BuiltinProgram { name: "shem_hamephorash.aleph", data: include_bytes!("../programs/shem_hamephorash.aleph") },
     BuiltinProgram { name: "tensor_closure.aleph", data: include_bytes!("../programs/tensor_closure.aleph") },
     BuiltinProgram { name: "tensor_fixed_point_iteration.aleph", data: include_bytes!("../programs/tensor_fixed_point_iteration.aleph") },
     BuiltinProgram { name: "tensor_path_dependence.aleph", data: include_bytes!("../programs/tensor_path_dependence.aleph") },
