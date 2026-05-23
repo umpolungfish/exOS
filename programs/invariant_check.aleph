@@ -1,0 +1,105 @@
+# invariant_check.aleph — Finding structural invariants of the ALEPH lattice
+#
+# A structural invariant is a property preserved under all lattice operations:
+# tensor (⊗), join (∨), meet (∧), and mediate(w, a, b).
+# This program searches for invariants by testing conjectures:
+#
+# Conjecture 1: d(L ⊗ L, L) = 0 ⟺ tier(L) = O_inf (Frobenius fixed point)
+# Conjecture 2: d(system(), L) ≥ d(system(), pole) for all letters L
+# Conjecture 3: mediate(L, L, L) = L for all L (self-mediation idempotent)
+# Conjecture 4: d(L ⊗ M, pole) ≤ min(d(L, pole), d(M, pole)) (pole absorption)
+# Conjecture 5: tier(join(L, M)) = max(tier(L), tier(M)) (join preserves max tier)
+# Conjecture 6: tier(meet(L, M)) = min(tier(L), tier(M)) (meet preserves min tier)
+#
+# Run with: :run invariant_check
+
+# ── CONJECTURE 1: Frobenius fixed point ⇔ O_inf ────────────────────────────
+# Test: vav, mem, shin should satisfy d(L⊗L, L) = 0
+# All non-O_inf letters should have d(L⊗L, L) > 0
+let fv = vav x vav     d(fv, vav)     # expect 0
+let fm = mem x mem     d(fm, mem)     # expect 0
+let fs = shin x shin   d(fs, shin)    # expect 0
+let fa = aleph x aleph d(fa, aleph)   # expect > 0
+let fg = gimel x gimel d(fg, gimel)   # expect > 0
+let ft = tav x tav     d(ft, tav)     # expect > 0
+# Counterexample check: is ANY non-O_inf letter Frobenius-closed?
+# If yes, Conjecture 1 is false — there are near-fixed points.
+
+# ── CONJECTURE 2: system() is the maximal boundary ─────────────────────────
+# system() = JOIN of all 22 letters. It should be at least as close to
+# every pole as any individual letter. I.e., d(system(), pole) should be
+# the MINIMUM distance — the boundary is the closest thing to O_inf.
+let sys = system()
+d(sys, vav)  d(sys, mem)  d(sys, shin)
+d(vav, vav)  d(mem, vav)  d(shin, vav)  d(hei, vav)
+d(aleph, vav)  d(tav, vav)  d(kuf, vav)  d(ayin, vav)
+# Is d(sys, vav) ≤ d(L, vav) for all L? Check extreme letters.
+d(gimel, vav)  d(sys, vav)   # Is sys closer to vav than gimel is?
+
+# ── CONJECTURE 3: Self-mediation idempotent ────────────────────────────────
+# For all L: mediate(L, L, L) = L v (L ⊗ L) = L v (L ⊗ L)
+# Does this equal L?
+let sv = mediate(vav, vav, vav)    d(sv, vav)     tier(sv)
+let sm = mediate(mem, mem, mem)    d(sm, mem)     tier(sm)
+let ss = mediate(shin, shin, shin) d(ss, shin)    tier(ss)
+let sa = mediate(aleph, aleph, aleph) d(sa, aleph) tier(sa)
+let sg = mediate(gimel, gimel, gimel) d(sg, gimel) tier(sg)
+let sn = mediate(nun, nun, nun)       d(sn, nun)   tier(sn)
+let st = mediate(tav, tav, tav)       d(st, tav)   tier(st)
+let sh = mediate(hei, hei, hei)       d(sh, hei)   tier(sh)
+
+# ── CONJECTURE 4: Pole absorption inequality ────────────────────────────────
+# For any letter L and pole P: d(L ⊗ P, P) ≤ d(L, P)
+# i.e., tensoring with a pole brings the result AT LEAST as close to the pole.
+# This is the gravitational basin property.
+let gv = gimel x vav     d(gv, vav)     d(gimel, vav)     # gv closer?
+let nv = nun x vav       d(nv, vav)     d(nun, vav)       # nv closer?
+let rv = resh x vav      d(rv, vav)     d(resh, vav)      # rv closer?
+let av = aleph x vav     d(av, vav)     d(aleph, vav)     # av closer?
+let hv = hei x vav       d(hv, vav)     d(hei, vav)       # hv closer?
+
+# Test with mem
+let gm = gimel x mem     d(gm, mem)     d(gimel, mem)
+let nm = nun x mem       d(nm, mem)     d(nun, mem)
+let am = aleph x mem     d(am, mem)     d(aleph, mem)
+
+# Test with shin
+let gs = gimel x shin    d(gs, shin)    d(gimel, shin)
+let rs = resh x shin     d(rs, shin)    d(resh, shin)
+let hs = hei x shin      d(hs, shin)    d(hei, shin)
+
+# ── CONJECTURE 5: Join preserves max tier ──────────────────────────────────
+# tier(L ∨ M) = max(tier(L), tier(M))
+let j1 = gimel v vav     tier(j1)     # max(O_0, O_inf) = O_inf?
+let j2 = gimel v aleph   tier(j2)     # max(O_0, O_2) = O_2?
+let j3 = gimel v nun     tier(j3)     # max(O_0, O_0) = O_0?
+let j4 = aleph v hei     tier(j4)     # max(O_2, O_2) = O_2?
+let j5 = aleph v lamed   tier(j5)     # max(O_2, O_1) = O_2?
+let j6 = vav v mem       tier(j6)     # max(O_inf, O_inf) = O_inf?
+let j7 = lamed v nun     tier(j7)     # max(O_1, O_0) = O_1?
+
+# ── CONJECTURE 6: Meet preserves min tier ──────────────────────────────────
+# tier(L ∧ M) = min(tier(L), tier(M))
+let m1 = gimel ^ vav     tier(m1)     # min(O_0, O_inf) = O_0?
+let m2 = gimel ^ aleph   tier(m2)     # min(O_0, O_2) = O_0?
+let m3 = aleph ^ hei     tier(m3)     # min(O_2, O_2) = O_2?
+let m4 = aleph ^ lamed   tier(m4)     # min(O_2, O_1) = O_1?
+let m5 = vav ^ mem       tier(m5)     # min(O_inf, O_inf) = O_inf?
+let m6 = lamed ^ gimel   tier(m6)     # min(O_1, O_0) = O_0?
+let m7 = vav ^ gimel     tier(m7)     # min(O_inf, O_0) = O_0?
+
+# ── CONJECTURE 7: Mediate preserves pole distances ─────────────────────────
+# mediate(w, a, b) = w v (a ⊗ b)
+# For all a,b: d(mediate(pole, a, b), pole) is the same as the pole witness
+let mp_ab = mediate(vav, aleph, bet)   d(mp_ab, vav)   tier(mp_ab)
+let mp_gn = mediate(vav, gimel, nun)   d(mp_gn, vav)   tier(mp_gn)
+let mp_hy = mediate(vav, hei, ayin)    d(mp_hy, vav)   tier(mp_hy)
+let mp_rt = mediate(vav, resh, tav)    d(mp_rt, vav)   tier(mp_rt)
+
+# ── CONJECTURE 8: d(meet, join) ≥ d(L, M) for all L, M ────────────────────
+# The interval between meet and join should be at least as wide as
+# the distance between the two original letters.
+let dmj = aleph ^ tav     let dmj_j = aleph v tav
+d(dmj, dmj_j)     d(aleph, tav)     # interval width vs original distance
+let emj = gimel ^ resh    let emj_j = gimel v resh
+d(emj, emj_j)     d(gimel, resh)    # same for O_0 pair

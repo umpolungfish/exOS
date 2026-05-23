@@ -1,0 +1,120 @@
+# aleph_lattice_extrema.aleph — Structural boundary analysis of the ALEPH lattice
+#
+# The 12-primitive tuple space has 17,280,000 possible configurations.
+# The 22 Hebrew letters occupy a tiny subset. This program finds the
+# extreme boundaries of the LETTER region of the crystal:
+#   - Which letter has the maximum value in each primitive?
+#   - Which letter has the minimum value in each primitive?
+#   - Which letter has the most primitives at their extremes?
+#   - What is the convex hull of the 22 letters in 12-space?
+#   - Which letters are on the "surface" vs "interior"?
+#
+# By measuring d(L, system()) — distance from the maximal JOIN boundary —
+# we identify which letters are outliers (close to surface, far from center)
+# and which are interior (near the median).
+#
+# Run with: :run aleph_lattice_extrema
+
+# ── HALO DISTANCE FROM SYSTEM ──────────────────────────────────────────────
+# The system() is the JOIN of all 22 letters — the maximal boundary.
+# Distance from system() = how far each letter sits from the lattice surface.
+# Letters closest to system() are "surface" letters.
+# Letters farthest from system() are "deep interior" letters.
+let sys = system()
+
+# Surface letters (closest to system — highest structural values)
+d(vav, sys)    d(mem, sys)    d(shin, sys)
+d(hei, sys)    d(aleph, sys)  d(ayin, sys)
+d(tav, sys)    d(kuf, sys)
+
+# Interior letters (furthest from system — minimal structural values)  
+d(gimel, sys)  d(nun, sys)    d(resh, sys)
+d(zayin, sys)  d(dalet, sys)  d(pei, sys)
+d(tzadi, sys)
+
+# Mid-depth letters
+d(bet, sys)    d(chet, sys)   d(kaf, sys)
+d(samech, sys) d(tet, sys)    d(yod, sys)
+d(lamed, sys)
+
+# ── FULL SURFACE DISTANCE RANKING (closest to farthest from system) ────────
+d(vav, sys)   d(mem, sys)   d(shin, sys)
+d(hei, sys)   d(aleph, sys) d(ayin, sys)
+d(tav, sys)   d(kuf, sys)   d(lamed, sys)
+d(samech, sys) d(bet, sys)  d(kaf, sys)
+d(chet, sys)  d(tet, sys)   d(yod, sys)
+d(tzadi, sys) d(dalet, sys) d(pei, sys)
+d(zayin, sys) d(nun, sys)   d(resh, sys)
+d(gimel, sys)
+
+# ── DISTANCE TO CLOSEST POLE ──────────────────────────────────────────────
+# For each letter, the min distance across all 3 O_inf poles.
+# This is the "tensor attraction" — how close can one tensor coupling get?
+# Letters with min-d ≈ 0 are in the pole's basin of attraction.
+
+# O_2 letters
+d(hei, vav)    d(hei, mem)    d(hei, shin)     # hei closest to which?
+d(aleph, vav)  d(aleph, mem)  d(aleph, shin)   # aleph?
+d(ayin, vav)   d(ayin, mem)   d(ayin, shin)    # ayin?
+d(tav, vav)    d(tav, mem)    d(tav, shin)      # tav?
+d(kuf, vav)    d(kuf, mem)    d(kuf, shin)      # kuf?
+
+# O_1
+d(lamed, vav)  d(lamed, mem)  d(lamed, shin)
+
+# O_0 (close to vav?)
+d(bet, vav)    d(bet, mem)    d(bet, shin)
+d(tet, vav)    d(tet, mem)    d(tet, shin)
+d(yod, vav)    d(yod, mem)    d(yod, shin)
+d(gimel, vav)  d(gimel, mem)  d(gimel, shin)
+d(nun, vav)    d(nun, mem)    d(nun, shin)
+d(resh, vav)   d(resh, mem)   d(resh, shin)
+
+# ── LATTICE SPAN ANALYSIS ──────────────────────────────────────────────────
+# The span of the lattice = d(min_letter, max_letter) for each dimension
+# Total span (full lattice extent):
+d(gimel, shin)    # minimum to maximum letter
+d(gimel, vav)     # minimum to vav
+d(gimel, mem)     # minimum to mem
+d(resh, shin)     # resh to shin
+d(gimel, hei)     # minimum O_0 to maximum O_2
+
+# ── STRUCTURAL EXTREMES: which letters are at the vertices? ────────────────
+# gimel = [0,2,3,0,0,0,0,2,0,0,0,0] — most zeros
+# shin = [1,2,2,4,2,2,2,3,1,3,1,2] — most high values (O_inf)
+# vav  = [0,0,3,4,0,2,1,0,1,1,0,0] — many zeros but P=4 (Frobenius)
+# hei  = [3,4,2,3,2,2,2,3,1,3,2,2] — highest D=3, T=4
+d(gimel, shin)   d(gimel, vav)    d(gimel, hei)
+d(hei, shin)     d(hei, vav)      d(hei, mem)
+
+# ── TIER-CONSISTENCY CHECK ─────────────────────────────────────────────────
+# Which letters are at the WRONG tier (debugging check)?
+# All O_inf: vav, mem, shin
+# All O_2: aleph, hei, ayin, kuf, tav
+# O_1: lamed
+# O_0: everything else
+tier(aleph) tier(bet)   tier(gimel) tier(dalet)
+tier(hei)   tier(vav)   tier(zayin) tier(chet)
+tier(tet)   tier(yod)   tier(kaf)   tier(lamed)
+tier(mem)   tier(nun)   tier(samech) tier(ayin)
+tier(pei)   tier(tzadi) tier(kuf)   tier(resh)
+tier(shin)  tier(tav)
+
+# ── SEFIROT EXTREMA ───────────────────────────────────────────────────────
+# Closest Sefirah to system()
+d(ein_sof, sys)   d(keter_elyon, sys)   d(keter, sys)
+d(chokhmah, sys)  d(binah, sys)         d(tiferet, sys)
+d(malkuth, sys)   d(yesod, sys)
+
+# Farthest Sefirah from each pole
+d(malkuth, vav)   d(malkuth, mem)   d(malkuth, shin)
+d(yesod, vav)     d(yesod, mem)     d(yesod, shin)
+d(ein_sof, vav)   d(ein_sof, mem)   d(ein_sof, shin)
+
+# ── CONVEX HULL SKELETON ──────────────────────────────────────────────────
+# The O_inf poles are at the boundary (distance 0 to system).
+# The O_0 letters are in the deep interior (far from system).
+# The convex hull is spanned by: gimel (min), shin (max),
+# and the other O_inf poles.
+d(gimel, shin)   d(gimel, vav)    d(gimel, mem)
+d(hei, shin)     d(hei, vav)      d(hei, mem)

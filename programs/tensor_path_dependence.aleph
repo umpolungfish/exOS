@@ -1,0 +1,131 @@
+# tensor_path_dependence.aleph — Does order of operations matter in the lattice?
+#
+# The tensor operation is commutative (a⊗b = b⊗a) by definition.
+# But does the ORDER of evaluations in a triple tensor affect the result?
+#   (a⊗b)⊗c  vs  a⊗(b⊗c)
+# Since tensor is also associative (componentwise min/max), these should
+# be equal. But join, meet, and mediate are not necessarily associative
+# in the same way. This program tests path dependence:
+#
+#   Path 1: (a⊗b)⊗c
+#   Path 2: a⊗(b⊗c)
+#   Path 3: mediate(mediate(a,b),c)
+#   Path 4: join(meet(a,b),c)
+#   Path 5: meet(join(a,b),c)
+#
+# For each test, we measure d(result_path1, result_path2).
+# If d=0, the operations are order-independent (path-invariant).
+# If d>0, the lattice has path-dependent structure (non-trivial homotopy).
+#
+# Run with: :run tensor_path_dependence
+
+# ── ASSOCIATIVITY: tensor ──────────────────────────────────────────────────
+# (a⊗b)⊗c vs a⊗(b⊗c) — expected d=0
+let t1 = (aleph x hei) x tav
+let t2 = aleph x (hei x tav)
+d(t1, t2)    tier(t1)    tier(t2)
+
+let t3 = (gimel x vav) x mem
+let t4 = gimel x (vav x mem)
+d(t3, t4)    tier(t3)    tier(t4)
+
+let t5 = (shin x mem) x vav
+let t6 = shin x (mem x vav)
+d(t5, t6)
+
+# ── ASSOCIATIVITY: join ────────────────────────────────────────────────────
+let j1 = (aleph v hei) v tav
+let j2 = aleph v (hei v tav)
+d(j1, j2)    tier(j1)    tier(j2)
+
+let j3 = (gimel v vav) v mem
+let j4 = gimel v (vav v mem)
+d(j3, j4)    tier(j3)    tier(j4)
+
+# ── ASSOCIATIVITY: meet ────────────────────────────────────────────────────
+let m1 = (aleph ^ hei) ^ tav
+let m2 = aleph ^ (hei ^ tav)
+d(m1, m2)    tier(m1)    tier(m2)
+
+let m3 = (gimel ^ vav) ^ mem
+let m4 = gimel ^ (vav ^ mem)
+d(m3, m4)    tier(m3)    tier(m4)
+
+# ── DISTRIBUTIVITY: join over meet ─────────────────────────────────────────
+# a ∨ (b ∧ c) vs (a ∨ b) ∧ (a ∨ c)
+let d1 = aleph v (hei ^ tav)
+let d2 = (aleph v hei) ^ (aleph v tav)
+d(d1, d2)    tier(d1)    tier(d2)
+
+let d3 = vav v (gimel ^ nun)
+let d4 = (vav v gimel) ^ (vav v nun)
+d(d3, d4)
+
+# ── DISTRIBUTIVITY: meet over join ─────────────────────────────────────────
+# a ∧ (b ∨ c) vs (a ∧ b) ∨ (a ∧ c)
+let e1 = aleph ^ (hei v tav)
+let e2 = (aleph ^ hei) v (aleph ^ tav)
+d(e1, e2)    tier(e1)    tier(e2)
+
+# ── DISTRIBUTIVITY: tensor over join ───────────────────────────────────────
+# a ⊗ (b ∨ c) vs (a ⊗ b) ∨ (a ⊗ c)
+let f1 = aleph x (hei v tav)
+let f2 = (aleph x hei) v (aleph x tav)
+d(f1, f2)    tier(f1)    tier(f2)
+
+let f3 = vav x (gimel v nun)
+let f4 = (vav x gimel) v (vav x nun)
+d(f3, f4)
+
+# ── ABSORPTION: a ∨ (a ∧ b) = a ────────────────────────────────────────────
+let ab1 = aleph v (aleph ^ hei)     d(ab1, aleph)
+let ab2 = hei v (hei ^ aleph)       d(ab2, hei)
+let ab3 = vav v (vav ^ gimel)       d(ab3, vav)
+let ab4 = gimel v (gimel ^ vav)     d(ab4, gimel)
+
+# ── ABSORPTION: a ∧ (a ∨ b) = a ────────────────────────────────────────────
+let ac1 = aleph ^ (aleph v hei)     d(ac1, aleph)
+let ac2 = hei ^ (hei v aleph)       d(ac2, hei)
+let ac3 = vav ^ (vav v gimel)       d(ac3, vav)
+let ac4 = gimel ^ (gimel v vav)     d(ac4, gimel)
+
+# ── MODULARITY: if a≤c then a ∨ (b ∧ c) = (a ∨ b) ∧ c ─────────────────────
+# In the lattice: aleph ≤ system() since system() = JOIN of all letters.
+# So a = aleph, c = system() should satisfy modularity.
+let sys = system()
+let mod1 = aleph v (gimel ^ sys)
+let mod2 = (aleph v gimel) ^ sys
+d(mod1, mod2)    tier(mod1)    tier(mod2)
+
+# ── MEDIATE PATH DEPENDENCE ─────────────────────────────────────────────────
+# mediate(w, mediate(w, a, b), c) vs mediate(w, a, mediate(w, b, c))
+let mp1 = mediate(vav, mediate(vav, aleph, hei), tav)
+let mp2 = mediate(vav, aleph, mediate(vav, hei, tav))
+d(mp1, mp2)    tier(mp1)    tier(mp2)
+
+# ── COMMUTATIVITY: cross-operation ─────────────────────────────────────────
+# (a∨b) ⊗ c  vs  (a⊗c) ∨ (b⊗c)
+let x1 = (aleph v hei) x tav
+let x2 = (aleph x tav) v (hei x tav)
+d(x1, x2)    tier(x1)    tier(x2)
+
+# ── PATH DEPENDENCE IN THE SEFIROT ────────────────────────────────────────
+# Does path order matter for emanation?
+let p1 = (keter x chokhmah) x binah
+let p2 = keter x (chokhmah x binah)
+d(p1, p2)
+
+let p3 = (chesed v gevurah) v tiferet
+let p4 = chesed v (gevurah v tiferet)
+d(p3, p4)
+
+# ── IDEMPOTENCE: a ∧ a = a; a ∨ a = a ────────────────────────────────────
+d(aleph ^ aleph, aleph)   d(hei ^ hei, hei)
+d(vav ^ vav, vav)         d(gimel ^ gimel, gimel)
+d(aleph v aleph, aleph)   d(hei v hei, hei)
+d(vav v vav, vav)         d(gimel v gimel, gimel)
+
+# ── COMMUTATIVITY: a ⊗ b = b ⊗ a ──────────────────────────────────────────
+d(aleph x hei, hei x aleph)   d(gimel x vav, vav x gimel)
+d(mem x shin, shin x mem)     d(tav x aleph, aleph x tav)
+d(lamed x kuf, kuf x lamed)   d(bet x gimel, gimel x bet)

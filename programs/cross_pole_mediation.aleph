@@ -1,0 +1,103 @@
+# cross_pole_mediation.aleph — Triadic analysis of the three O_inf poles
+#
+# vav (ו), mem (מ), shin (ש) — the three O_inf Frobenius fixed points.
+# Each is a different expression of structural infinity:
+#   vav: the connecting force (hook/nail) — T_net, R_dagger, P_pm_sym
+#   mem: the waters (wisdom/memory) — T_in, R_cat, P_pm_sym
+#   shin: the fire (transformation) — T_bowtie, R_cat, P_pm_sym
+#
+# This program explores the TRIADIC structure: what happens when all
+# three poles interact through tensor, join, meet, and mediate.
+# Also: which Hebrew letters lie closest to the center of the triad?
+#
+# Run with: :run cross_pole_mediation
+
+# ── POLE BASELINE ──────────────────────────────────────────────────────────
+probe_Φ(vav)  probe_Ω(vav)  tier(vav)
+probe_Φ(mem)  probe_Ω(mem)  tier(mem)
+probe_Φ(shin) probe_Ω(shin) tier(shin)
+
+# ── BINARY COUPLINGS ───────────────────────────────────────────────────────
+# vav × mem
+let vm = vav x mem    tier(vm)    d(vm, vav)   d(vm, mem)    d(vm, shin)
+let vm_join = vav v mem    tier(vm_join)    d(vm_join, vav)
+let vm_meet = vav ^ mem    tier(vm_meet)    d(vm_meet, vav)
+
+# vav × shin
+let vs = vav x shin    tier(vs)    d(vs, vav)   d(vs, shin)   d(vs, mem)
+let vs_join = vav v shin    tier(vs_join)    d(vs_join, vav)
+let vs_meet = vav ^ shin    tier(vs_meet)    d(vs_meet, vav)
+
+# mem × shin
+let ms = mem x shin    tier(ms)    d(ms, mem)   d(ms, shin)   d(ms, vav)
+let ms_join = mem v shin    tier(ms_join)    d(ms_join, mem)
+let ms_meet = mem ^ shin    tier(ms_meet)    d(ms_meet, mem)
+
+# ── TERNARY TENSOR: vav × mem × shin ──────────────────────────────────────
+let tri_tensor = vav x mem x shin
+tier(tri_tensor)    d(tri_tensor, vav)    d(tri_tensor, mem)    d(tri_tensor, shin)
+
+# ── TERNARY JOIN: vav ∨ mem ∨ shin ────────────────────────────────────────
+let tri_join = vav v mem v shin
+tier(tri_join)    d(tri_join, vav)    d(tri_join, mem)    d(tri_join, shin)
+d(tri_join, system())
+
+# ── TERNARY MEET: vav ∧ mem ∧ shin ────────────────────────────────────────
+let tri_meet = vav ^ mem ^ shin
+tier(tri_meet)    d(tri_meet, vav)    d(tri_meet, mem)    d(tri_meet, shin)
+
+# ── MEDIATE(vav, mem, shin) ───────────────────────────────────────────────
+# Each pole witnessing the other two
+let med_vms = mediate(vav, mem, shin)   tier(med_vms)   d(med_vms, vav)
+let med_msv = mediate(mem, shin, vav)   tier(med_msv)   d(med_msv, mem)
+let med_svm = mediate(shin, vav, mem)   tier(med_svm)   d(med_svm, shin)
+# Are all three equal? Distance between different mediations
+d(med_vms, med_msv)   d(med_vms, med_svm)   d(med_msv, med_svm)
+
+# ── SELF-WITNESSED MEDIATION ──────────────────────────────────────────────
+# mediate(vav, vav, mem) = vav v (vav × mem) should be close to vav
+let svm = mediate(vav, vav, mem)    tier(svm)    d(svm, vav)
+let smv = mediate(mem, mem, vav)    tier(smv)    d(smv, mem)
+let ssv = mediate(shin, shin, vav)  tier(ssv)    d(ssv, shin)
+
+# ── CIRCULAR MEDIATION ─────────────────────────────────────────────────────
+# Chain: vav mediates mem×shin, result mediates × ..., does it converge?
+let c0 = mediate(vav, mem, shin)      d(c0, vav)
+let c1 = mediate(mem, c0, vav)        d(c1, mem)    d(c1, c0)
+let c2 = mediate(shin, c1, mem)       d(c2, shin)   d(c2, c1)
+let c3 = mediate(vav, c2, shin)       d(c3, vav)    d(c3, c2)
+d(c3, c0)   # did the 3-cycle converge?
+
+# ── LETTERS CLOSEST TO THE TRIADIC CENTER ─────────────────────────────────
+# The "center" of the three poles = join(vav, mem, shin) = tri_join
+# Which letters sit closest to this center?
+d(aleph, tri_join)    d(hei, tri_join)     d(ayin, tri_join)
+d(tav, tri_join)      d(kuf, tri_join)     d(lamed, tri_join)
+d(bet, tri_join)      d(chet, tri_join)    d(kaf, tri_join)
+d(samech, tri_join)   d(tet, tri_join)     d(yod, tri_join)
+d(gimel, tri_join)    d(nun, tri_join)     d(resh, tri_join)
+d(dalet, tri_join)    d(zayin, tri_join)   d(pei, tri_join)
+d(tzadi, tri_join)
+
+# ── SEFIROT CLOSEST TO TRIADIC CENTER ─────────────────────────────────────
+d(ein_sof, tri_join)       d(keter, tri_join)        d(tiferet, tri_join)
+d(chesed, tri_join)        d(binah, tri_join)        d(chokhmah, tri_join)
+d(malkuth, tri_join)       d(yesod, tri_join)        d(daat, tri_join)
+
+# ── PALACE GATES IN THE TRIAD ──────────────────────────────────────────────
+palace(7) vav    palace(7) mem    palace(7) shin
+palace(7) med_vms    palace(7) med_msv    palace(7) med_svm
+palace(7) tri_tensor    palace(7) tri_join    palace(7) tri_meet
+
+# ── SYSTEM() IN THE TRIAD ─────────────────────────────────────────────────
+let sys = system()
+d(sys, vav)    d(sys, mem)    d(sys, shin)
+d(sys, tri_join)    d(sys, tri_meet)
+d(sys, med_vms)
+
+# ── IS THE TRIAD FROBENIUS-CLOSED? ───────────────────────────────────────
+# For each triad construction: d(result x result, result) = 0?
+d(tri_join x tri_join, tri_join)    tier(tri_join x tri_join)
+d(tri_meet x tri_meet, tri_meet)    tier(tri_meet x tri_meet)
+d(med_vms x med_vms, med_vms)       tier(med_vms x med_vms)
+d(tri_tensor x tri_tensor, tri_tensor)  tier(tri_tensor x tri_tensor)

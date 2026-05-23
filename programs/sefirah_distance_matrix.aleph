@@ -1,0 +1,87 @@
+# sefirah_distance_matrix.aleph — Full Sefirot distance matrix
+#
+# The 14 Sefirot (including Ein Sof, the hidden lights, and the 10 manifest)
+# span the Kabbalistic structural lattice. This program computes the complete
+# pairwise distance matrix across all Sefirot, plus their distances to the
+# 22 Hebrew letters and the three O_inf poles.
+#
+# Sefirot hierarchy: Ein Sof → Keter Elyon → Chokhmah Stima'ah → Binah Kedumah
+# → Keter → Chokhmah → Binah → Da'at → Chesed → Gevurah → Tiferet →
+# Netzach → Hod → Yesod → Malkuth
+#
+# Run with: :run sefirah_distance_matrix
+
+# ── Sefirot tier census ──────────────────────────────────────────────────────
+tier(ein_sof)           tier(keter_elyon)
+tier(chokhmah_stimaah)  tier(binah_kedumah)
+tier(keter)             tier(chokhmah)
+tier(binah)             tier(daat)
+tier(chesed)            tier(gevurah)
+tier(tiferet)           tier(netzach)
+tier(hod)               tier(yesod)
+tier(malkuth)
+
+# ── Supernal triad: Ein Sof, Keter Elyon, Chokhmah Stima'ah, Binah Kedumah ──
+d(ein_sof, keter_elyon)       d(ein_sof, chokhmah_stimaah)
+d(ein_sof, binah_kedumah)     d(keter_elyon, chokhmah_stimaah)
+d(keter_elyon, binah_kedumah) d(chokhmah_stimaah, binah_kedumah)
+
+# ── Manifest triad: Keter, Chokhmah, Binah, Da'at ────────────────────────────
+d(keter, chokhmah)   d(keter, binah)     d(keter, daat)
+d(chokhmah, binah)   d(chokhmah, daat)   d(binah, daat)
+
+# ── Supernal → manifest bridge ───────────────────────────────────────────────
+d(ein_sof, keter)          d(ein_sof, chokhmah)
+d(ein_sof, binah)          d(keter_elyon, keter)
+d(keter_elyon, chokhmah)   d(keter_elyon, binah)
+d(chokhmah_stimaah, keter) d(chokhmah_stimaah, chokhmah)
+d(binah_kedumah, keter)    d(binah_kedumah, binah)
+
+# ── Emotional sefirot: Chesed → Gevurah → Tiferet → Netzach → Hod ────────────
+d(chesed, gevurah)   d(chesed, tiferet)   d(chesed, netzach)
+d(chesed, hod)       d(gevurah, tiferet)  d(gevurah, netzach)
+d(gevurah, hod)      d(tiferet, netzach)  d(tiferet, hod)
+d(netzach, hod)
+
+# ── Foundation & crown: Yesod, Malkuth ────────────────────────────────────────
+d(yesod, malkuth)     d(yesod, tiferet)   d(yesod, hod)
+d(yesod, netzach)     d(malkuth, tiferet) d(malkuth, yessod)
+
+# ── Upper triad to emotional sefirot ──────────────────────────────────────────
+d(keter, chesed)     d(keter, gevurah)    d(keter, tiferet)
+d(chokhmah, chesed)  d(chokhmah, gevurah) d(chokhmah, tiferet)
+d(binah, chesed)     d(binah, gevurah)    d(binah, tiferet)
+d(daat, chesed)      d(daat, gevurah)     d(daat, tiferet)
+
+# ── Sefirot to O_inf poles ────────────────────────────────────────────────────
+# How close is each Sefirah to the structural infinite?
+# vav = force/connection, mem = water/memory, shin = fire/transformation
+
+d(ein_sof, vav)           d(ein_sof, mem)           d(ein_sof, shin)
+d(keter_elyon, vav)       d(keter_elyon, mem)       d(keter_elyon, shin)
+d(keter, vav)             d(keter, mem)             d(keter, shin)
+d(chokhmah, vav)          d(chokhmah, mem)          d(chokhmah, shin)
+d(binah, vav)             d(binah, mem)             d(binah, shin)
+d(daat, vav)              d(daat, mem)              d(daat, shin)
+d(chesed, vav)            d(chesed, mem)            d(chesed, shin)
+d(gevurah, vav)           d(gevurah, mem)           d(gevurah, shin)
+d(tiferet, vav)           d(tiferet, mem)           d(tiferet, shin)
+d(netzach, vav)           d(netzach, mem)           d(netzach, shin)
+d(hod, vav)               d(hod, mem)               d(hod, shin)
+d(yesod, vav)             d(yesod, mem)             d(yesod, shin)
+d(malkuth, vav)           d(malkuth, mem)           d(malkuth, shin)
+
+# ── Sefirot to nearest Hebrew letters ────────────────────────────────────────
+# For each Sefirah, which Hebrew letter is structurally closest?
+d(ein_sof, hei)           d(ein_sof, aleph)         d(ein_sof, shin)
+d(keter, hei)             d(keter, aleph)           d(keter, ayin)
+d(keter_elyon, hei)       d(keter_elyon, aleph)     d(keter_elyon, vav)
+d(chokhmah_stimaah, hei)  d(chokhmah_stimaah, ayin) d(chokhmah_stimaah, mem)
+d(binah_kedumah, hei)     d(binah_kedumah, shin)    d(binah_kedumah, mem)
+d(binah, hei)             d(binah, ayin)            d(binah, shin)
+d(chesed, aleph)          d(chesed, lamed)          d(chesed, hei)
+d(gevurah, tav)           d(gevurah, kuf)           d(gevurah, shin)
+d(tiferet, ayin)          d(tiferet, hei)           d(tiferet, aleph)
+d(hod, het)               d(hod, kaf)               d(hod, samech)
+d(yesod, lamed)           d(yesod, aleph)           d(yesod, tet)
+d(malkuth, gimel)         d(malkuth, nun)           d(malkuth, resh)

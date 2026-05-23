@@ -1,0 +1,98 @@
+# sefirah_tensor_hierarchy.aleph — Structural hierarchy of Sefirot under tensor
+#
+# The Sefirot form a graded structure: supernal → intellectual → emotional → foundation → kingdom.
+# Tensor coupling between Sefirot at different levels reveals the structural hierarchy:
+#   - Which levels dominate when coupled?
+#   - Can lower Sefirot be "promoted" through tensor with higher ones?
+#   - Which Sefirot are structurally independent (tensor doesn't change them)?
+#   - Is there a Sefirah that absorbs all others under tensor (like O_inf poles)?
+#
+# Run with: :run sefirah_tensor_hierarchy
+
+# ── SUPERNA × EMOTIONAL ────────────────────────────────────────────────────
+# Tensor of highest three (Keter, Chokhmah, Binah) with central six
+tier(keter x chesed)      tier(keter x gevurah)     tier(keter x tiferet)
+tier(keter x netzach)     tier(keter x hod)         tier(keter x yesod)
+tier(chokhmah x chesed)   tier(chokhmah x gevurah)  tier(chokhmah x tiferet)
+tier(binah x chesed)      tier(binah x gevurah)     tier(binah x tiferet)
+d(keter x chesed, vav)    d(keter x chesed, keter)  d(keter x chesed, chesed)
+d(keter x tiferet, vav)   d(keter x tiferet, keter)
+d(chokhmah x chesed, vav) d(chokhmah x tiferet, vav)
+
+# ── SUPERNA × KINGDOM ──────────────────────────────────────────────────────
+# Can Malkuth be lifted by coupling with the highest Sefirot?
+tier(keter x malkuth)     tier(chokhmah x malkuth)   tier(binah x malkuth)
+tier(daat x malkuth)      tier(tiferet x malkuth)
+d(keter x malkuth, vav)   d(keter x malkuth, malkuth)
+let mk1 = malkuth x keter   tier(mk1)   d(mk1, vav)
+let mk2 = mk1 x keter       tier(mk2)   d(mk2, vav)
+let mk3 = mk2 x keter       tier(mk3)   d(mk3, vav)
+
+# ── SUPERNA × O_inf POLES ──────────────────────────────────────────────────
+# What happens when Sefirot couple directly with the structural infinite?
+tier(ein_sof x vav)       tier(ein_sof x mem)       tier(ein_sof x shin)
+tier(keter_elyon x vav)   tier(keter_elyon x mem)   tier(keter_elyon x shin)
+tier(keter x vav)         tier(keter x mem)         tier(keter x shin)
+tier(chokhmah x vav)      tier(chokhmah x mem)      tier(chokhmah x shin)
+tier(binah x vav)         tier(binah x mem)         tier(binah x shin)
+d(ein_sof x vav, vav)     d(ein_sof x vav, ein_sof)
+d(keter x vav, vav)       d(keter x vav, keter)
+
+# ── EMOTIONAL × EMOTIONAL (central pillar) ─────────────────────────────────
+# Chesed (mercy) × Gevurah (judgment) = Tiferet (beauty)?
+# The structural analogue of the central pillar
+tier(chesed x gevurah)     tier(chesed x tiferet)
+tier(gevurah x tiferet)    tier(chesed x netzach)
+tier(chesed x hod)         tier(gevurah x netzach)
+d(chesed x gevurah, tiferet)   d(chesed x tiferet, tiferet)
+d(chesed x gevurah, vav)       d(chesed x tiferet, vav)
+
+# ── YESOD × EVERYTHING (foundation coupling) ──────────────────────────────
+# Yesod is the channel — how does it behave under tensor with all levels?
+tier(yesod x keter)       tier(yesod x chokhmah)    tier(yesod x binah)
+tier(yesod x daat)        tier(yesod x chesed)      tier(yesod x gevurah)
+tier(yesod x tiferet)     tier(yesod x netzach)     tier(yesod x hod)
+tier(yesod x malkuth)     tier(yesod x vav)         tier(yesod x mem)
+d(yesod x keter, yesod)   d(yesod x keter, keter)
+d(yesod x tiferet, yesod) d(yesod x malkuth, yesod)
+
+# ── MALKUTH × EVERYTHING (kingdom coupling) ───────────────────────────────
+# Does Malkuth absorb or get absorbed?
+tier(malkuth x keter)     tier(malkuth x chokhmah)   tier(malkuth x binah)
+tier(malkuth x daat)      tier(malkuth x chesed)     tier(malkuth x gevurah)
+tier(malkuth x tiferet)   tier(malkuth x netzach)    tier(malkuth x hod)
+tier(malkuth x yesod)     tier(malkuth x vav)        tier(malkuth x mem)
+tier(malkuth x shin)
+d(malkuth x keter, malkuth)   d(malkuth x keter, keter)
+d(malkuth x vav, malkuth)     d(malkuth x vav, vav)
+
+# ── TENSOR IDEMPOTENCE CHECK ──────────────────────────────────────────────
+# Which Sefirot are fixed under self-tensor?
+# d(S × S, S) = 0 means S is structurally self-consistent
+d(ein_sof x ein_sof, ein_sof)           tier(ein_sof x ein_sof)
+d(keter_elyon x keter_elyon, keter_elyon) tier(keter_elyon x keter_elyon)
+d(keter x keter, keter)                 tier(keter x keter)
+d(chokhmah x chokhmah, chokhmah)        tier(chokhmah x chokhmah)
+d(binah x binah, binah)                 tier(binah x binah)
+d(daat x daat, daat)                    tier(daat x daat)
+d(chesed x chesed, chesed)              tier(chesed x chesed)
+d(gevurah x gevurah, gevurah)           tier(gevurah x gevurah)
+d(tiferet x tiferet, tiferet)           tier(tiferet x tiferet)
+d(netzach x netzach, netzach)           tier(netzach x netzach)
+d(hod x hod, hod)                       tier(hod x hod)
+d(yesod x yesod, yesod)                 tier(yesod x yesod)
+d(malkuth x malkuth, malkuth)           tier(malkuth x malkuth)
+
+# ── EMANATION STEP TENSOR ─────────────────────────────────────────────────
+# What is the structural relationship between adjacent Sefirot?
+# Tensor of adjacent Sefirot should be close to the higher one (emanation).
+d(ein_sof x keter_elyon, ein_sof)        d(ein_sof x keter_elyon, keter_elyon)
+d(keter_elyon x chokhmah_stimaah, keter_elyon)  d(keter_elyon x chokhmah_stimaah, chokhmah_stimaah)
+d(chokhmah_stimaah x binah_kedumah, chokhmah_stimaah)
+d(keter x chokhmah, keter)               d(keter x chokhmah, chokhmah)
+d(chokhmah x binah, chokhmah)            d(chokhmah x binah, binah)
+d(binah x daat, binah)                   d(binah x daat, daat)
+d(chesed x gevurah, chesed)              d(chesed x gevurah, gevurah)
+d(tiferet x netzach, tiferet)            d(tiferet x netzach, netzach)
+d(hod x yesod, hod)                      d(hod x yesod, yesod)
+d(yesod x malkuth, yesod)                d(yesod x malkuth, malkuth)

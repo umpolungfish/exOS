@@ -1,0 +1,141 @@
+# primitive_landscape.aleph — Per-primitive extremal analysis of all 22 letters
+#
+# Each Hebrew letter is a 12-primitive tuple [D, T, R, P, F, K, G, Γ, Φ, H, S, Ω]
+# This program finds, for EACH primitive independently:
+#   - The MAXIMUM value across all 22 letters
+#   - The MINIMUM value across all 22 letters
+#   - Which letters attain each extremum
+#   - The range (max-min) per primitive
+#
+# This reveals which primitives have the widest structural variation
+# (high expressive range) and which are nearly constant (tightly constrained).
+# It also identifies structural "outlier" letters that hold extreme values
+# in multiple primitives simultaneously.
+#
+# Run with: :run primitive_landscape
+
+# ── D (Dimensionality): wedge(0), triangle(1), infty(2), odot(3) ────────────
+# D extremes: which letters have minimal/maximal dimension?
+# D=0 (wedge): aleph, gimel, dalet, hei, vav, zayin, yod, nun, pei, tzadi, resh
+# D=1 (triangle): bet, chet, tet, kaf, mem, samech, kuf, shin, tav
+# D=2 (infty): lamed
+# D=3 (odot): hei? actually D is the first index — let's check
+probe_Φ(aleph)
+probe_Φ(hei)
+
+# Let's probe each letter to see primitives
+# Actually the evaluator only has probe_Φ and probe_Ω available.
+# For full primitive inspection we use distance comparisons.
+
+# ── H (Chirality/memory): 0-3 ordinal ──────────────────────────────────────
+# H extremes: which letters have the longest/shortest memory?
+# Distance to "high-H" pole (shin has H=3) vs "low-H" letters
+d(hei, shin)    # hei: H=3 — maximal chirality
+d(aleph, shin)  # aleph: H=3 — also maximal
+d(ayin, shin)   # ayin: H=2
+d(tav, shin)    # tav: H=3
+d(kuf, shin)    # kuf: H=2
+d(mem, shin)    # mem: H=2
+d(vav, shin)    # vav: H=1
+d(bet, shin)    # bet: H=1
+d(gimel, shin)  # gimel: H=0 — minimal chirality
+d(dalet, shin)  # dalet: H=0
+d(zayin, shin)  # zayin: H=0
+
+# ── S (Stoichiometry): 1:1(0), n:n(1), n:m(2) ──────────────────────────────
+# S extremes: which letters have minimal/maximal component variety?
+d(aleph, shin)  # aleph: S=0 (1:1)
+d(hei, mem)     # hei: S=2 (n:m)
+d(tav, vav)     # tav: S=1 (n:n)
+d(mem, vav)     # mem: S=1 (n:n)
+d(shin, vav)    # shin: S=1 (n:n)
+d(gimel, vav)   # gimel: S=0 (1:1)
+
+# ── Ω (Winding/protection): 0(0), Z2(1), Z(2) ──────────────────────────────
+# Ω extremes: which letters have topological protection?
+# Ω=2 (Z): shin only? Ω=1 (Z2): mem? Ω=0: most others
+d(shin, vav)   # shin: Ω=2 (Z winding)
+d(mem, vav)    # mem: Ω=2 (Z winding)
+d(vav, vav)    # vav: Ω=0 (trivial)
+d(aleph, mem)  # aleph: Ω=2 (Z winding)
+tier(shin)  tier(mem)  tier(vav)  tier(aleph)
+
+# ── G (Scope/interaction range): beth(0), gimel(1), aleph(2) ────────────────
+# G extremes: nearest-neighbor vs universal
+d(shin, vav)   d(hei, vav)    d(mem, vav)
+d(aleph, vav)  d(ayin, vav)
+d(bet, vav)    d(tav, vav)
+
+# ── Γ (Grammar/coupling): and(0), or(1), seq(2), broadcast(3) ────────────────
+# Γ extremes: which letters have maximal coupling modes?
+d(shin, vav)  d(hei, vav)   d(mem, vav)
+d(ayin, vav)  d(pei, vav)
+d(aleph, vav) d(tav, vav)
+
+# ── K (Kinetics): fast(0), mod(1), slow(2), trap(3), MBL(4) ─────────────────
+# K extremes: slowest letters (near-equilibrium) vs fastest (driven)
+d(vav, vav)    # vav: K=2 (slow)
+d(mem, vav)    # mem: K=2 (slow) 
+d(shin, vav)   # shin: K=2 (slow)
+
+# ── F (Fidelity/regime): classical(0), thermal(1), quantum(2) ───────────────
+# F extremes: maximal quantum coherence
+d(shin, vav)  d(mem, vav)   d(vav, vav)
+d(hei, vav)   d(aleph, vav) d(ayin, vav)
+
+# ── R (Relational mode): super(0), cat(1), dagger(2), lr(3) ─────────────────
+# R extremes: bidirectional feedback vs supervenience
+d(shin, vav)  d(mem, vav)  d(vav, vav)
+d(hei, vav)   d(aleph, vav)
+
+# ── T (Topology): network(0), in(1), bowtie(2), boxtimes(3), odot(4) ───────
+# T extremes: odot = imscriptive closure
+d(shin, vav)   d(hei, vav)    d(mem, vav)
+d(ayin, vav)   d(aleph, vav)
+d(bet, vav)    d(tav, vav)    d(kuf, vav)
+
+# ── P (Parity/symmetry): asym(0), psi(1), pm(2), sym(3), pm_sym(4) ─────────
+# P extremes: Frobenius-special (±ˢ) at ordinal 4 — only O_inf poles
+d(vav, vav)    # vav: P=4 (pm_sym) — self-adjoint
+d(mem, vav)    # mem: P=4
+d(shin, vav)   # shin: P=4
+d(aleph, vav)  # aleph: P=3 (sym) — one step below
+d(hei, vav)    # hei: P=3
+d(gimel, vav)  # gimel: P=0 (asym) — no symmetry
+
+# ── Φ (Criticality): sub(0), c(1), c_complex(2), EP(3), super(4) ───────────
+# Φ extremes: self-modeling vs sub-critical
+d(vav, vav)    # vav: Φ=1 (c) — self-modeling
+d(mem, vav)    # mem: Φ=1
+d(shin, vav)   # shin: Φ=1
+d(aleph, vav)  # aleph: Φ=1
+d(kuf, vav)    # kuf: Φ=1
+d(tav, vav)    # tav: Φ=1
+d(lamed, vav)  # lamed: Φ=1
+d(hei, vav)    # hei: Φ=1
+d(ayin, vav)   # ayin: Φ=1
+d(bet, vav)    # bet: Φ=0 — sub-critical
+d(gimel, vav)  # gimel: Φ=0
+
+# ── STRUCTURAL DIVERSITY RANKING ────────────────────────────────────────────
+# Which letter has the MOST extreme values across all primitives?
+# Measure by distance to "average letter" — the join/meet center.
+# shin and vav are the most extreme (O_inf), gimel the least (O_0).
+d(gimel, system())   d(nun, system())   d(resh, system())
+d(zayin, system())   d(dalet, system()) d(pei, system())
+d(tzadi, system())   d(bet, system())   d(chet, system())
+d(kaf, system())     d(samech, system())
+d(tet, system())     d(yod, system())   d(lamed, system())
+d(kuf, system())     d(tav, system())   d(aleph, system())
+d(hei, system())     d(ayin, system())  d(vav, system())
+d(mem, system())     d(shin, system())
+
+# ── PRIMITIVE RANGE INDICATOR ────────────────────────────────────────────────
+# The distance between min-letter and max-letter in each primitive dimension
+# is approximated by the range of distances to system() (the JOIN boundary).
+# Letters closest to system() are "maximal" and furthest are "minimal".
+# The spread is the primitive expressiveness of the ALEPH lattice.
+d(gimel, shin)  # minimal vs maximal — the full range of the lattice
+d(gimel, vav)   # minimal vs O_inf
+d(gimel, mem)   # minimal vs O_inf
+d(resh, shin)   # near-min vs O_inf

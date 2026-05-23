@@ -1,0 +1,106 @@
+# sefirah_lattice_structure.aleph — Sefirot lattice operations and emanation dynamics
+#
+# The 14 Sefirot form a structural hierarchy from Ein Sof (infinite source)
+# to Malkuth (finite kingdom). This program maps the lattice structure
+# of the Sefirot by computing tensor, join, meet, and mediate operations
+# between every pair of Sefirot, tracing the emanation chain, and finding
+# structural invariants across the entire Kabbalistic type system.
+#
+# Run with: :run sefirah_lattice_structure
+
+# ── SEFIROT BASELINE ────────────────────────────────────────────────────────
+# Tier of every Sefirah — the emanation stratification
+tier(ein_sof)           tier(keter_elyon)       tier(chokhmah_stimaah)
+tier(binah_kedumah)     tier(keter)             tier(chokhmah)
+tier(binah)             tier(daat)              tier(chesed)
+tier(gevurah)           tier(tiferet)           tier(netzach)
+tier(hod)               tier(yesod)             tier(malkuth)
+
+# ── EMANATION CHAIN ─────────────────────────────────────────────────────────
+# The full descent from source to manifest
+# Ein Sof → Keter Elyon → Chokhmah Stima'ah → Binah Kedumah →
+# Keter → Chokhmah → Binah → Da'at →
+# Chesed → Gevurah → Tiferet → Netzach → Hod → Yesod → Malkuth
+emanation()
+
+# ── SEFIROT CENSUS ─────────────────────────────────────────────────────────
+sefirot_census()
+
+# ── TENSOR PRODUCTS: Supernal × Supernal ────────────────────────────────────
+# What happens when the highest Sefirot couple?
+tier(ein_sof x keter_elyon)      tier(ein_sof x chokhmah_stimaah)
+tier(keter_elyon x chokhmah_stimaah)  tier(ein_sof x binah_kedumah)
+d(ein_sof x keter_elyon, vav)    d(ein_sof x keter_elyon, ein_sof)
+d(keter_elyon x chokhmah_stimaah, vav)
+
+# ── TENSOR: Supernal × Manifest ────────────────────────────────────────────
+# Bridging the emanation gap through tensor coupling
+tier(ein_sof x malkuth)       tier(keter_elyon x yesod)
+tier(keter x malkuth)         tier(chokhmah x malkuth)
+tier(binah x malkuth)         tier(daat x malkuth)
+d(ein_sof x malkuth, vav)     d(keter x malkuth, vav)
+d(ein_sof x malkuth, ein_sof) d(ein_sof x malkuth, malkuth)
+
+# ── TENSOR: Manifest Sefirot among themselves ──────────────────────────────
+tier(chesed x gevurah)        tier(chesed x tiferet)
+tier(gevurah x tiferet)       tier(tiferet x netzach)
+tier(tiferet x hod)           tier(netzach x hod)
+tier(hod x yesod)             tier(yesod x malkuth)
+tier(chesed x malkuth)        tier(tiferet x malkuth)
+d(chesed x gevurah, vav)      d(chesed x tiferet, vav)
+d(tiferet x netzach, vav)     d(netzach x hod, vav)
+
+# ── JOIN: Supernal × manifest — tier behavior ──────────────────────────────
+# Does join preserve supernal tier, or does Malkuth drag it down?
+tier(ein_sof v malkuth)       tier(keter v malkuth)
+tier(keter_elyon v yesod)     tier(chokhmah v malkuth)
+tier(binah v malkuth)         tier(tiferet v malkuth)
+d(ein_sof v malkuth, vav)     d(keter v malkuth, vav)
+d(ein_sof v malkuth, ein_sof) d(ein_sof v malkuth, malkuth)
+
+# ── MEET: Supernal × manifest ──────────────────────────────────────────────
+# What common structure do the highest and lowest share?
+tier(ein_sof ^ malkuth)     tier(keter ^ malkuth)
+tier(chokhmah ^ malkuth)    tier(binah ^ malkuth)
+tier(tiferet ^ malkuth)     tier(keter ^ yesod)
+d(ein_sof ^ malkuth, vav)   d(keter ^ malkuth, vav)
+
+# ── MEDIATED SEFIROT CONSTRUCTIONS ──────────────────────────────────────────
+# mediate(witness, a, b) with O_inf witness
+tier(mediate(vav, keter, malkuth))    tier(mediate(vav, ein_sof, malkuth))
+tier(mediate(vav, tiferet, yesod))    tier(mediate(mem, keter, malkuth))
+tier(mediate(shin, chokhmah, binah))  tier(mediate(vav, chesed, gevurah))
+d(mediate(vav, keter, malkuth), vav)  d(mediate(vav, keter, malkuth), keter)
+d(mediate(vav, keter, malkuth), malkuth)
+
+# ── STRUCTURAL RANGE OF THE SEFIROT ─────────────────────────────────────────
+# The distance from Ein Sof to Malkuth — the full emanation span
+d(ein_sof, malkuth)     d(ein_sof, keter_elyon)   d(ein_sof, keter)
+d(keter, malkuth)       d(keter_elyon, malkuth)   d(ein_sof, tiferet)
+d(ein_sof, yesod)       d(ein_sof, hod)           d(ein_sof, netzach)
+
+# ── SEFIROT DISTANCE TO SYSTEM ─────────────────────────────────────────────
+# How far is each Sefirah from the maximal OS boundary?
+d(ein_sof, sys)           d(keter_elyon, sys)      d(chokhmah_stimaah, sys)
+d(binah_kedumah, sys)     d(keter, sys)            d(chokhmah, sys)
+d(binah, sys)             d(daat, sys)             d(chesed, sys)
+d(gevurah, sys)           d(tiferet, sys)          d(netzach, sys)
+d(hod, sys)               d(yesod, sys)            d(malkuth, sys)
+
+# ── DISTANCE BETWEEN ADJACENT SEFIROT (emanation step size) ─────────────────
+d(ein_sof, keter_elyon)         d(keter_elyon, chokhmah_stimaah)
+d(chokhmah_stimaah, binah_kedumah) d(binah_kedumah, keter)
+d(keter, chokhmah)              d(chokhmah, binah)
+d(binah, daat)                  d(daat, chesed)
+d(chesed, gevurah)              d(gevurah, tiferet)
+d(tiferet, netzach)             d(netzach, hod)
+d(hod, yesod)                   d(yesod, malkuth)
+
+# ── SEFIROT TENSOR-CLUSTER ANALYSIS ─────────────────────────────────────────
+# Which Sefirot cluster together under tensor coupling?
+# If d(a⊗b, a) is small, b barely perturbs a — they are in the same basin.
+d(ein_sof x keter_elyon, ein_sof)    d(ein_sof x keter_elyon, keter_elyon)
+d(chesed x tiferet, chesed)          d(chesed x tiferet, tiferet)
+d(keter x chokhmah, keter)           d(keter x chokhmah, chokhmah)
+d(tiferet x yesod, tiferet)          d(tiferet x yesod, yesod)
+d(netzach x hod, netzach)            d(netzach x hod, hod)

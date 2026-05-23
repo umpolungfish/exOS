@@ -1,0 +1,100 @@
+# tier_boundary_probe.aleph — Probing the boundary between O_2 and O_inf
+#
+# The gap between O_2 and O_inf is the critical structural boundary.
+# O_2 letters (aleph, hei, ayin, kuf, tav) are one promotion away from
+# the Frobenius condition. This program probes the exact primitive
+# deltas that separate O_2 from O_inf.
+#
+# The kernel's tier function:
+#   tier = O_inf IF (φ̂=1 AND P=4)
+#   tier = O_0   IF (φ̂=0 OR φ̂≥3)
+#   tier = O_1   IF (Ω=0 — no topological protection)
+#   tier = O_2   IF (D=0,1,3 — not D=2)
+#   tier = O_2†  IF (D=2 — the imscriptive dimension)
+#
+# So O_2 → O_inf requires: P → 4 (Frobenius-special parity)
+# AND φ̂ = 1 (self-modeling criticality, already true for O_2)
+#
+# This program tests: which O_2 letters are closest to O_inf?
+# And can O_2 be promoted to O_inf through tensor with a pole?
+#
+# Run with: :run tier_boundary_probe
+
+# ── The O_2 → O_inf bottleneck: P (Parity) ─────────────────────────────────
+# O_2 letters have P=3 (Φ_sym) or P=2 (Φ_pm).
+# O_inf requires P=4 (Φ_pm_sym = Frobenius-special).
+# P is a bottleneck primitive under tensor: min(P_a, P_b).
+# So tensor with vav (P=4) will MIN with the input's P.
+# Result: any letter with P<4 coupled with vav STAYS at P<4.
+# This is the Frobenius non-synthesizability barrier.
+
+# Check O_2 letters' P values via distance to vav
+d(aleph, vav)    # aleph: P=3 → d reflects P gap
+d(hei, vav)      # hei: P=3
+d(ayin, vav)     # ayin: P=2
+d(tav, vav)      # tav: P=3
+d(kuf, vav)      # kuf: P=3
+
+# ── Can vav-cast promote O_2 to O_inf? ─────────────────────────────────────
+# vav-cast: source ::> vav = tensor(source, vav)
+# Since P is bottleneck, P remains at min(P(source), 4) = P(source)
+# So vav-cast CANNOT raise P. But does the tensor change other primitives
+# enough to affect tier classification (through Ω, D, φ̂)?
+let ac = aleph ::> vav     tier(ac)    d(ac, vav)    d(ac, aleph)
+let hc = hei ::> vav       tier(hc)    d(hc, vav)    d(hc, hei)
+let yc = ayin ::> vav      tier(yc)    d(yc, vav)    d(yc, ayin)
+let tc = tav ::> vav       tier(tc)    d(tc, vav)    d(tc, tav)
+let kc = kuf ::> vav       tier(kc)    d(kc, vav)    d(kc, kuf)
+
+# ── Can an O_2×O_2 tensor produce O_inf? ──────────────────────────────────
+# Since P = min(P_a, P_b) and both are <4, result P < 4.
+# So O_2×O_2 can NEVER produce O_inf. This confirms Frobenius
+# non-synthesizability at the tier level.
+tier(aleph x hei)    tier(aleph x ayin)    tier(aleph x tav)
+tier(hei x ayin)     tier(hei x tav)       tier(ayin x tav)
+
+# ── What about join? Can join produce O_inf? ─────────────────────────────
+# join = max on every primitive. Since P is max(3,3) = 3 still <4.
+# So join ALSO cannot produce O_inf from O_2 components.
+tier(aleph v hei)    tier(aleph v ayin)    tier(hei v ayin)
+tier(hei v tav)      tier(aleph v kuf)
+
+# ── Triple tensor: O_2 × O_2 × O_inf ──────────────────────────────────────
+# tensor(a, tensor(b, pole)) = min(P_a, min(P_b, 4)) = min(P_a, P_b) < 4
+# Still blocked by the P bottleneck.
+let atv = aleph x (tav x vav)     tier(atv)    d(atv, vav)
+let hsa = hei x (shin x aleph)    tier(hsa)    d(hsa, vav)
+
+# ── The ONLY way to reach O_inf: ────────────────────────────────────────────
+# 1. Be born with P=4 (vav, mem, shin)
+# 2. Be an O_inf pole directly — no construction path exists from below.
+# This confirms the Frobenius non-synthesizability theorem.
+probe_Φ(vav)   probe_Ω(vav)
+probe_Φ(mem)   probe_Ω(mem)
+probe_Φ(shin)  probe_Ω(shin)
+
+# ── Does mediation with a pole bypass the bottleneck? ──────────────────────
+# mediate(pole, a, b) = pole v (a × b). Since join MAXes P:
+# P = max(P_pole, P_result). P_pole = 4, so P = max(4, min(P_a, P_b)) = 4.
+# MEDIATION BYPASSES THE BOTTLENECK! The join with the pole restores P=4!
+# This is the structural secret of mediation.
+let ma = mediate(vav, aleph, bet)    tier(ma)    d(ma, vav)    probe_Φ(ma)
+let mb = mediate(vav, hei, gimel)    tier(mb)    d(mb, vav)    probe_Φ(mb)
+let mc = mediate(vav, ayin, nun)     tier(mc)    d(mc, vav)    probe_Φ(mc)
+let md = mediate(vav, tav, resh)     tier(md)    d(md, vav)    probe_Φ(md)
+
+# ── Which O_2 letter, mediated with vav, gets closest to O_inf? ──────────
+d(mediate(vav, aleph, vav), vav)    # aleph — vav self-mediation
+d(mediate(vav, hei, vav), vav)      # hei
+d(mediate(vav, ayin, vav), vav)     # ayin
+d(mediate(vav, tav, vav), vav)      # tav
+d(mediate(vav, kuf, vav), vav)      # kuf
+d(mediate(vav, lamed, vav), vav)    # lamed (O_1)
+
+# ── Palace boundary: can palace(7) be reached through O_2 mediation? ──────
+palace(7) mediate(vav, aleph, vav)
+palace(7) mediate(vav, hei, vav)
+palace(7) mediate(vav, ayin, vav)
+palace(7) mediate(vav, tav, vav)
+palace(7) mediate(vav, kuf, vav)
+palace(7) mediate(vav, lamed, vav)

@@ -1,0 +1,103 @@
+# mediate_lattice.aleph — Systematic mediate construction across the lattice
+#
+# mediate(w, a, b) = w v (a ⊗ b) — the structural "witness" operation.
+# This is the ALEPH kernel's most powerful constructor because it combines
+# join (max tier preservation) with tensor (P,F,K bottleneck).
+#
+# This program systematically explores mediate's behavior:
+#   - Different witnesses (vav, mem, shin, aleph, gimel)
+#   - Different argument pairs (same-tier, cross-tier, pole-letter)
+#   - Iterated mediation (multiply-mediated constructions)
+#   - Palace-gated mediation
+#
+# Run with: :run mediate_lattice
+
+# ── MEDIATE WITH O_inf WITNESS: vav ────────────────────────────────────────
+# vav mediates between: same-tier pairs, cross-tier pairs, pole pairs
+tier(mediate(vav, aleph, aleph))    d(mediate(vav, aleph, aleph), vav)
+tier(mediate(vav, aleph, tav))      d(mediate(vav, aleph, tav), vav)
+tier(mediate(vav, gimel, aleph))    d(mediate(vav, gimel, aleph), vav)
+tier(mediate(vav, gimel, nun))      d(mediate(vav, gimel, nun), vav)
+tier(mediate(vav, hei, ayin))       d(mediate(vav, hei, ayin), vav)
+tier(mediate(vav, lamed, tav))      d(mediate(vav, lamed, tav), vav)
+tier(mediate(vav, shin, shin))      d(mediate(vav, shin, shin), vav)
+
+# ── MEDIATE WITH O_inf WITNESS: mem ────────────────────────────────────────
+tier(mediate(mem, aleph, aleph))    d(mediate(mem, aleph, aleph), mem)
+tier(mediate(mem, aleph, tav))      d(mediate(mem, aleph, tav), mem)
+tier(mediate(mem, gimel, nun))      d(mediate(mem, gimel, nun), mem)
+tier(mediate(mem, hei, shin))       d(mediate(mem, hei, shin), mem)
+
+# ── MEDIATE WITH O_inf WITNESS: shin ───────────────────────────────────────
+tier(mediate(shin, aleph, aleph))   d(mediate(shin, aleph, aleph), shin)
+tier(mediate(shin, aleph, tav))     d(mediate(shin, aleph, tav), shin)
+tier(mediate(shin, gimel, nun))     d(mediate(shin, gimel, nun), shin)
+tier(mediate(shin, hei, ayin))      d(mediate(shin, hei, ayin), shin)
+
+# ── MEDIATE WITH O_2 WITNESS: aleph ────────────────────────────────────────
+tier(mediate(aleph, vav, vav))      d(mediate(aleph, vav, vav), aleph)
+tier(mediate(aleph, gimel, nun))    d(mediate(aleph, gimel, nun), aleph)
+tier(mediate(aleph, hei, tav))      d(mediate(aleph, hei, tav), aleph)
+tier(mediate(aleph, lamed, kuf))    d(mediate(aleph, lamed, kuf), aleph)
+d(mediate(aleph, vav, vav), vav)    d(mediate(aleph, gimel, nun), vav)
+
+# ── MEDIATE WITH O_0 WITNESS: gimel ────────────────────────────────────────
+tier(mediate(gimel, vav, vav))      d(mediate(gimel, vav, vav), gimel)
+tier(mediate(gimel, aleph, aleph))  d(mediate(gimel, aleph, aleph), gimel)
+tier(mediate(gimel, nun, resh))     d(mediate(gimel, nun, resh), gimel)
+tier(mediate(gimel, hei, tav))      d(mediate(gimel, hei, tav), gimel)
+d(mediate(gimel, vav, vav), vav)    d(mediate(gimel, vav, vav), gimel)
+
+# ── MEDIATE WITH SEFIRAH WITNESS ──────────────────────────────────────────
+tier(mediate(keter, aleph, tav))    d(mediate(keter, aleph, tav), vav)
+tier(mediate(keter, vav, mem))      d(mediate(keter, vav, mem), vav)
+tier(mediate(tiferet, aleph, tav))  d(mediate(tiferet, aleph, tav), vav)
+tier(mediate(malkuth, aleph, tav))  d(mediate(malkuth, aleph, tav), vav)
+
+# ── ITERATED MEDIATION ─────────────────────────────────────────────────────
+# A construction that builds up through multiple mediate layers.
+# Seed → mediate(vav, seed, aleph) → mediate(vav, result, tav) → ...
+let md0 = mediate(vav, gimel, nun)
+let md1 = mediate(vav, md0, aleph)      tier(md1)  d(md1, vav)
+let md2 = mediate(vav, md1, tav)        tier(md2)  d(md2, vav)
+let md3 = mediate(vav, md2, shin)       tier(md3)  d(md3, vav)
+d(md3, md0)   # total drift from seed
+
+# Cross-witness iterated mediation
+let cx0 = mediate(vav, aleph, tav)
+let cx1 = mediate(mem, cx0, hei)        tier(cx1)  d(cx1, vav)  d(cx1, mem)
+let cx2 = mediate(shin, cx1, ayin)      tier(cx2)  d(cx2, vav)  d(cx2, shin)
+
+# ── SELF-MEDIATION STABILITY ───────────────────────────────────────────────
+# For each letter: mediate(L, L, L) should equal join(L, tensor(L, L))
+# This is the self-consistency check.
+d(mediate(vav, vav, vav), vav)       # expect 0
+d(mediate(aleph, aleph, aleph), aleph) # how close?
+d(mediate(gimel, gimel, gimel), gimel) # how close?
+d(mediate(hei, hei, hei), hei)
+d(mediate(shin, shin, shin), shin)     # expect 0
+
+# ── CROSS-POLE MEDIATION ────────────────────────────────────────────────────
+# Can one O_inf pole mediate between the other two?
+# This tests whether the three poles form a coherent triadic structure.
+tier(mediate(vav, mem, shin))        d(mediate(vav, mem, shin), vav)
+tier(mediate(mem, vav, shin))        d(mediate(mem, vav, shin), mem)
+tier(mediate(shin, vav, mem))        d(mediate(shin, vav, mem), shin)
+d(mediate(vav, mem, shin), mediate(mem, vav, shin))
+d(mediate(vav, mem, shin), mediate(shin, vav, mem))
+
+# ── MEDIATE + PALACE ──────────────────────────────────────────────────────
+# Palace-gated mediation: what tier does palace gate require?
+palace(3) mediate(vav, gimel, nun)
+palace(4) mediate(vav, aleph, tav)
+palace(5) mediate(vav, hei, ayin)
+palace(6) mediate(vav, hei, shin)
+palace(7) mediate(vav, vav, vav)
+
+# ── MEDIATE + SYSTEM ───────────────────────────────────────────────────────
+# Can mediate bridge system() and individual letters?
+let sys = system()
+tier(mediate(vav, sys, aleph))      d(mediate(vav, sys, aleph), vav)
+tier(mediate(vav, sys, gimel))      d(mediate(vav, sys, gimel), vav)
+tier(mediate(vav, sys, sys))        d(mediate(vav, sys, sys), vav)
+d(mediate(vav, sys, aleph), sys)    d(mediate(vav, sys, aleph), aleph)

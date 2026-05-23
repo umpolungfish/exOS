@@ -1,0 +1,153 @@
+# tensor_fixed_point_iteration.aleph — Iterated tensor convergence to fixed points
+#
+# The Frobenius identity: μ∘δ = id means that for O_inf letters,
+# d(L x L, L) = 0 — they are fixed points under self-tensor.
+# For non-O_inf letters, iterate: L, L x L, (L x L) x L, ...
+# Does the sequence converge? To which pole? How many steps?
+#
+# This program computes the full convergence orbit for EVERY Hebrew letter:
+#   Step 0: L
+#   Step 1: L x L  (self-tensor)
+#   Step 2: (L x L) x L  (self-tensor iterated)
+#   Step 3: ... until convergence (d < epsilon) or O_inf reached.
+#
+# Also studies convergence under tensor with each O_inf pole:
+#   L, L x vav, (L x vav) x vav, ...
+#
+# Run with: :run tensor_fixed_point_iteration
+
+# ── SELF-TENSOR ITERATION: all O_inf poles ──────────────────────────────────
+# These converge in 1 step (they are already fixed points)
+let v0 = vav       let v1 = v0 x v0     tier(v1)  d(v1, v0)
+let m0 = mem       let m1 = m0 x m0     tier(m1)  d(m1, m0)
+let s0 = shin      let s1 = s0 x s0     tier(s1)  d(s1, s0)
+
+# ── O_2 letters: self-tensor at depth 1, 2, 3 ──────────────────────────────
+# aleph
+let a0 = aleph          tier(a0)
+let a1 = a0 x a0        tier(a1)  d(a1, a0)
+let a2 = a1 x a0        tier(a2)  d(a2, a1)
+let a3 = a2 x a0        tier(a3)  d(a3, a2)
+let a4 = a3 x a0        tier(a4)  d(a4, a3)
+d(a4, a0)  d(a4, vav)  d(a4, mem)  d(a4, shin)
+
+# hei
+let h0 = hei            tier(h0)
+let h1 = h0 x h0        tier(h1)  d(h1, h0)
+let h2 = h1 x h0        tier(h2)  d(h2, h1)
+let h3 = h2 x h0        tier(h3)  d(h3, h2)
+d(h3, h0)  d(h3, vav)  d(h3, mem)  d(h3, shin)
+
+# ayin
+let y0 = ayin           tier(y0)
+let y1 = y0 x y0        tier(y1)  d(y1, y0)
+let y2 = y1 x y0        tier(y2)  d(y2, y1)
+let y3 = y2 x y0        tier(y3)  d(y3, y2)
+d(y3, y0)  d(y3, vav)  d(y3, mem)  d(y3, shin)
+
+# tav
+let t0 = tav            tier(t0)
+let t1 = t0 x t0        tier(t1)  d(t1, t0)
+let t2 = t1 x t0        tier(t2)  d(t2, t1)
+let t3 = t2 x t0        tier(t3)  d(t3, t2)
+d(t3, t0)  d(t3, vav)  d(t3, mem)  d(t3, shin)
+
+# kuf
+let k0 = kuf            tier(k0)
+let k1 = k0 x k0        tier(k1)  d(k1, k0)
+let k2 = k1 x k0        tier(k2)  d(k2, k1)
+let k3 = k2 x k0        tier(k3)  d(k3, k2)
+d(k3, k0)  d(k3, vav)  d(k3, mem)  d(k3, shin)
+
+# ── O_1 letter: lamed self-tensor convergence ──────────────────────────────
+let l0 = lamed          tier(l0)
+let l1 = l0 x l0        tier(l1)  d(l1, l0)
+let l2 = l1 x l0        tier(l2)  d(l2, l1)
+let l3 = l2 x l0        tier(l3)  d(l3, l2)
+d(l3, l0)  d(l3, vav)  d(l3, mem)  d(l3, shin)
+
+# ── O_0 letters: self-tensors — do they ever leave O_0? ─────────────────────
+# gimel
+let g0 = gimel          tier(g0)
+let g1 = g0 x g0        tier(g1)  d(g1, g0)
+let g2 = g1 x g0        tier(g2)  d(g2, g1)
+let g3 = g2 x g0        tier(g3)  d(g3, g2)
+d(g3, g0)  d(g3, vav)  d(g3, mem)  d(g3, shin)
+
+# resh
+let r0 = resh           tier(r0)
+let r1 = r0 x r0        tier(r1)  d(r1, r0)
+let r2 = r1 x r0        tier(r2)  d(r2, r1)
+let r3 = r2 x r0        tier(r3)  d(r3, r2)
+d(r3, r0)  d(r3, vav)  d(r3, mem)  d(r3, shin)
+
+# nun
+let n0 = nun            tier(n0)
+let n1 = n0 x n0        tier(n1)  d(n1, n0)
+let n2 = n1 x n0        tier(n2)  d(n2, n1)
+let n3 = n2 x n0        tier(n3)  d(n3, n2)
+d(n3, n0)  d(n3, vav)  d(n3, mem)  d(n3, shin)
+
+# dalet
+let d0 = dalet          tier(d0)
+let d1 = d0 x d0        tier(d1)  d(d1, d0)
+let d2 = d1 x d0        tier(d2)  d(d2, d1)
+let d3 = d2 x d0        tier(d3)  d(d3, d2)
+d(d3, d0)  d(d3, vav)  d(d3, mem)  d(d3, shin)
+
+# ── Tensor-with-pole iteration: L x L x L x ... pole ───────────────────────
+# This tests whether repeated coupling with a pole produces convergence.
+# Pattern: L0 = L, L1 = L0 x pole, L2 = L1 x pole, L3 = L2 x pole
+
+# gimel x vav iterated
+let gv0 = gimel          let gv1 = gv0 x vav    tier(gv1)  d(gv1, vav)
+let gv2 = gv1 x vav      tier(gv2)  d(gv2, vav)  d(gv2, gv1)
+let gv3 = gv2 x vav      tier(gv3)  d(gv3, vav)  d(gv3, gv2)
+
+# resh x shin iterated
+let rs0 = resh           let rs1 = rs0 x shin   tier(rs1)  d(rs1, shin)
+let rs2 = rs1 x shin     tier(rs2)  d(rs2, shin)  d(rs2, rs1)
+let rs3 = rs2 x shin     tier(rs3)  d(rs3, shin)  d(rs3, rs2)
+
+# nun x mem iterated
+let nm0 = nun            let nm1 = nm0 x mem    tier(nm1)  d(nm1, mem)
+let nm2 = nm1 x mem      tier(nm2)  d(nm2, mem)  d(nm2, nm1)
+let nm3 = nm2 x mem      tier(nm3)  d(nm3, mem)  d(nm3, nm2)
+
+# aleph x vav iterated (O_2 rich letter — does it converge to O_inf?)
+let av0 = aleph          let av1 = av0 x vav    tier(av1)  d(av1, vav)
+let av2 = av1 x vav      tier(av2)  d(av2, vav)  d(av2, av1)
+let av3 = av2 x vav      tier(av3)  d(av3, vav)  d(av3, av2)
+
+# ── Cross-witness iteration: mediate(pole, L, pole) iterated ────────────────
+# The mediate function: witness v (arg1 x arg2)
+# When both args are the same pole, mediate pulls L toward that pole.
+let mw0 = mediate(vav, gimel, vav)
+let mw1 = mediate(vav, mw0, vav)
+let mw2 = mediate(vav, mw1, vav)
+tier(mw0)  d(mw0, vav)  tier(mw1)  d(mw1, vav)  tier(mw2)  d(mw2, vav)
+
+let mw0m = mediate(mem, nun, mem)
+let mw1m = mediate(mem, mw0m, mem)
+tier(mw0m)  d(mw0m, mem)  tier(mw1m)  d(mw1m, mem)
+
+let mw0s = mediate(shin, resh, shin)
+let mw1s = mediate(shin, mw0s, shin)
+tier(mw0s)  d(mw0s, shin)  tier(mw1s)  d(mw1s, shin)
+
+# ── Sefirot tensor convergence ──────────────────────────────────────────────
+# keter — closest to O_inf among Sefirot
+let ke0 = keter           let ke1 = ke0 x ke0      tier(ke1)  d(ke1, ke0)
+let ke2 = ke1 x ke0       tier(ke2)  d(ke2, ke1)   d(ke2, vav)
+let ke3 = ke2 x ke0       tier(ke3)  d(ke3, ke2)   d(ke3, vav)
+
+# malkuth — furthest from O_inf
+let ma0 = malkuth         let ma1 = ma0 x ma0      tier(ma1)  d(ma1, ma0)
+let ma2 = ma1 x ma0       tier(ma2)  d(ma2, ma1)   d(ma2, vav)
+let ma3 = ma2 x ma0       tier(ma3)  d(ma3, ma2)   d(ma3, vav)
+
+# ── Convergence ranking ─────────────────────────────────────────────────────
+# Which letter converges fastest to a pole?
+d(gv3, vav)   d(nm3, mem)   d(rs3, shin)
+d(av3, vav)   d(t0, vav)    d(k0, vav)
+d(l0, vav)    d(h0, vav)    d(y0, vav)

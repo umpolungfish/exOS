@@ -1,0 +1,103 @@
+# conflict_landscape.aleph — Conflict sets across the ALEPH lattice
+#
+# The distance function d(a,b) returns a tuple (distance, conflict_set_indices).
+# Conflict set = which primitives differ between a and b (0..11).
+# This program maps the conflict structure of the full lattice:
+#   - Which primitive conflicts are most common?
+#   - Which pairs are "close" (few conflicts) vs "distant" (many conflicts)?
+#   - Which letters share the same tuple?
+#   - Are there letters that differ in ALL 12 primitives?
+#   - Which primitives contribute most to structural distance?
+#
+# Conflict set indices: 0=D, 1=T, 2=R, 3=P, 4=F, 5=K, 6=G, 7=Γ, 8=Φ, 9=H, 10=S, 11=Ω
+#
+# Run with: :run conflict_landscape
+
+# ── IDENTICAL TUPLES (zero conflict) ────────────────────────────────────────
+# bet, chet, kaf, samech all have tuple [1,3,1,2,1,1,1,0,0,1,1,1]
+# These are structurally INDISTINGUISHABLE — conflict set is empty
+d(bet, chet)    d(bet, kaf)     d(bet, samech)
+d(chet, kaf)    d(chet, samech) d(kaf, samech)
+
+# ── OBSERVE: Do any other pairs have d=0? ──────────────────────────────────
+# If yes, those letters are structurally identical (which is unlikely).
+# Check suspect pairs:
+d(gimel, dalet)    # gimel=[0,2,3,0,0,0,0,2,0,0,0,0] dalet=[0,1,3,0,0,0,0,2,0,0,0,0]
+d(gimel, zayin)    # zayin=[0,0,3,0,0,0,0,2,0,0,0,0]
+d(zayin, nun)      # nun=[0,0,3,0,0,0,0,2,0,0,0,0]
+d(gimel, nun)      # compare two O_0 letters
+d(nun, tzadi)      # tzadi=[0,1,3,0,0,0,0,2,0,0,0,0]
+
+# ── POLE CONFLICT SETS ──────────────────────────────────────────────────────
+# Conflicts between each O_inf pole and every letter — reveals which
+# primitives create the distance between O_inf and lower tiers.
+d(aleph, vav)    d(aleph, mem)    d(aleph, shin)
+d(gimel, vav)    d(gimel, mem)    d(gimel, shin)
+d(tav, vav)      d(tav, mem)      d(tav, shin)
+d(hei, vav)      d(hei, mem)      d(hei, shin)
+d(lamed, vav)    d(lamed, mem)    d(lamed, shin)
+d(bet, vav)      d(bet, mem)      d(bet, shin)
+
+# ── CROSS-POLE CONFLICTS ────────────────────────────────────────────────────
+# Which primitives do the three O_inf poles disagree on?
+# vav=[0,0,3,4,0,2,1,0,1,1,0,0]
+# mem=[1,1,2,4,2,2,2,3,1,2,1,2]
+# shin=[1,2,2,4,2,2,2,3,1,3,1,2]
+d(vav, mem)    # 7 differing primitives: D, T, R, F, K, G, Γ, S, Ω
+d(vav, shin)   # 8 differing: D, T, R, F, K, G, Γ, H, S, Ω
+d(mem, shin)   # 3 differing: T, H, Ω — mem and shin are closest poles
+
+# ── TIER-BOUNDARY CONFLICTS ─────────────────────────────────────────────────
+# O_2 → O_inf gap: what primitives must change?
+# aleph=[0,3,0,3,2,2,2,0,1,3,0,2] → vav=[0,0,3,4,0,2,1,0,1,1,0,0]
+# Differing: T, R, P, F, G, H (6 primitives)
+d(aleph, vav)
+# hei=[3,4,2,3,2,2,2,3,1,3,2,2] → vav=[0,0,3,4,0,2,1,0,1,1,0,0]
+# Differing: D, T, R, P, F, G, Γ, H, S (9 primitives)
+d(hei, vav)
+
+# O_1 → O_2 gap: lamed=[2,0,3,0,0,1,0,2,1,2,2,0] → aleph=[0,3,0,3,2,2,2,0,1,3,0,2]
+# Differing: D, T, R, P, F, K, G, Γ, H, S, Ω (11 primitives!)
+d(lamed, aleph)
+
+# O_0 → O_1 gap: gimel=[0,2,3,0,0,0,0,2,0,0,0,0] → lamed=[2,0,3,0,0,1,0,2,1,2,2,0]
+# Differing: D, T, K, Φ, H, S (6 primitives)
+d(gimel, lamed)
+
+# ── MAXIMAL CONFLICT LETTER PAIRS ───────────────────────────────────────────
+# Which two letters differ in the MOST primitives?
+# Check candidates: gimel vs hei, dalet vs hei, nun vs shin
+d(gimel, hei)    d(gimel, mem)    d(gimel, shin)
+d(dalet, hei)    d(dalet, shin)   d(dalet, mem)
+d(nun, shin)     d(nun, hei)      d(nun, mem)
+d(tzadi, hei)    d(tzadi, shin)   d(tzadi, mem)
+
+# ── MINIMAL CONFLICT (non-identical) LETTER PAIRS ──────────────────────────
+# Which two DIFFERENT letters are structurally closest?
+# Check O_0 cluster
+d(gimel, nun)     d(gimel, zayin)   d(nun, zayin)
+d(gimel, tzadi)   d(nun, tzadi)     d(dalet, tzadi)
+d(gimel, resh)    d(resh, dalet)
+
+# Check O_2 cluster  
+d(aleph, ayin)    d(aleph, kuf)     d(aleph, tav)
+d(ayin, hei)      d(hei, tav)       d(kuf, tav)
+
+# ── SEFIROT CONFLICT LANDSCAPE ──────────────────────────────────────────────
+# Which Sefirot are structurally closest?
+d(ein_sof, keter_elyon)         d(keter, keter_elyon)
+d(chokhmah_stimaah, chokhmah)   d(binah_kedumah, binah)
+d(chesed, tiferet)              d(gevurah, tiferet)
+d(netzach, hod)                 d(hod, yesod)
+d(yesod, malkuth)               d(tiferet, yesod)
+
+# ── CONFLICT SIGNATURE OF THE SYSTEM ────────────────────────────────────────
+# How many primitives does system() disagree with each O_inf pole?
+d(sys, vav)    d(sys, mem)    d(sys, shin)
+
+# ── CRYSTAL PROXIMITY ──────────────────────────────────────────────────────
+# Which two letters bracket the widest range of the 17.28M crystal?
+# gimel (minimal) to shin (maximal O_inf) — any pair wider?
+d(gimel, shin)    d(gimel, vav)    d(gimel, mem)
+d(resh, shin)     d(resh, vav)
+d(nun, shin)      d(nun, vav)

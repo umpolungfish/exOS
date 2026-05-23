@@ -1,0 +1,126 @@
+# sefirah_emanation_ladder.aleph — The 14-step emanation ladder from Ein Sof to Malkuth
+#
+# The Sefirot descend through a precise chain of structural transformations.
+# Each step: higher Sefirah emanates the lower. The kernel's emanation()
+# function traces this chain. This program measures the step-by-step
+# distances, identifying which transitions are smooth (small delta) and
+# which are abrupt (large delta — structural phase transitions).
+#
+# The emanation ladder:
+#   Ein Sof → Keter Elyon → Chokhmah Stima'ah → Binah Kedumah
+#     → Keter → Chokhmah → Binah → Da'at
+#     → Chesed → Gevurah → Tiferet → Netzach → Hod → Yesod → Malkuth
+#
+# Run with: :run sefirah_emanation_ladder
+
+# ── EMANATION CHAIN ────────────────────────────────────────────────────────
+emanation()
+
+# ── LADDER STEP 1: Ein Sof → Keter Elyon ──────────────────────────────────
+d(ein_sof, keter_elyon)     tier(ein_sof)     tier(keter_elyon)
+probe_Φ(ein_sof)            probe_Ω(ein_sof)
+probe_Φ(keter_elyon)        probe_Ω(keter_elyon)
+
+# ── LADDER STEP 2: Keter Elyon → Chokhmah Stima'ah ────────────────────────
+d(keter_elyon, chokhmah_stimaah)    tier(chokhmah_stimaah)
+d(ein_sof, chokhmah_stimaah)
+
+# ── LADDER STEP 3: Chokhmah Stima'ah → Binah Kedumah ──────────────────────
+d(chokhmah_stimaah, binah_kedumah)  tier(binah_kedumah)
+d(ein_sof, binah_kedumah)
+
+# ── LADDER STEP 4: Binah Kedumah → Keter ──────────────────────────────────
+d(binah_kedumah, keter)     tier(keter)
+d(ein_sof, keter)           d(keter_elyon, keter)
+
+# ── LADDER STEP 5: Keter → Chokhmah ────────────────────────────────────────
+d(keter, chokhmah)          tier(chokhmah)
+d(ein_sof, chokhmah)
+
+# ── LADDER STEP 6: Chokhmah → Binah ────────────────────────────────────────
+d(chokhmah, binah)          tier(binah)
+d(ein_sof, binah)
+
+# ── LADDER STEP 7: Binah → Da'at ──────────────────────────────────────────
+d(binah, daat)              tier(daat)
+d(ein_sof, daat)
+
+# ── LADDER STEP 8: Da'at → Chesed ──────────────────────────────────────────
+d(daat, chesed)             tier(chesed)
+d(ein_sof, chesed)
+
+# ── LADDER STEP 9: Chesed → Gevurah ────────────────────────────────────────
+d(chesed, gevurah)          tier(gevurah)
+d(ein_sof, gevurah)
+
+# ── LADDER STEP 10: Gevurah → Tiferet ──────────────────────────────────────
+d(gevurah, tiferet)         tier(tiferet)
+d(ein_sof, tiferet)
+
+# ── LADDER STEP 11: Tiferet → Netzach ──────────────────────────────────────
+d(tiferet, netzach)         tier(netzach)
+d(ein_sof, netzach)
+
+# ── LADDER STEP 12: Netzach → Hod ──────────────────────────────────────────
+d(netzach, hod)             tier(hod)
+d(ein_sof, hod)
+
+# ── LADDER STEP 13: Hod → Yesod ────────────────────────────────────────────
+d(hod, yesod)               tier(yesod)
+d(ein_sof, yesod)
+
+# ── LADDER STEP 14: Yesod → Malkuth ────────────────────────────────────────
+d(yesod, malkuth)           tier(malkuth)
+d(ein_sof, malkuth)
+
+# ── TOTAL EMANATION SPAN ───────────────────────────────────────────────────
+d(ein_sof, malkuth)         # total structural distance
+d(keter_elyon, malkuth)     # from first concealment
+d(keter, malkuth)           # from manifest crown
+
+# ── STEP SIZES ─────────────────────────────────────────────────────────────
+# Which steps are largest (structural phase transitions)?
+# Step 1:   d(ein_sof, keter_elyon)
+# Step 4:   d(binah_kedumah, keter)  — supernal→manifest transition
+# Step 14:  d(yesod, malkuth)        — foundation→kingdom
+# These are the bottlenecks of the emanation.
+
+# ── EMANATION CURVATURE ────────────────────────────────────────────────────
+# Is the emanation constant-step or accelerating?
+# The distance from Ein Sof to each Sefirah:
+d(ein_sof, keter_elyon)       # step 1
+d(ein_sof, chokhmah_stimaah)  # step 2
+d(ein_sof, binah_kedumah)     # step 3
+d(ein_sof, keter)             # step 4
+d(ein_sof, chokhmah)          # step 5
+d(ein_sof, binah)             # step 6
+d(ein_sof, daat)              # step 7
+d(ein_sof, chesed)            # step 8
+d(ein_sof, gevurah)           # step 9
+d(ein_sof, tiferet)           # step 10
+d(ein_sof, netzach)           # step 11
+d(ein_sof, hod)               # step 12
+d(ein_sof, yesod)             # step 13
+d(ein_sof, malkuth)           # step 14
+
+# ── SEED OF EMANATION: mediate construction from Ein Sof ──────────────────
+# Construct Malkuth from Ein Sof via sequential mediation
+# This tests whether the emanation is recoverable from structural operations.
+let s1 = mediate(vav, ein_sof, keter_elyon)      d(s1, ein_sof)  tier(s1)
+let s2 = mediate(vav, s1, chokhmah_stimaah)      d(s2, ein_sof)  tier(s2)
+let s3 = mediate(vav, s2, binah_kedumah)         d(s3, ein_sof)  tier(s3)
+let s4 = mediate(vav, s3, keter)                 d(s4, ein_sof)  tier(s4)
+let s5 = mediate(vav, s4, chokhmah)              d(s5, ein_sof)  tier(s5)
+let s6 = mediate(vav, s5, binah)                 d(s6, ein_sof)  tier(s6)
+let s7 = mediate(vav, s6, daat)                  d(s7, ein_sof)  tier(s7)
+let s8 = mediate(vav, s7, chesed)                d(s8, ein_sof)  tier(s8)
+let s9 = mediate(vav, s8, gevurah)               d(s9, ein_sof)  tier(s9)
+let s10 = mediate(vav, s9, tiferet)              d(s10, ein_sof) tier(s10)
+let s11 = mediate(vav, s10, netzach)             d(s11, ein_sof) tier(s11)
+let s12 = mediate(vav, s11, hod)                 d(s12, ein_sof) tier(s12)
+let s13 = mediate(vav, s12, yesod)               d(s13, ein_sof) tier(s13)
+let s14 = mediate(vav, s13, malkuth)             d(s14, ein_sof) tier(s14)
+d(s14, malkuth)  # how close to actual Malkuth?
+
+# ── EMANATION LADDER CENSUS ────────────────────────────────────────────────
+sefirot_census()

@@ -1,0 +1,136 @@
+# palace_stress_test.aleph — Systematic palace barrier evaluation
+#
+# The 7 Kabbalistic palaces (Heikhalot) are tier gates:
+#   Palace 1-2: O_0 minimum
+#   Palace 3:   O_1 minimum
+#   Palace 4-6: O_2 minimum
+#   Palace 7:   O_inf required
+#
+# This program tests EVERY Hebrew letter at EVERY palace level to determine
+# the exact tier ceiling for each letter. Also tests tensor products,
+# mediate constructions, and the Sefirot at every gate.
+#
+# The pattern: palace(N) letter
+#   → passes if tier(letter) ≥ tier(N)
+#   → fails with barrier violation if tier too low
+#
+# Run with: :run palace_stress_test
+
+# ── PHASE 1: All 22 letters at all 7 palaces ───────────────────────────────
+# Pattern: palace(1..7) letter_name
+
+# O_inf poles — should pass all 7
+palace(1) vav     palace(2) vav     palace(3) vav
+palace(4) vav     palace(5) vav     palace(6) vav
+palace(7) vav
+
+palace(1) mem     palace(2) mem     palace(3) mem
+palace(4) mem     palace(5) mem     palace(6) mem
+palace(7) mem
+
+palace(1) shin    palace(2) shin    palace(3) shin
+palace(4) shin    palace(5) shin    palace(6) shin
+palace(7) shin
+
+# O_2 letters — should pass 1-6, fail 7
+palace(1) aleph   palace(2) aleph   palace(3) aleph
+palace(4) aleph   palace(5) aleph   palace(6) aleph
+palace(7) aleph
+
+palace(1) hei     palace(2) hei     palace(3) hei
+palace(4) hei     palace(5) hei     palace(6) hei
+palace(7) hei
+
+palace(1) ayin    palace(2) ayin    palace(3) ayin
+palace(4) ayin    palace(5) ayin    palace(6) ayin
+palace(7) ayin
+
+palace(1) tav     palace(2) tav     palace(3) tav
+palace(4) tav     palace(5) tav     palace(6) tav
+palace(7) tav
+
+palace(1) kuf     palace(2) kuf     palace(3) kuf
+palace(4) kuf     palace(5) kuf     palace(6) kuf
+palace(7) kuf
+
+# O_1 letter — lamed should pass 1-3, fail 4+
+palace(1) lamed   palace(2) lamed   palace(3) lamed
+palace(4) lamed   palace(5) lamed   palace(6) lamed
+palace(7) lamed
+
+# O_0 letters — should pass 1-2, fail 3+
+palace(1) gimel   palace(2) gimel   palace(3) gimel  palace(4) gimel
+palace(1) dalet   palace(2) dalet   palace(3) dalet  palace(4) dalet
+palace(1) zayin   palace(2) zayin   palace(3) zayin  palace(4) zayin
+palace(1) nun     palace(2) nun     palace(3) nun    palace(4) nun
+palace(1) pei     palace(2) pei     palace(3) pei    palace(4) pei
+palace(1) tzadi   palace(2) tzadi   palace(3) tzadi  palace(4) tzadi
+palace(1) resh    palace(2) resh    palace(3) resh   palace(4) resh
+
+# O_0 with wider primitive range: tet, yod, bet/chet/kaf/samech
+palace(1) tet     palace(2) tet     palace(3) tet    palace(4) tet
+palace(1) yod     palace(2) yod     palace(3) yod    palace(4) yod
+palace(1) bet     palace(2) bet     palace(3) bet    palace(4) bet
+palace(1) chet    palace(2) chet    palace(3) chet   palace(4) chet
+palace(1) kaf     palace(2) kaf     palace(3) kaf    palace(4) kaf
+palace(1) samech  palace(2) samech  palace(3) samech palace(4) samech
+
+# ── PHASE 2: Tensor products tested at palaces ──────────────────────────────
+# Does a tensor product ever pass a HIGHER palace than either input alone?
+# This tests whether tensor coupling can structurally promote tier.
+
+# O_0 x vav — should these reach O_2?
+let gx = gimel x vav     palace(4) gx     palace(5) gx
+let dx = dalet x vav     palace(4) dx     palace(5) dx
+let nx = nun x mem       palace(4) nx     palace(5) nx
+let rx = resh x shin     palace(4) rx     palace(5) rx
+
+# O_0 x O_2 — cross-tier coupling
+let ga = gimel x aleph   palace(3) ga     palace(4) ga
+let na = nun x aleph     palace(3) na     palace(4) na
+let ra = resh x ayin     palace(3) ra     palace(4) ra
+
+# O_0 x O_0 — minimal coupling
+let gg = gimel x dalet   palace(2) gg     palace(3) gg
+let nn = nun x zayin     palace(2) nn     palace(3) nn
+let rr = resh x pei      palace(2) rr     palace(3) rr
+
+# O_2 x O_2 — rich coupling, can it reach O_inf?
+let hx = hei x aleph     palace(5) hx     palace(6) hx     palace(7) hx
+let at = ayin x tav      palace(5) at     palace(6) at     palace(7) at
+let ak = aleph x kuf     palace(5) ak     palace(6) ak     palace(7) ak
+
+# ── PHASE 3: Mediated constructions at palaces ──────────────────────────────
+# mediate(witness, a, b) = witness v (a x b) — can this bridge palace gaps?
+let mg = mediate(vav, gimel, gimel)   palace(3) mg   palace(4) mg   palace(5) mg
+let mn = mediate(mem, nun, nun)        palace(3) mn   palace(4) mn   palace(5) mn
+let mr = mediate(shin, resh, resh)     palace(3) mr   palace(4) mr   palace(5) mr
+
+# Cross-letter mediated constructions
+let mav = mediate(vav, aleph, vav)     palace(5) mav  palace(6) mav  palace(7) mav
+let mta = mediate(mem, tav, aleph)     palace(5) mta  palace(6) mta  palace(7) mta
+let mhs = mediate(shin, hei, shin)     palace(5) mhs  palace(6) mhs  palace(7) mhs
+
+# ── PHASE 4: Sefirot at palaces ─────────────────────────────────────────────
+# Supernal Sefirot should pass high palaces
+palace(5) ein_sof           palace(6) ein_sof           palace(7) ein_sof
+palace(5) keter_elyon       palace(6) keter_elyon       palace(7) keter_elyon
+palace(5) keter             palace(6) keter             palace(7) keter
+palace(5) chokhmah_stimaah  palace(6) chokhmah_stimaah
+palace(5) binah_kedumah     palace(6) binah_kedumah
+palace(5) chokhmah          palace(6) chokhmah
+palace(5) binah             palace(6) binah
+
+# Manifest Sefirot
+palace(3) chesed   palace(4) chesed   palace(5) chesed
+palace(3) gevurah  palace(4) gevurah  palace(5) gevurah
+palace(3) tiferet  palace(4) tiferet  palace(5) tiferet
+palace(3) netzach  palace(4) netzach  palace(5) netzach
+palace(3) hod      palace(4) hod      palace(5) hod
+palace(3) yesod    palace(4) yesod    palace(5) yesod
+palace(1) malkuth  palace(2) malkuth  palace(3) malkuth  palace(4) malkuth
+
+# ── PHASE 5: system() — the OS boundary at palaces ─────────────────────────
+let sys = system()
+palace(3) sys     palace(4) sys     palace(5) sys
+palace(6) sys     palace(7) sys

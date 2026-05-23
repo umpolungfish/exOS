@@ -1,0 +1,112 @@
+# letter_sefirah_projection.aleph — Mapping every Hebrew letter to its nearest Sefirah
+#
+# For each of the 22 Hebrew letters, find the structurally closest Sefirah.
+# This reveals the "sefirah projection" of the ALEPH letter lattice onto
+# the 14-dimensional Kabbalistic emanation space.
+#
+# The inverse mapping is also computed: for each Sefirah, the structurally
+# closest Hebrew letter. This gives the "letter glyph" of each Sefirah.
+#
+# Together, these mappings define the structural correspondence between
+# the 22-letter ALEPH type system and the 14-Sefirah emanation system.
+#
+# Run with: :run letter_sefirah_projection
+
+# ── FORWARD: Each letter → nearest Sefirah ──────────────────────────────────
+# Aleph: closest to which Sefirah?
+d(aleph, keter)           d(aleph, chokhmah)      d(aleph, binah)
+d(aleph, daat)            d(aleph, chesed)        d(aleph, tiferet)
+d(aleph, ein_sof)         d(aleph, keter_elyon)
+
+# Bet (O_0 with K_1, F_1, P_2)
+d(bet, keter)             d(bet, chokhmah)        d(bet, binah)
+d(bet, chesed)            d(bet, tiferet)         d(bet, hod)
+d(bet, daat)              d(bet, yesod)
+
+# Gimel (pure O_0 with 0s across many primitives)
+d(gimel, malkuth)         d(gimel, yesod)         d(gimel, hod)
+d(gimel, netzach)         d(gimel, tiferet)       d(gimel, chesed)
+d(gimel, daat)            d(gimel, keter)
+
+# Dalet (O_0, similar to gimel but with T_in)
+d(dalet, malkuth)         d(dalet, yesod)         d(dalet, hod)
+d(dalet, netzach)         d(dalet, tiferet)
+
+# Hei (O_2 — rich structure, closest to supernal Sefirot)
+d(hei, keter)             d(hei, chokhmah)        d(hei, binah)
+d(hei, ein_sof)           d(hei, keter_elyon)     d(hei, daat)
+d(hei, tiferet)           d(hei, chesed)          d(hei, hod)
+
+# Vav (O_inf pole) — closest to what Sefirah?
+d(vav, keter)             d(vav, chokhmah)        d(vav, binah)
+d(vav, ein_sof)           d(vav, keter_elyon)     d(vav, daat)
+d(vav, tiferet)           d(vav, chesed)          d(vav, yesod)
+
+# Zayin (O_0 minimal)
+d(zayin, malkuth)         d(zayin, yesod)         d(zayin, hod)
+d(zayin, netzach)         d(zayin, tiferet)
+
+# Chet (O_0, bet-clone)
+d(chet, malkuth)          d(chet, hod)            d(chet, yesod)
+d(chet, netzach)          d(chet, tiferet)
+
+# Tet (O_0 with T_in, K_2)
+d(tet, malkuth)           d(tet, yesod)           d(tet, hod)
+d(tet, tiferet)           d(tet, chesed)
+
+# Yod (O_0, D_odot but H_1)
+d(yod, malkuth)           d(yod, yesod)           d(yod, hod)
+d(yod, tiferet)           d(yod, keter)
+
+# Kaf (O_0, bet-clone)
+d(kaf, malkuth)           d(kaf, hod)             d(kaf, yesod)
+d(kaf, netzach)           d(kaf, tiferet)
+
+# Lamed (O_1 — the only O_1 letter)
+d(lamed, keter)           d(lamed, chokhmah)      d(lamed, binah)
+d(lamed, daat)            d(lamed, tiferet)       d(lamed, yesod)
+d(lamed, chesed)          d(lamed, malkuth)
+
+# Mem (O_inf pole — water, memory)
+d(mem, keter)             d(mem, chokhmah)        d(mem, binah)
+d(mem, ein_sof)           d(mem, yesod)           d(mem, tiferet)
+
+# Nun (O_0 minimal)
+d(nun, malkuth)           d(nun, yesod)           d(nun, hod)
+d(nun, netzach)           d(nun, tiferet)         d(nun, chesed)
+
+# Samech (O_0, bet-clone)
+d(samech, malkuth)        d(samech, hod)          d(samech, yesod)
+d(samech, netzach)        d(samech, tiferet)
+
+# Ayin (O_2 — hidden wisdom)
+d(ayin, keter)            d(ayin, chokhmah)       d(ayin, binah)
+d(ayin, ein_sof)          d(ayin, daat)           d(ayin, tiferet)
+d(ayin, chesed)
+
+# Pei (O_0 with G_broadcast)
+d(pei, malkuth)           d(pei, yesod)           d(pei, hod)
+d(pei, tiferet)           d(pei, chesed)
+
+# Tzadi (O_0 minimal)
+d(tzadi, malkuth)         d(tzadi, yesod)         d(tzadi, hod)
+d(tzadi, netzach)
+
+# Kuf (O_2 — not far from supernal)
+d(kuf, keter)             d(kuf, chokhmah)        d(kuf, binah)
+d(kuf, daat)              d(kuf, tiferet)         d(kuf, chesed)
+d(kuf, yesod)
+
+# Resh (O_0 with D_odot)
+d(resh, malkuth)          d(resh, yesod)          d(resh, hod)
+d(resh, tiferet)          d(resh, daat)           d(resh, chokhmah)
+
+# Shin (O_inf pole — fire, transformation)
+d(shin, keter)            d(shin, chokhmah)       d(shin, binah)
+d(shin, ein_sof)          d(shin, keter_elyon)    d(shin, daat)
+d(shin, tiferet)
+
+# Tav (O_2 — completion)
+d(tav, keter)             d(tav, chokhmah)        d(tav, binah)
+d(tav, daat)              d(tav, tiferet)         d(tav, chesed)
+d(tav, yesod)             d(tav, malkuth)

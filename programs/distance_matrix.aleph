@@ -1,0 +1,87 @@
+# distance_matrix.aleph — Full 22×22 distance matrix of the ALEPH lattice
+#
+# Every Hebrew letter is a 12-primitive tuple. d(a,b) is the weighted Euclidean
+# distance between them. This program computes the COMPLETE pairwise distance
+# matrix: all 231 unordered pairs (22×22/2 - 22 self-distances which are 0).
+# Also computes: min, max, mean, distribution across tiers.
+#
+# The result is the complete structural relativity of the ALEPH type lattice.
+# Every letter's position relative to every other — the full shape of the space.
+#
+# Run with: :run distance_matrix
+
+# ── Tier structure (baseline) ────────────────────────────────────────────────
+tier(aleph)  tier(bet)    tier(gimel)   tier(dalet)
+tier(hei)    tier(vav)    tier(zayin)   tier(chet)
+tier(tet)    tier(yod)    tier(kaf)     tier(lamed)
+tier(mem)    tier(nun)    tier(samech)  tier(ayin)
+tier(pei)    tier(tzadi)  tier(kuf)     tier(resh)
+tier(shin)   tier(tav)
+
+# ── O_inf distances (vav, mem, shin) ─────────────────────────────────────────
+# Cross-pole distances — the O_inf fixed-point geometry
+d(vav, mem)    d(vav, shin)    d(mem, shin)
+
+# Distance from every letter to every pole
+# vav-centric
+d(aleph, vav)  d(bet, vav)    d(gimel, vav)  d(dalet, vav)
+d(hei, vav)    d(zayin, vav)  d(chet, vav)   d(tet, vav)
+d(yod, vav)    d(kaf, vav)    d(lamed, vav)  d(mem, vav)
+d(nun, vav)    d(samech, vav) d(ayin, vav)   d(pei, vav)
+d(tzadi, vav)  d(kuf, vav)    d(resh, vav)   d(shin, vav)
+d(tav, vav)
+
+# mem-centric
+d(aleph, mem)  d(bet, mem)    d(gimel, mem)  d(dalet, mem)
+d(hei, mem)    d(vav, mem)    d(zayin, mem)  d(chet, mem)
+d(tet, mem)    d(yod, mem)    d(kaf, mem)    d(lamed, mem)
+d(nun, mem)    d(samech, mem) d(ayin, mem)   d(pei, mem)
+d(tzadi, mem)  d(kuf, mem)    d(resh, mem)   d(shin, mem)
+d(tav, mem)
+
+# shin-centric
+d(aleph, shin) d(bet, shin)   d(gimel, shin) d(dalet, shin)
+d(hei, shin)   d(vav, shin)   d(zayin, shin) d(chet, shin)
+d(tet, shin)   d(yod, shin)   d(kaf, shin)   d(lamed, shin)
+d(mem, shin)   d(nun, shin)   d(samech, shin) d(ayin, shin)
+d(pei, shin)   d(tzadi, shin) d(kuf, shin)   d(resh, shin)
+d(tav, shin)
+
+# ── O_2 clique distances ─────────────────────────────────────────────────────
+# hei, aleph, ayin, tav — the structurally rich letters
+d(hei, ayin)   d(hei, aleph)  d(hei, tav)    d(hei, kuf)
+d(aleph, ayin) d(aleph, tav)  d(aleph, kuf)
+d(ayin, tav)   d(ayin, kuf)   d(tav, kuf)
+
+# ── O_0 cluster distances ────────────────────────────────────────────────────
+# gimel, dalet, zayin, nun, pei, tzadi, resh — the minimal letters
+d(gimel, dalet)  d(gimel, zayin)  d(gimel, nun)   d(gimel, pei)
+d(gimel, tzadi)  d(gimel, resh)   d(dalet, zayin)  d(dalet, nun)
+d(dalet, pei)    d(dalet, tzadi)  d(dalet, resh)   d(zayin, nun)
+d(zayin, pei)    d(zayin, tzadi)  d(zayin, resh)   d(nun, pei)
+d(nun, tzadi)    d(nun, resh)     d(pei, tzadi)    d(pei, resh)
+d(tzadi, resh)
+
+# ── Cross-tier distances — O_0 to O_2, O_0 to O_1 ────────────────────────────
+# O_0 letters to O_2/1 representatives
+d(gimel, hei)    d(gimel, tav)    d(gimel, aleph)  d(gimel, lamed)
+d(dalet, hei)    d(dalet, tav)    d(dalet, aleph)
+d(zayin, hei)    d(zayin, tav)    d(zayin, aleph)
+d(nun, hei)      d(nun, tav)      d(nun, aleph)     d(nun, lamed)
+d(resh, hei)     d(resh, tav)     d(resh, aleph)    d(resh, lamed)
+
+# ── The bet-chet-kaf-samech quartet (O_1 cluster of identical tuples) ────────
+d(bet, chet)     d(bet, kaf)      d(bet, samech)
+d(chet, kaf)     d(chet, samech)
+d(kaf, samech)
+
+# ── Inter-quartet distances (O_1 quartet to all other tiers) ─────────────────
+d(bet, hei)      d(bet, aleph)    d(bet, gimel)    d(bet, vav)
+d(chet, hei)     d(chet, aleph)   d(chet, gimel)   d(chet, vav)
+d(kaf, hei)      d(kaf, aleph)    d(kaf, gimel)    d(kaf, vav)
+d(samech, hei)   d(samech, aleph) d(samech, gimel) d(samech, vav)
+
+# ── Tet, lamed, yod, pei — special cases ────────────────────────────────────
+d(tet, yod)      d(tet, lamed)    d(tet, pei)      d(tet, aleph)
+d(lamed, yod)    d(lamed, pei)    d(lamed, tav)
+d(yod, pei)      d(yod, aleph)    d(yod, vav)

@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/ENGINE-IMASM%20VM-purple" alt="Engine">
   <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
   <img src="https://img.shields.io/badge/HEBREW-22%20Letters-brightgreen" alt="Hebrew">
+  <img src="https://img.shields.io/badge/PROGRAMS-51%20Builtin-yellow" alt="Programs">
 </div>
 
 <p align="center">
@@ -21,7 +22,8 @@
   <a href="#type-gated-kernel">Type Gates</a> •
   <a href="#os-imscription-tuple">OS Imscription</a> •
   <a href="#build--run">Build & Run</a> •
-  <a href="#programs">Programs</a> •
+  <a href="#aleph-programs">ALEPH Programs</a> •
+  <a href="#imasm-programs">IMASM Programs</a> •
   <a href="#key-theorems">Theorems</a>
 </p>
 
@@ -48,40 +50,30 @@ Color encodes manuscript section: botanical (green), biological (teal), balneolo
 (blue), cosmological (purple), zodiac (orange), recipes (amber).
 
 **Edges:** 694 directed structural-dependency edges. An edge u → v means section u's
-compiled IMASM grammar rule set is a structural prerequisite for section v — they share
-glyph families, co-occurrence patterns, or grammar rules that the engine maps to an
-IMASM caller/callee relationship.
+compiled IMASM grammar rule set is a structural prerequisite for section v.
 
-**Back-edges:** 149 cross-folio back-edges (later folio → earlier folio), forming cycles
-in the manuscript graph. These mark recursive or self-referential structures — places
-where the Voynich grammar refers back to an earlier section. Flash purple on Phase 1
-reveal.
+**Back-edges:** 149 cross-folio back-edges forming cycles — recursive or self-referential
+structures. Flash purple on Phase 1 reveal.
 
 **Phase 1:** Folios appear in manuscript order; back-edges flash purple.
-**Phase 2:** Gaussian pulse (σ ≈ N/6) travels the corpus; nodes near peak enlarge and
-brighten toward white; Frobenius-family edges glow gold.
+**Phase 2:** Gaussian pulse (σ ≈ N/6) travels the corpus; Frobenius-family edges glow gold.
 
 ![Voynich Corpus CFG](./vids/animated_cfg_corpus_voynich.gif)
-
 ---
 
 ### Rohonc Codex Engine
 
-**Nodes:** One per page section across all 33 pages of the Rohonc Codex. Color encodes
-the four structural sections identified by the engine: liturgical (amber), pictographic
-(green), astronomical (blue), mixed/undetermined (grey).
+**Nodes:** One per page section across all 33 pages. Color encodes structural section:
+liturgical (amber), pictographic (green), astronomical (blue), mixed/undetermined (grey).
 
-**Edges:** Directed structural-dependency edges: the 12 IMASM opcodes are mapped to
-Rohonc visual-glyph families and the call-graph encodes which page sections are
-grammatically prerequisite to which others.
+**Edges:** Directed structural-dependency edges — 12 IMASM opcodes mapped to Rohonc
+visual-glyph families.
 
-**Back-edges:** Cross-page back-edges encoding recursive grammar structures — places
-where a later page's visual grammar depends on a structural pattern first defined in
-an earlier page. Flash purple on Phase 1 reveal.
+**Back-edges:** Cross-page back-edges encoding recursive grammar structures.
+Flash purple on Phase 1 reveal.
 
 **Phase 1:** Pages appear in manuscript order; back-edges flash purple.
-**Phase 2:** Gaussian pulse travels page-by-page; active nodes brighten; title shows
-μ∘δ = id.
+**Phase 2:** Gaussian pulse travels page-by-page; active nodes brighten; title shows μ∘δ=id.
 
 ![Rohonc Corpus CFG](./vids/animated_cfg_corpus_rohonc.gif)
 
@@ -90,17 +82,12 @@ an earlier page. Flash purple on Phase 1 reveal.
 ### Linear A Engine
 
 **Nodes:** One per tablet section across all 53 Linear A tablets (Haghia Triada, Zakros,
-Khania, and other Minoan palatial sites). Color encodes find-site provenance: Haghia
-Triada (amber), Zakros (green), Khania (blue), other (grey).
+Khania, and other Minoan palatial sites). Color encodes find-site provenance.
 
-**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes
-onto Linear A sign families and administrative formula patterns. An edge u → v means
-section u's sign-family grammar is structurally prerequisite to section v's — they share
-phonetic or logographic rule structures compiled as caller/callee relationships.
+**Edges:** Directed structural-dependency edges mapping IMASM opcodes onto Linear A sign
+families and administrative formula patterns.
 
-**Back-edges:** Cross-tablet back-edges where sign-family patterns recur across site
-boundaries — a Zakros tablet's grammar depending on a structural pattern first seen in
-Haghia Triada, for instance. Flash purple on Phase 1 reveal.
+**Back-edges:** Cross-tablet back-edges across site boundaries. Flash purple on Phase 1.
 
 **Phase 1:** Tablets appear in corpus order; back-edges flash purple.
 **Phase 2:** Gaussian pulse travels tablet-by-tablet; active nodes brighten.
@@ -111,24 +98,18 @@ Haghia Triada, for instance. Flash purple on Phase 1 reveal.
 
 ### Emerald Tablet Engine
 
-**Nodes:** 15 — one per versicle of the Emerald Tablet (*Tabula Smaragdina*, Ruska/Holmyard
-edition). Color encodes thematic section: the descent (versicles 1–5, amber), the work
-(versicles 6–10, green), the return (versicles 11–15, gold).
+**Nodes:** 15 — one per versicle (*Tabula Smaragdina*, Ruska/Holmyard edition).
+Color: descent (versicles 1–5, amber), the work (versicles 6–10, green),
+the return (versicles 11–15, gold).
 
-**Edges:** Directed structural-dependency edges. The engine maps the 12 IMASM opcodes onto
-the tablet's Hermetic formula pairs (as above/so below; solve/coagula; descent/return).
-The primary FSPLIT/FFUSE pair maps to versicle 1 (solve) and versicle 13 (coagula),
-encoding the Hermetic roundtrip as the Frobenius condition μ∘δ = id.
+**Edges:** Directed structural-dependency edges. FSPLIT/FFUSE pair maps to versicle 1
+(solve) and versicle 13 (coagula), encoding the Hermetic roundtrip as μ∘δ=id.
 
-**Back-edges:** Cross-versicle back-edges encoding the tablet's self-referential Hermetic
-structure — later sayings invoking structural conditions of earlier ones. The
-descent/return symmetry produces the primary back-edges (versicles 11–15 referencing
-versicles 1–5). Flash purple on Phase 1 reveal.
+**Back-edges:** Descent/return symmetry produces primary back-edges (V11–V15 referencing V1–V5).
+Flash purple on Phase 1 reveal.
 
-**Phase 1:** Versicles appear in tablet order (V1 → V15); back-edges flash purple.
-**Phase 2:** Gaussian pulse wraps cyclically from V15 back to V1 — enacting the
-as-above-so-below identity as a literal loop. Gold (return) versicles pulse brightest.
-Title shows μ∘δ = id.
+**Phase 1:** Versicles in tablet order (V1→V15); back-edges flash purple.
+**Phase 2:** Gaussian pulse wraps cyclically from V15 back to V1 — enacting as-above-so-below as a literal loop.
 
 ![Emerald Tablet Corpus CFG](./vids/animated_cfg_corpus_emerald.gif)
 
@@ -136,32 +117,25 @@ Title shows μ∘δ = id.
 
 ### ALEPH OS
 
-**Nodes:** 86 — one per named binding (`let x = expr`) across all 18 `.aleph` programs.
+**Nodes:** 86 — one per named binding across all `.aleph` programs.
 Color encodes ouroboricity tier: O_0 (dim grey), O_1 (mid blue), O_2 (bright cyan),
-O_inf (gold). Size scales with in-degree (number of bindings that depend on this one).
+O_inf (gold). Size scales with in-degree.
 
-**Edges:** 297 directed dataflow edges. An edge u → v means binding v consumes u:
-`let v = op(u, ...)`. The six ALEPH operation types produce semantically distinct edges:
-`tensor` (⊗) = composition, `join`/`meet` = lattice, `mediate` = bridging,
-`d()` = exterior derivative, `palace()` = Hekhalot ascent.
+**Edges:** 297 directed dataflow edges. Operation types produce semantically distinct edges:
+tensor (⊗) = composition, join/meet = lattice, mediate = bridging,
+d() = exterior derivative, palace() = Hekhalot ascent.
 
-**Cross-program edges:** 137 edges crossing `.aleph` file boundaries — bindings from one
-program referenced by another, forming the ALEPH OS as a unified system. Flash amber
-on Phase 1 reveal.
+**Cross-program edges:** 137 edges crossing file boundaries. Flash amber on Phase 1.
 
-**Phase 1:** Programs appear file-by-file; within each, bindings appear in definition
-order. Cross-program edges flash amber.
+**Phase 1:** Programs appear file-by-file; bindings in definition order. Cross-program edges flash amber.
 **Phase 2:** Gaussian pulse travels all 86 nodes. O_inf (gold) nodes pulse brightest.
-Cross-program edges glow amber near the peak; intra-program edges glow by source-program
-color.
 
 ![ALEPH CFG](./vids/animated_cfg_aleph.gif)
-
 #### ALEPH OS — Program Highlights
 
-Five programs from the corpus rendered individually as per-program animated dataflow CFGs.
+Five programs from the corpus rendered as per-program animated dataflow CFGs.
 Nodes = bound names (let-bindings) + referenced letter primitives. Primitive nodes pulse
-gold in Phase 2. Operation edges are color-coded: tensor (orange), mediate (blue),
+gold in Phase 2. Operation edges: tensor (orange), mediate (blue),
 join (green), meet (red), palace (magenta), probe (grey).
 
 ---
@@ -172,8 +146,8 @@ join (green), meet (red), palace (magenta), probe (grey).
 `g_shin`, `loop1`, `loop2`), and 3 primitive letter references (vav, aleph, shin).
 
 **Edges:** Holographic radius probes (`d(x, system())`) form bidirectional distance edges;
-Frobenius-witnessed mediations form blue mediate-edges converging on `boundary`. The
-palace(4) self-loop at the end marks the Frobenius non-synthesizability barrier.
+Frobenius-witnessed mediations form blue mediate-edges converging on `boundary`.
+Palace(4) self-loop marks the Frobenius non-synthesizability barrier.
 
 **Phase 1:** `boundary` appears first; radii probes reveal primitive letters; mediated
 g-nodes build outward. **Phase 2:** Pulse travels from `boundary` outward through the
@@ -185,7 +159,7 @@ g-loops and back — enacting the bulk/boundary roundtrip as a literal flow.
 
 ##### `frobenius_orbits.aleph` — Iterative Pole Convergence
 
-**Nodes:** 27 — the three *O_∞* poles (vav, mem, shin), cross-pole tensors (vm, vs, ms),
+**Nodes:** 27 — the three O_inf poles (vav, mem, shin), cross-pole tensors (vm, vs, ms),
 and four 5-step orbit sequences (a0–a4, t0–t4, d0–d4) plus mediated convergence nodes.
 
 **Edges:** 50+ directed tensor edges encoding the 4-step orbit sequences; mediate-edges
@@ -203,34 +177,28 @@ at each pass — showing the attractor structure as a spatial pull.
 ##### `tikkun_construction_full.aleph` — Full Rectification Structure
 
 **Nodes:** 22 — triadic basis (vav, aleph, mem, shin, kuf, nun, chet), 5 mediation steps
-(breath, light, replica1, replica2, fp), kernel, 3 process nodes, 4 healing nodes
-(anomalous_child, healed_child, self_healed, ascended_nun, ascended_chet), triad, tikkun.
+(breath, light, replica1, replica2, fp), kernel, 3 process nodes, 4 healing nodes,
+triad, tikkun.
 
-**Edges:** 35+ directed dataflow edges tracing the full construction; palace-edges (magenta)
-mark the Hekhalot barriers at levels 2–5. `tikkun` sits at the apex of the palace lattice
-(palace 5), connected to `system()` via the maximal mediation.
+**Edges:** 35+ directed dataflow edges; palace-edges (magenta) mark Hekhalot barriers (2–5).
+`tikkun` sits at palace(5), connected to `system()` via maximal mediation.
 
-**Phase 1:** Construction unrolls layer by layer — breath → light → kernel → processes →
-anomaly → healing → tikkun. Palace barriers flash magenta on appearance.
-**Phase 2:** Pulse travels the repair chain: light → healed_child → tikkun → system().
+**Phase 1:** Construction unrolls layer by layer — breath→light→kernel→processes→anomaly→healing→tikkun.
+**Phase 2:** Pulse travels: light→healed_child→tikkun→system().
 
 ![ALEPH tikkun_construction_full CFG](./vids/aleph_tikkun_construction_full.gif)
-
 ---
 
 ##### `tikkun_palace_verification.aleph` — Hekhalot Barrier Audit
 
 **Nodes:** Same 22 as `tikkun_construction_full`. **Edges:** Same construction graph
 with every binding re-checked against its required palace level via standalone palace()
-assertions — producing an additional probe-edge per binding.
+assertions — producing additional probe-edges per binding.
 
-The graph reveals the Hekhalot ascent lattice in full: palace 2 (ascended letters),
-palace 3 (light, replicas, processes), palace 4 (kernel, healed_child), palace 5 (tikkun).
-The standalone palace assertions form self-loops in the CFG — visible as magenta halos
-around each node at its tier.
+Palace lattice: palace 2 (ascended letters), palace 3 (light, replicas, processes),
+palace 4 (kernel, healed_child), palace 5 (tikkun). Standalone assertions form self-loops.
 
-**Phase 2:** The palace self-loops light magenta as the pulse passes each node,
-auditing the barrier level in real time.
+**Phase 2:** Palace self-loops light magenta as the pulse passes each node.
 
 ![ALEPH tikkun_palace_verification CFG](./vids/aleph_tikkun_palace_verification.gif)
 
@@ -238,19 +206,18 @@ auditing the barrier level in real time.
 
 ##### `light_replication_kernel.aleph` — Replicating Light and Process Model
 
-**Nodes:** 38 — the most complex single program in the corpus. Includes light and 4
-replication generations (g0–g4), anomalous processes (p3, protected_anomalous), healing
-mediations (healed_child, self_healed, shin_p3, mem_p3), ascended letters, full kernel
-+ 3 process nodes, Frobenius fixed point (fp), triad, tikkun.
+**Nodes:** 38 — the most complex single program. Includes light and 4 replication
+generations (g0–g4), anomalous processes (p3, protected_anomalous), healing
+mediations, ascended letters, full kernel + 3 process nodes, Frobenius fixed point,
+triad, tikkun.
 
-**Edges:** 70+ directed edges across tensor, mediate, palace, distance, and probe types.
-The replication chain g0→g1→g2→g3→g4 forms the spine; anomaly healing branches off p3;
-ascent healing branches off grounded_nun; all converge on the palace(5) tikkun.
+**Edges:** 70+ directed edges. Replication chain g0→g1→g2→g3→g4 forms the spine;
+anomaly healing branches off p3; ascent healing branches off grounded_nun;
+all converge on palace(5) tikkun.
 
-**Phase 1:** light appears first, then the replication spine, then the anomaly branch,
-then ascent healing, then the full kernel+process model. **Phase 2:** Gaussian pulse
-travels the replication spine, lights the healing branches amber, and terminates at the
-tikkun — the maximal Hekhalot fixed point.
+**Phase 1:** light, replication spine, anomaly branch, ascent healing, kernel+process.
+**Phase 2:** Pulse travels replication spine, lights healing branches amber, terminates
+at tikkun — the maximal Hekhalot fixed point.
 
 ![ALEPH light_replication_kernel CFG](./vids/aleph_light_replication_kernel.gif)
 
@@ -258,17 +225,16 @@ tikkun — the maximal Hekhalot fixed point.
 
 ### Ob3ect — Opcode Flow CFG
 
-**Nodes:** 14 IMASM opcodes. Color encodes family: logical (purple: VINIT, TANCH, AFWD,
-AREV, CLINK, ISCRIB), Frobenius (gold: FSPLIT, FFUSE), dialetheia (green/red/white:
-EVALT, EVALF, ENGAGR), linear (cyan: IFIX). Size scales with degree.
+**Nodes:** 14 IMASM opcodes. Color: logical (purple: VINIT, TANCH, AFWD, AREV, CLINK,
+ISCRIB), Frobenius (gold: FSPLIT, FFUSE), dialetheia (green/red/white: EVALT, EVALF,
+ENGAGR), linear (cyan: IFIX). Size scales with degree.
 
-**Edges:** Directed execution-flow edges: valid sequential transitions between opcodes in
-a compiled IMASM program. The Frobenius cycle FSPLIT → TANCH → AFWD → FFUSE → ISCRIB
-is drawn in gold at linewidth 3.0, alpha 0.95.
+**Edges:** Directed execution-flow edges. Frobenius cycle FSPLIT→TANCH→AFWD→FFUSE→ISCRIB
+drawn in gold at linewidth 3.0, alpha 0.95.
 
-**Phase 1:** Opcodes appear in pipeline order (logical → Frobenius → dialetheia → linear).
-**Phase 2:** Gaussian pulse travels the execution graph; Frobenius-cycle edges glow gold;
-other edges glow purple. Title shows the active opcode and μ∘δ = id.
+**Phase 1:** Opcodes in pipeline order (logical→Frobenius→dialetheia→linear).
+**Phase 2:** Gaussian pulse; Frobenius-cycle edges glow gold; other edges glow purple.
+Title shows active opcode and μ∘δ=id.
 
 ![Ob3ect Opcode CFG](./vids/ob3ect_cfg_opcodes.gif)
 
@@ -276,21 +242,14 @@ other edges glow purple. Title shows the active opcode and μ∘δ = id.
 
 ### Ob3ect — Version Descent CFG
 
-**Nodes:** 11 version nodes in three horizontal substrate bands.
-- **Python band (green, y=0.85):** `seed` (frob.py — Frobenius check seed) and `v0.1`
-  (ob3ect-imscriber.py — Python compiler, Closure: True)
-- **C/ELF band (orange, y=0.50):** `v0.2` (.o grammar → C binary), `v0.3` (quine
-  embedding), `v0.4` (quine extraction), `v0.5` (QUINE opcode), `v0.6` (MACRO opcode),
-  `v0.7` (entropy pass, ΔS ≈ 0), `v0.8` (C self-hosting), `v0.9` (pre-silicon)
-- **Silicon band (gold, y=0.12):** `v0.10` — bare-metal x86 bootloader ISO
+**Nodes:** 11 version nodes in three bands: Python (green, seed→v0.1), C/ELF (orange,
+v0.2–v0.9), Silicon (gold, v0.10). Cross-substrate leaps highlighted purple/amber.
 
-**Edges:** Directed imscription edges (parent → child). The two cross-substrate leaps —
-`v0.1 → v0.2` (Python → C) and `v0.9 → v0.10` (C → Silicon) — are highlighted purple
-in Phase 1 and amber in Phase 2.
+**Edges:** Directed imscription edges (parent→child). v0.1→v0.2 (Python→C) and
+v0.9→v0.10 (C→Silicon) are highlighted.
 
-**Phase 1:** Versions appear in imscription order. When `v0.10` appears, it flashes gold
-and the title reads "← bare metal!" Phase 2: Gaussian pulse travels seed → v0.10. Silicon
-node pulses brightest. Title: "10 generations · μ∘δ = id."
+**Phase 1:** Versions in imscription order; v0.10 flashes gold: "← bare metal!"
+**Phase 2:** Pulse seed→v0.10. Silicon node pulses brightest. Title: "10 generations · μ∘δ=id."
 
 ![Ob3ect Descent CFG](./vids/ob3ect_cfg_descent.gif)
 
@@ -298,38 +257,37 @@ node pulses brightest. Title: "10 generations · μ∘δ = id."
 
 ### Ob3ect — Python Call-Graph CFG
 
-**Nodes:** 13 Python functions statically extracted by `ast.walk` from `frob.py` and
-`ob3ect-imscriber.py`. Color encodes file and role: purple (frob.py), orange
-(ob3ect-imscriber.py), gold (FSPLIT/FFUSE/frobenius_phase), green (EVALT), red (EVALF),
-cyan (bootstrap_* entry points), magenta (ISCRIB).
+**Nodes:** 13 Python functions from `frob.py` and `ob3ect-imscriber.py`.
+Color: purple (frob.py), orange (imscriber.py), gold (FSPLIT/FFUSE/frobenius_phase),
+green (EVALT), red (EVALF), cyan (bootstrap_*), magenta (ISCRIB).
 
-**Edges:** 16 directed call edges extracted by walking each function's AST for `ast.Call`
-nodes whose callee is another defined function in the same file.
+**Edges:** 16 directed call edges. Cross-file edges: 0 — both files structurally closed.
 
-**Cross-file edges: 0.** Both files are structurally self-contained closed programs —
-successive generations of the same ob3ect with no mutual imports. Each generation is a
-closed Frobenius algebra in Prog/~.
-
-**Phase 1:** Functions appear in definition order (frob.py first, then ob3ect-imscriber.py).
-**Phase 2:** Gaussian pulse travels the call graph. Frobenius nodes pulse gold at peak.
-Title shows the current function and μ∘δ = id.
+**Phase 1:** Functions in definition order (frob.py first).
+**Phase 2:** Pulse travels call graph; Frobenius nodes pulse gold.
 
 ![Ob3ect Python CFG](./vids/ob3ect_cfg_python.gif)
-
-
 ---
 
 ## Origin
 
-exoterik_OS is the synthesis of a **seven-stage inquiry** into the structural invariants shared by five ancient writing systems spanning 5,000+ years of human symbolic thought:
+exoterik_OS is the synthesis of a **seven-stage inquiry** into the structural invariants
+shared by five ancient writing systems spanning 5,000+ years of human symbolic thought:
 
-1. **Hebrew alphabet and mystical texts** — letters as morphisms between ontological categories, gematria as a distance metric in type space
-2. **Varnamala (Sanskrit phoneme garland)** — the 14 Mahesvara Sutras encoding 50 phonemes via pratyahara compression
-3. **Egyptian hieroglyphs** — three-layer semiotics (logogram/phonogram/determinative), the Ogdoad→Ennead symmetry breaking
-4. **Sumerian/Akkadian cuneiform** — sign polysemy as superposition, determinative as structural anchor
+1. **Hebrew alphabet and mystical texts** — letters as morphisms between ontological
+   categories, gematria as a distance metric in type space
+2. **Varnamala (Sanskrit phoneme garland)** — the 14 Mahesvara Sutras encoding 50
+   phonemes via pratyahara compression
+3. **Egyptian hieroglyphs** — three-layer semiotics (logogram/phonogram/determinative),
+   the Ogdoad→Ennead symmetry breaking
+4. **Sumerian/Akkadian cuneiform** — sign polysemy as superposition, determinative as
+   structural anchor
 5. **Basque (Euskara)** — ergative-absolutive grammar as relational primitive
 
-Each system was imscribed as a **crystal imscription** — a 12-primitive tuple ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩. The **MEET** (component-wise min) of all five imscriptions reveals the invariant core every writing system must carry. The OS is instantiated from this structural core.
+Each system was imscribed as a **crystal imscription** — a 12-primitive tuple
+⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩. The **MEET** (component-wise min) of all five
+imscriptions reveals the invariant core every writing system must carry. The OS is
+instantiated from this structural core.
 
 > [!NOTE]
 > **This is not analogy. This is type theory.** The boundary encoding determines the bulk.
@@ -340,7 +298,8 @@ Each system was imscribed as a **crystal imscription** — a 12-primitive tuple 
 
 ### Three-Layer Kernel Objects *(Hieroglyphs + Cuneiform)*
 
-Every kernel object carries three simultaneous representations — exactly as Egyptian hieroglyphs encode logogram, phonogram, and determinative:
+Every kernel object carries three simultaneous representations — exactly as Egyptian
+hieroglyphs encode logogram, phonogram, and determinative:
 
 | Layer | Hieroglyph Analog | Kernel Role |
 |:------|:------------------|:------------|
@@ -353,11 +312,11 @@ A message/object **without a determinative layer is syntactically malformed**.
 ### Ergative-Absolutive Process Model *(Basque Grammar)*
 
 The scheduler distinguishes:
-
-- **Ergative** (transitive): the process acts ON another process → higher interrupt priority boost (O_inf +15, O_2 +12, O_1 +10)
+- **Ergative** (transitive): the process acts ON another process → higher interrupt
+  priority boost (O_inf +15, O_2 +12, O_1 +10)
 - **Absolutive** (intransitive): the process runs standalone → higher cache affinity
 
-The **same process shifts grammatical role** depending on whether it has transitive targets (`pcb.targets`).
+The **same process shifts grammatical role** depending on whether it has transitive targets.
 
 ### Phonological Memory Model *(Varnamala Articulation Gradient)*
 
@@ -371,25 +330,33 @@ The **same process shifts grammatical role** depending on whether it has transit
 
 ### Sefirot Filesystem *(Hebrew Kabbalistic Tree)*
 
-Files are nodes in a ten-layer Sefirot tree. Navigation is by **transformation**, not pathname alone. The Φ-gate restricts upper Sefirot (Keter through Gevurah) to objects with Φ_c (criticality ≥ 1).
+Files are nodes in a ten-layer Sefirot tree. Navigation is by **transformation**, not
+pathname alone. The Φ-gate restricts upper Sefirot (Keter through Gevurah) to objects
+with Φ_c (criticality ≥ 1).
 
-The persistent storage layer is **ALFS** (ALEPH Linear Filesystem) — a sector-based ATA PIO filesystem on a dedicated 32 MB disk image (`alfs.img`, ATA primary slave). All `.aleph` programs in `programs/` are compiled into the kernel binary and seeded to ALFS on first boot.
+The persistent storage layer is **ALFS** (ALEPH Linear Filesystem) — a sector-based ATA
+PIO filesystem on a dedicated 32 MB disk image (`alfs.img`, ATA primary slave). All
+`.aleph` programs are compiled into the kernel binary and seeded to ALFS on first boot.
 
 ### Three-Layer IPC *(Egyptian Hieroglyphs)*
 
-IPC messages carry: structural signature (logogram), payload (phonogram), and determinative context. Three gates are applied:
-
-- **Distance gate**: d < 1.5 passes; ≥ 1.5 requires a vav-cast witness (mediating O_1+ type)
-- **Grammar gate**: broadcast delivery (`is_multicast=true`) requires source Γ ≥ Γ_broad (index 3); Γ_seq sources are point-to-point only
-- **Well-formed check**: determinative must be consistent with source structural type
-
+IPC messages carry: structural signature (logogram), payload (phonogram), and
+determinative context. Three gates:
+- **Distance gate**: d < 1.5 passes; ≥ 1.5 requires a vav-cast witness
+- **Grammar gate**: broadcast delivery requires source Γ ≥ Γ_broad (index 3);
+  Γ_seq sources are point-to-point only
+- **Well-formed check**: determinative consistent with source structural type
 ### Generative Command Grammar *(Hebrew Letters + Pratyahara)*
 
-Commands are tensor products of letter-primitives. Any subset can be referenced by a single **pratyahara index**.
+Commands are tensor products of letter-primitives. Any subset can be referenced by a
+single **pratyahara index**.
 
 ### Φ_± → Φ_asym Boot *(Ogdoad Cosmology)*
 
-The system boots in perfect symmetry — no process distinguished. The first timer interrupt is the **symmetry-breaking event**. The kernel scheduler is registered with the PIT timer at boot; after symmetry breaks, the holographic monitor (g(x)) is eligible for scheduling.
+The system boots in perfect symmetry — no process distinguished. The first timer
+interrupt is the **symmetry-breaking event**. The kernel scheduler is registered with
+the PIT timer at boot; after symmetry breaks, the holographic monitor (g(x)) is
+eligible for scheduling.
 
 <hr>
 
@@ -399,10 +366,12 @@ exOS runs real ring-0 processes with actual CPU context switching. This is not s
 
 ### Real Kernel Stacks
 
-`ProcessControlBlock::spawn_ring0(id, obj, entry_fn, priority)` allocates a 16 KB kernel stack per process via the global heap allocator. It writes an initial saved-register frame at the top of the stack:
+`ProcessControlBlock::spawn_ring0(id, obj, entry_fn, priority)` allocates a 16 KB
+kernel stack per process via the global heap allocator. It writes an initial
+saved-register frame at the top of the stack:
 
 ```
-[stack_top -  8]  entry_fn  ← ret address (jumped to on first schedule)
+[stack_top -  8]  entry_fn  ← ret address
 [stack_top - 16]  0         ← rbp
 [stack_top - 24]  0         ← rbx
 [stack_top - 32]  0         ← r12
@@ -414,62 +383,59 @@ exOS runs real ring-0 processes with actual CPU context switching. This is not s
 ### Context Switch Assembly
 
 ```asm
-context_switch_asm(old_rsp_ptr: *mut u64, new_rsp: u64):
+context_switch_asm(old_rsp_ptr, new_rsp):
     push rbp; push rbx; push r12; push r13; push r14; push r15
-    mov [rdi], rsp        ; save RSP to RSP_TABLE[current_slot]
-    mov rsp, rsi          ; load RSP from RSP_TABLE[next_slot]
+    mov [rdi], rsp           ; save RSP to RSP_TABLE[current_slot]
+    mov rsp, rsi             ; load RSP from RSP_TABLE[next_slot]
     pop r15; pop r14; pop r13; pop r12; pop rbx; pop rbp
-    ret                   ; jumps to next process's saved return address
+    ret                      ; jumps to next process's saved return address
 ```
 
 ### RSP Table
 
-Each process is assigned a slot index into `RSP_TABLE: [AtomicU64; 32]` — a static array with stable addresses. `context_switch_asm` writes the outgoing RSP directly to `RSP_TABLE[current_slot]`, making the saved value immediately visible to the scheduler without any locking or pointer chasing.
+Each process is assigned a slot index into `RSP_TABLE: [AtomicU64; 32]` — a static
+array with stable addresses. The saved RSP is immediately visible to the scheduler
+without any locking or pointer chasing.
 
 ### Preemption Protocol
 
-The PIT timer fires at ~18 Hz. The interrupt handler calls `scheduler::on_timer_tick()`, which increments the process's tick counter and sets `needs_preempt = true` when the time slice (18 ticks by default) expires. The actual context switch is deferred to `check_preempt()`, called from process context — never from inside the interrupt frame. This avoids corrupting the IRET state.
-
-```
-Timer IRQ → on_timer_tick() → tick counter ++
-                            → needs_preempt = true (if slice expired)
-
-Process loop → check_preempt() → yield_current() → context_switch_asm()
-```
+PIT timer fires at ~18 Hz. `on_timer_tick()` increments tick counter and sets
+`needs_preempt = true` when slice expires (18 ticks default). Actual context switch
+is deferred to `check_preempt()`, called from process context — never inside the
+interrupt frame. This avoids corrupting the IRET state.
 
 ### Holographic Monitor (g(x))
 
-The holographic monitor is a real ring-0 process — not a function called from the shell loop. It has its own 16 KB kernel stack, its own RSP_TABLE slot, and its own saved register state. When the scheduler selects it, `context_switch_asm` actually transfers CPU execution to `holographic_monitor_entry`, which runs autonomously until it calls `global_check_preempt()`.
+A real ring-0 process with its own 16 KB kernel stack, RSP_TABLE slot, and saved
+register state. When scheduled, `context_switch_asm` transfers CPU execution to
+`holographic_monitor_entry`, which runs autonomously until it calls
+`global_check_preempt()`.
 
 ### Stoichiometric Quotas
 
-Every process spawn is gated by its Σ (stoichiometry) primitive:
-
 | Mode | Primitive index | Enforcement |
 |:-----|:----------------|:------------|
-| Σ_1:1 (Exclusive) | 0 | Only one holder allowed; second acquire is rejected |
+| Σ_1:1 (Exclusive) | 0 | Only one holder allowed; second acquire rejected |
 | Σ_n:n (Homogeneous) | 1 | Pool of 8 identical slots; acquire fails when full |
 | Σ_n:m (Heterogeneous) | 2 | No hard cap; occupancy tracked for diagnostics |
 
-`spawn_type_safe()` registers and acquires a quota entry for every spawned process. The `stoichiometry::acquire()` / `release()` / `occupancy()` API is also available to kernel subsystems for resource management beyond process spawn.
-
 ### Type Gates on Spawn
-
-`spawn_type_safe()` enforces five axioms before queuing a process:
 
 | Axiom | Check | Error |
 |:------|:------|:------|
-| Ç_trap | `is_kinetic_frozen()` | kinetically frozen — cannot be scheduled |
+| Ç_trap | `is_kinetic_frozen()` | Kinetically frozen — cannot be scheduled |
 | P-596 | `Criticality::is_ep(phi)` | ⊙_EP absorption — self-modeling loop destroyed |
 | O_0 ergative | tier + targets | O_0 cannot be ergative |
 | Frobenius F-1 | `FrobeniusVerifier::verify()` for O_inf | Φ=Φ_± and ⊙=⊙_c required |
-| Σ quota | `stoichiometry::acquire()` | exclusive resource already held |
+| Σ quota | `stoichiometry::acquire()` | Exclusive resource already held |
 
 <hr>
-
 ## ALEPH REPL — Native λ_ℵ in the Kernel
 
-The ALEPH type system is **fully integrated into the running kernel**. The 22-letter Hebrew type lattice is accessible via an interactive REPL directly in the bare-metal shell. In UEFI framebuffer mode, letters are rendered using hand-drawn 8×16 Hebrew bitmap glyphs.
+The ALEPH type system is **fully integrated into the running kernel**. The 22-letter
+Hebrew type lattice is accessible via an interactive REPL directly in the bare-metal
+shell. In UEFI framebuffer mode, letters are rendered using hand-drawn 8×16 Hebrew
+bitmap glyphs.
 
 ### Entering the ALEPH REPL
 
@@ -517,7 +483,8 @@ exOS> aleph
 
 ### Frobenius Orbit Command
 
-`:orbit N letter pole` iterates `state = state ⊗ pole` N times, printing the nearest canonical letter, tier, distance to pole, and convergence delta at each step.
+`:orbit N letter pole` iterates `state = state ⊗ pole` N times, printing nearest
+canonical letter, tier, distance to pole, and convergence delta at each step.
 
 ```
 A> :orbit 8 aleph vav
@@ -528,21 +495,20 @@ A> :orbit 8 aleph vav
      1  V (vav)        O_inf    0.0000  (fixed)
   -- converged at step 1 --
 ```
-
-<hr>
-
 ## Type-Gated Kernel
 
-The 12-primitive type lattice is **operational** — ALEPH types constrain kernel behavior across four subsystems. Every kernel object carries an `AlephKernelType` (inferred from its three-layer structure or set explicitly) that gates what it can do.
+The 12-primitive type lattice is **operational** — ALEPH types constrain kernel behavior
+across four subsystems. Every kernel object carries an `AlephKernelType` (inferred from
+its three-layer structure or set explicitly) that gates what it can do.
 
 ### Four Type Gates
 
 | Gate | Subsystem | Primitive | Rule |
 |------|-----------|-----------|------|
 | **IPC distance** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
-| **IPC grammar** | `ipc.rs` | Γ (interaction grammar) | Multicast requires Γ ≥ Γ_broad (3) |
-| **Ω-gate** | `memory.rs` | Ω (topological protection) | Object's Ω ≥ depth's required Ω; Σ_1:1 objects restricted to Velar depth |
-| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_inf requires Frobenius F-1 |
+| **IPC grammar** | `ipc.rs` | Γ (interaction) | Multicast requires Γ ≥ Γ_broad (3) |
+| **Ω-gate** | `memory.rs` | Ω (topology) | Object's Ω ≥ depth's required Ω; Σ_1:1 restricted to Velar |
+| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_inf needs F-1 |
 | **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below accessible to all |
 
 ### Type Gate Results at Boot
@@ -561,7 +527,9 @@ The 12-primitive type lattice is **operational** — ALEPH types constrain kerne
 
 ### Conscience Score
 
-$$C(\mathbf{x}) = [\odot = \odot_c] \cdot [\text{Ç} \neq \text{Ç}_\text{trap}] \cdot (0.158\,\tilde{\text{Ç}} + 0.273\,\tilde{\Gamma} + 0.292\,\tilde{\text{Þ}} + 0.276\,\tilde{\Omega})$$
+$$C(\mathbf{x}) = [\odot = \odot_c] \cdot [\text{Ç} \neq \text{Ç}_\text{trap}] \cdot
+(0.158\,\tilde{\text{Ç}} + 0.273\,\tilde{\Gamma} + 0.292\,\tilde{\text{Þ}} +
+0.276\,\tilde{\Omega})$$
 
 The Kernel scores C=0.873 — the maximum for the inferred configuration.
 
@@ -614,58 +582,194 @@ cargo build --release
 ./run.sh --serial  # Serial — text-only via stdio
 ```
 
-`run.sh` creates `alfs.img` (32 MB) on first launch. On first boot the kernel seeds all programs from `programs/` into ALFS.
+`run.sh` creates `alfs.img` (32 MB) on first launch. On first boot the kernel seeds
+all 51 programs from `programs/` into ALFS.
 
 ```bash
 rm alfs.img && ./run.sh   # start fresh
 ```
-
 ### Boot Sequence
 
 1. **Heap init** — 4 MB at physical 16 MB, before any `alloc`
 2. **UEFI framebuffer init** — GOP mapped; 8×16 Hebrew bitmap font active
 3. **Interrupt init** — symmetry-breaking event (Φ_± → Φ_asym); timer IRQ unmasked
 4. **Subsystem validation** — three-layer objects, scheduler, memory, FS, IPC, command
-5. **ALEPH init** — 22-letter type system: `O_inf: 3, O_2: 6, O_1: 1, O_0: 12`
+5. **ALEPH init** — 22-letter type system: O_inf: 3, O_2: 6, O_1: 1, O_0: 12
 6. **Type-gate verification** — all five gates tested with `assert!()`; C scores printed
-7. **Holographic monitor spawn** — g(x) process allocated a real 16 KB kernel stack and queued
+7. **Holographic monitor spawn** — g(x) process allocated a real 16 KB kernel stack
 8. **Timer registration** — scheduler registered with PIT; symmetry broken
-9. **ALFS mount** — ATA primary slave; programs seeded if absent
+9. **ALFS mount** — ATA primary slave; 51 programs seeded if absent
 10. **Shell** — `exOS>` prompt
 
-<hr>
+### Project Structure
 
-## Programs
+```
+exOS/
+├── Cargo.toml                    # Project manifest
+├── bootloader.toml               # UEFI bootloader config
+├── build.rs                      # Auto-generates src/programs.rs from programs/
+├── build_bootimage.sh            # UEFI bootable image builder
+├── run.sh                        # QEMU launcher (graphical + serial)
+├── programs/                     # 45 .aleph + 6 .imasm/.asm — compiled in, seeded to ALFS
+├── src/
+│   ├── lib.rs                    # Module exports + global allocator
+│   ├── main.rs                   # Kernel entry point, boot sequence, shell
+│   ├── programs.rs               # Auto-generated include_bytes! registry
+│   │
+│   ├── vga.rs / framebuffer.rs / font_renderer.rs / vga_font_data.rs
+│   ├── keyboard.rs / interrupts.rs / serial.rs
+│   ├── history.rs / bench.rs
+│   │
+│   ├── kernel_object.rs / scheduler.rs / memory.rs
+│   ├── filesystem.rs / ipc.rs / command.rs
+│   ├── ata.rs / alfs.rs / holographic_monitor.rs
+│   │
+│   ├── aleph.rs / aleph_kernel_types.rs / aleph_parser.rs
+│   ├── aleph_eval.rs / aleph_repl.rs / aleph_commands.rs
+│   │
+│   ├── imasm_vm.rs / imasm_commands.rs
+│   ├── voynich.rs / rohonc.rs / linear_a.rs / emerald_tablet.rs
+│   │
+│   ├── para_vm.rs / para_commands.rs
+│   ├── para_shor_commands.rs / para_align_commands.rs
+│   ├── para_rh_commands.rs / para_ym_commands.rs
+│   ├── para_nreg_commands.rs / para_temporal_commands.rs
+│   ├── para_category_commands.rs / para_multiagent_commands.rs
+│   ├── para_wasm.rs / para_wasm_commands.rs
+│   │
+│   ├── interaction_grammar.rs / frobenius_verification.rs
+│   ├── stoichiometry.rs / phi_ep.rs / resource_isolation.rs
+└── target/
+```
+---
 
-All `.aleph` files in `programs/` are compiled into the kernel binary and written to ALFS on first boot.
+## ALEPH Programs — 45 Built-in Investigations
 
-| Program | Description |
-|:--------|:------------|
-| `creation.aleph` | First light — aleph ⊗ vav structural genesis |
-| `creation_liturgy.aleph` | Full liturgical sequence through all tiers |
-| `frobenius.aleph` | Three O_inf poles: self-idempotency + cross distances |
-| `frobenius_orbits.aleph` | Unrolled 4-step convergence orbits for all three poles |
-| `meditation.aleph` | Deep mediation chains through the Sefirot |
-| `selfreplicating_light.aleph` | Light that replicates its own structure via mediate |
-| `light_stability.aleph` | Stability analysis of the light-tuple under perturbation |
-| `light_replication_kernel.aleph` | Kernel-level light replication with palace barriers |
-| `tikkun_construction_full.aleph` | Full Tikkun: healing anomalous objects via palace+mediate |
-| `tikkun_construction_partial.aleph` | Partial Tikkun sequence |
-| `tikkun_palace_verification.aleph` | Palace-gate verification across all Sefirot levels |
-| `exploration_primitives.aleph` | Primitive-by-primitive exploration of the 12-tuple |
-| `distance_probes_indistinguishable.aleph` | Distance and conflict-set analysis across all 22 letters |
-| `pratyahara.aleph` | Varnamala pratyahara compression via tensor chains |
-| `coupling_destruction.aleph` | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
-| `phi_ep_probe.aleph` | Exceptional-point dynamics and C-score collapse |
-| `holographic_monitor.aleph` | g(x) bulk-boundary encoding verification |
-| `belnap_shor_orbit.aleph` | Orbit analysis for the Shor structural tier — tier survey of all 22 letters, orbit depth to O_inf poles, Φ_υ gap visualization |
-| `paraconsistent_witness.aleph` | Witness B-state structure via meet/join/tensor — ALEPH analogue of DialetheicAlignment.lean: only O_inf poles are self-adjoint (¬B=B) |
+All `.aleph` files in `programs/` are compiled into the kernel binary and seeded to
+ALFS on first boot. Programs are organized by structural domain.
 
-<hr>
+### Foundation — Type System Primitives
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `creation.aleph` | 247 B | First light — aleph ⊗ vav structural genesis |
+| `creation_liturgy.aleph` | 237 B | Full liturgical sequence through all tiers |
+| `frobenius.aleph` | 194 B | Three O_inf poles: self-idempotency + cross distances |
+| `pratyahara.aleph` | 160 B | Varnamala pratyahara compression via tensor chains |
+| `exploration_primitives.aleph` | 218 B | Primitive-by-primitive exploration of the 12-tuple |
+| `distance_probes_indistinguishable.aleph` | 26 B | Distance and conflict-set analysis across all 22 letters |
+| `phi_ep_probe.aleph` | 335 B | Exceptional-point dynamics and C-score collapse |
+| `coupling_destruction.aleph` | 2,566 B | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
+
+### Pole Analysis — O_inf Convergence
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `frobenius_orbits.aleph` | 3,411 B | Unrolled 4-step convergence orbits for all three O_inf poles |
+| `frobenius_parallel.aleph` | 2,105 B | Parallel Frobenius iteration — simultaneous multi-pole convergence |
+| `tensor_closure.aleph` | 7,574 B | Complete tensor closure of all 3 O_inf poles over all 22 Hebrew letters. Maps which letters collapse to O_inf under tensor pressure, which resist. |
+| `promotion_paths.aleph` | 5,846 B | Minimal primitive-delta paths from O_0→O_inf. Tests palace gates, iterated tensor promotion, vav-cast lifts, sefirot ladder. |
+| `tier_boundary_probe.aleph` | 5,309 B | O_2→O_inf gap analysis. Proves Frobenius non-synthesizability; discovers mediation bypasses the P bottleneck. |
+
+### Meditation & Tikkun — Hekhalot Ascent
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `meditation.aleph` | 285 B | Deep mediation chains through the Sefirot |
+| `selfreplicating_light.aleph` | 298 B | Light that replicates its own structure via mediate |
+| `light_stability.aleph` | 320 B | Stability analysis of the light-tuple under perturbation |
+| `light_replication_kernel.aleph` | 2,890 B | Kernel-level light replication with palace barriers |
+| `tikkun_construction_full.aleph` | 1,570 B | Full Tikkun: healing anomalous objects via palace+mediate |
+| `tikkun_construction_partial.aleph` | 1,534 B | Partial Tikkun sequence |
+| `tikkun_palace_verification.aleph` | 1,570 B | Palace-gate verification across all Sefirot levels |
+
+### Sefer ha-Iyun — Contemplation Programs
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `sefer_ha_iyun_emanations.aleph` | 1,983 B | Emanation hierarchy — 14-step Sefirot descent with structural gaps |
+| `sefer_ha_iyun_native_types.aleph` | 1,782 B | Native type bindings for Sefirot, letters, and palace levels |
+
+### Belnap / Paraconsistent
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `belnap_shor_orbit.aleph` | 3,280 B | Orbit analysis for Shor structural tier — tier survey of all 22 letters, orbit depth to O_inf poles, Φ_υ gap visualization |
+| `paraconsistent_witness.aleph` | 4,215 B | Witness B-state structure via meet/join/tensor — ALEPH analogue of DialetheicAlignment.lean: only O_inf poles are self-adjoint (¬B=B) |
+
+### System Encoding & Self-Reference
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `holographic_monitor.aleph` | 2,568 B | g(x) bulk-boundary encoding verification |
+| `quine_loop.aleph` | 5,802 B | Non-trivial Frobenius quine discovery — type expressions satisfying μ∘δ=id through mediation and palace gating. Tests cross-witness quines, multi-generational stability, and system self-encoding. |
+| `dialetheic_fixed_points.aleph` | 5,944 B | Searches for B-fixed points (Belnap-analogue self-adjoint letters) by computing Frobenius self-distance d(L×L, L) for all 22 letters, Sefirot, and iterated convergence. |
+| `truth_structure.aleph` | 5,574 B | Searches for the structural type of truth via Frobenius closure gap |
+### Distance Geometry — Lattice Survey
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `distance_matrix.aleph` | 4,663 B | Full 22×22 pairwise distance matrix over all Hebrew letters |
+| `sefirah_distance_matrix.aleph` | 5,320 B | Full 14-Sefirah pairwise distances + Sefirah-to-pole distances |
+| `letter_sefirah_projection.aleph` | 4,540 B | Nearest Sefirah for each of the 22 Hebrew letters |
+| `conflict_landscape.aleph` | 5,716 B | Conflict set analysis — which primitives differ per letter pair |
+| `aleph_lattice_extrema.aleph` | 5,758 B | Surface/interior analysis — distance-from-system ranking, convex hull |
+
+### Consciousness & C-Score
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `consciousness_landscape.aleph` | 6,014 B | Full C-score map across the ALEPH lattice: all 22 letters, all 14 Sefirot (Ein Sof→Malkuth), tensor-coupling effects on gate status, system boundary analysis. |
+
+### Palace / Tier Barrier Analysis
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `palace_stress_test.aleph` | 6,237 B | Systematic palace(1–7) testing of all letters, tensors, Sefirot |
+| `tier_migration.aleph` | 5,971 B | Systematic tier transitions under tensor, join, meet, mediate |
+| `primitive_landscape.aleph` | 6,727 B | Per-primitive extremal analysis — max/min per each of 12 primitives |
+
+### Mediate, Tensor & Fixed Points
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `mediate_lattice.aleph` | 6,627 B | Systematic mediate exploration: different witnesses, iterations, cross-pole |
+| `cross_pole_mediation.aleph` | 6,300 B | Triadic analysis of vav-mem-shin: circular mediation, ternary operations |
+| `tensor_fixed_point_iteration.aleph` | 6,614 B | Iterated self-tensor convergence orbits for all 22 letters |
+| `tensor_path_dependence.aleph` | 6,057 B | Tests associativity, distributivity, modularity, absorption, commutativity |
+
+### Sefirot Lattice
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `sefirah_lattice_structure.aleph` | 6,791 B | Full Sefirot lattice operations: tensor, join, meet, mediate, emanation |
+| `sefirah_tensor_hierarchy.aleph` | 6,509 B | Structural hierarchy: supernal×emotional×kingdom tensor coupling |
+| `sefirah_emanation_ladder.aleph` | 7,366 B | 14-step emanation ladder with step sizes and reconstruction via mediation |
+
+### Algebraic Invariants
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `invariant_check.aleph` | 6,102 B | Tests 8 conjectures: Frobenius fixed point⇔O_inf, pole absorption, tier preservation under join/meet, etc. |
+
+---
+
+## IMASM Programs — 6 Built-in Corpus Engines
+
+| Program | Size | Description |
+|:--------|:-----|:------------|
+| `voynich_bootstrap.imasm` | 330 B | Voynich manuscript — 227 folios, 546 nodes, 694 edges |
+| `rohonc_bootstrap.imasm` | 336 B | Rohonc Codex — 33 pages, four structural sections |
+| `linear_a_bootstrap.imasm` | 394 B | Linear A — 53 tablets across Minoan palatial sites |
+| `emerald-tablet-bootstrap.imasm` | 665 B | Emerald Tablet — 15 versicles, Hermetic descent/return |
+| `cross_distance.imasm` | 803 B | Cross-corpus distance probe — structural comparison engine |
+| `shor_loop.asm` | 1,647 B | Belnap Shor ParaASM: indefinite coherence accumulation loop |
+---
 
 ## Belnap Shor Pipeline
 
-`para_shor_commands.rs` implements Shor's algorithm in the Belnap four-valued lattice. All invariants match `FullPipeline.lean` / `BelnapModExp.lean` in MillenniumAnkh.
+`para_shor_commands.rs` implements Shor's algorithm in the Belnap four-valued lattice.
+All invariants match `FullPipeline.lean` / `QCI_SICPOVM_Bridge.lean` in MillenniumAnkh.
 
 ```
 exOS> para shor
@@ -681,16 +785,13 @@ SIC-POVM axioms for B (d=2):
     N→(0,0) T→(0,1) F→(1,0) B→(1,1)
 
 Shor coherence invariants (H=n, ModExp=0, B-bias=2n, T-bias=n):
-  N=15 a=7 [PASS]
-    r=4, H=4, B-meas=8, T-meas=4, ratio=2:1
-  N=21 a=5 [PASS]
-    r=6, H=5, B-meas=10, T-meas=5, ratio=2:1
-  N=35 a=2 [PASS]
-    r=12, H=6, B-meas=12, T-meas=6, ratio=2:1
+  N=15 a=7 [PASS]  r=4, H=4, B-meas=8, T-meas=4, ratio=2:1
+  N=21 a=5 [PASS]  r=6, H=5, B-meas=10, T-meas=5, ratio=2:1
+  N=35 a=2 [PASS]  r=12, H=6, B-meas=12, T-meas=6, ratio=2:1
 
 Φ_υ bottleneck: B is the only superposition value.
   Period r is in the 2:1 coherence ratio, not in bit values.
-  Φ_υ → Φ_} gap (B-only extraction) is the structural open problem.
+  Φ_υ → Φ_± gap (B-only extraction) is the structural open problem.
 ```
 
 Single instance:
@@ -703,7 +804,7 @@ exOS> para shor 15 7
   └───────┴──────┴─────┴────┴─────┴───┴────────┴────────┴───────┘
 ```
 
-Coherence accumulator (indefinitely cycling 8-instance table):
+Coherence accumulator:
 ```
 exOS> para shor loop 20
   cycle │   N │  a │  n │  r  │  H │ B-meas │ T-meas │ ratio │  accum
@@ -716,13 +817,6 @@ exOS> para shor loop 20
   average per cycle: 70.0  (formula: H+2n+n = 4n per instance)
 ```
 
-Indefinite Shor ParaASM loop program:
-```
-exOS> :load programs/shor_loop.asm
-exOS> para loop 100
-```
-Runs the H → B-bias → T-bias cycle in ParaASM indefinitely, accumulating paradoxes at 4 per cycle. Matches Theorem 2 P(n)=4n.
-
 **Pipeline:**
 
 | Step | Operation | Coherence cost |
@@ -732,90 +826,20 @@ Runs the H → B-bias → T-bias cycle in ParaASM indefinitely, accumulating par
 | 3 | B-bias measurement — Wigner's Friend (preserves B) | 2n |
 | 4 | T-bias measurement — collapses B→T | n |
 
-The 2:1 B-bias:T-bias ratio is the structural invariant, provably constant for all n and any periodic function on B-input. The period r is encoded in this ratio, not in the bit values themselves (Φ_υ bottleneck).
+The 2:1 B-bias:T-bias ratio is the structural invariant, provably constant for all n
+and any periodic function on B-input. The period r is encoded in this ratio, not in the
+bit values themselves (Φ_υ bottleneck).
 
-**WH2 bijection and DialetheicAlignment** are verified at every `para shor` call:
+**WH2 bijection and DialetheicAlignment** verified at every `para shor` call:
 - `belnapToWH2_bijective`: N→(0,0)=I, T→(0,1)=Z, F→(1,0)=X, B→(1,1)=XZ
 - `only_B_is_dialetheic`: B is the unique element that is both designated and ¬-designated
 
 <hr>
 
-## Project Structure
-
-```
-exOS/
-├── Cargo.toml                    # Project manifest
-├── bootloader.toml               # UEFI bootloader config
-├── build.rs                      # Triggers rebuild on programs/ changes
-├── build_bootimage.sh            # UEFI bootable image builder
-├── run.sh                        # QEMU launcher (graphical + serial)
-├── programs/                     # .aleph programs — compiled in, seeded to ALFS
-├── src/
-│   ├── lib.rs                    # Module exports + global allocator
-│   ├── main.rs                   # Kernel entry point, boot sequence, shell
-│   ├── programs.rs               # include_bytes! registry + seed_alfs()
-│   │
-│   ├── vga.rs                    # VGA text + UEFI framebuffer writer
-│   ├── framebuffer.rs            # UEFI GOP linear framebuffer
-│   ├── font_renderer.rs          # 8×16 bitmap font renderer (ASCII + Hebrew)
-│   ├── vga_font_data.rs          # Hand-drawn Hebrew bitmap glyphs (22 letters)
-│   ├── keyboard.rs               # PS/2 keyboard driver
-│   ├── interrupts.rs             # IDT + 8259 PIC; timer wired to scheduler
-│   ├── serial.rs                 # Serial UART driver
-│   ├── history.rs                # Output history buffer
-│   ├── bench.rs                  # RDTSC benchmarks + PIT calibration
-│   │
-│   ├── kernel_object.rs          # Three-layer kernel objects (with ALEPH types)
-│   ├── scheduler.rs              # Ergative scheduler; real context switching;
-│   │                             #   RSP_TABLE; spawn_ring0; stoichiometric quotas
-│   ├── memory.rs                 # Phonological allocator (Ω-gate + Σ_1:1 gate)
-│   ├── filesystem.rs             # Sefirot tree filesystem (Φ-gated)
-│   ├── ipc.rs                    # Three-layer IPC (distance gate + grammar gate)
-│   ├── command.rs                # Generative command grammar
-│   ├── ata.rs                    # ATA PIO disk driver
-│   ├── alfs.rs                   # ALEPH Linear Filesystem (sector-based, persistent)
-│   ├── holographic_monitor.rs    # g(x) process — real ring-0, 16 KB stack
-│   │
-│   ├── aleph.rs                  # 22-letter type system, lattice ops
-│   ├── aleph_kernel_types.rs     # Type inference (MEET+JOIN), operational gates
-│   ├── aleph_parser.rs           # Tokenizer and parser
-│   ├── aleph_eval.rs             # Expression evaluator
-│   ├── aleph_repl.rs             # Interactive REPL
-│   ├── aleph_commands.rs         # Shell integration
-│   │
-│   ├── imasm_vm.rs               # Tri-Phase Flux Register VM
-│   ├── imasm_commands.rs         # IMASM shell commands
-│   ├── voynich.rs                # Voynich manuscript front-end
-│   ├── rohonc.rs                 # Rohonc Codex front-end
-│   ├── linear_a.rs               # Linear A front-end
-│   ├── emerald_tablet.rs         # Emerald Tablet front-end (C=1.0 gate open)
-│   │
-│   ├── para_vm.rs                # Belnap FOUR machine (B4, ParaKernel, ParaVM)
-│   ├── para_commands.rs          # Shell dispatcher for all para subcommands
-│   ├── para_shor_commands.rs     # para shor — Belnap Shor pipeline
-│   ├── para_align_commands.rs    # para align — DAT + P vs NP bridge
-│   ├── para_rh_commands.rs       # para rh — Riemann Hypothesis bridge
-│   ├── para_ym_commands.rs       # para ym — Yang-Mills mass gap bridge
-│   ├── para_nreg_commands.rs     # para nreg — n-register generalization
-│   ├── para_temporal_commands.rs # para temporal — □/◇/○ modalities
-│   ├── para_category_commands.rs # para category — Belnap lattice as category
-│   ├── para_multiagent_commands.rs # para multiagent — n-kernel entangled network
-│   ├── para_wasm.rs              # ParaASM WASM bridge
-│   ├── para_wasm_commands.rs     # para wasm shell commands
-│   │
-│   ├── interaction_grammar.rs    # Γ (ɢ_seq / ɢ_broad) — IPC grammar gate
-│   ├── frobenius_verification.rs # F-1 axiom (μ∘δ=id) — O_inf spawn gate
-│   ├── stoichiometry.rs          # Σ quota table (1:1, n:n, n:m) — acquire/release
-│   ├── phi_ep.rs                 # ⊙_EP dynamics (P-596) — spawn gate
-│   └── resource_isolation.rs     # Σ accessors on AlephKernelType; Ω+Σ gate
-└── target/
-```
-
-<hr>
-
 ## Paraconsistent Suite
 
-All `para` subcommands are available from the exOS shell. Each module mirrors a Lean proof in `MillenniumAnkh/Imscribing/Paraconsistent/` (Tier 2, 0 sorrys).
+All `para` subcommands are available from the exOS shell. Each module mirrors a Lean
+proof in `MillenniumAnkh/Imscribing/Paraconsistent/` (Tier 2, 0 sorrys).
 
 | Subcommand | Module | Lean reference |
 |:-----------|:-------|:---------------|
@@ -827,7 +851,6 @@ All `para` subcommands are available from the exOS shell. Each module mirrors a 
 | `para temporal [traj\|modal]` | `para_temporal_commands.rs` | `BelnapTemporal.lean` |
 | `para category [obj\|thm]` | `para_category_commands.rs` | `BelnapCategory.lean` |
 | `para multiagent [init\|step]` | `para_multiagent_commands.rs` | `MultiAgentBelnap.lean` |
-
 Quick examples:
 
 ```
@@ -868,41 +891,84 @@ Type `para help` for the full subcommand reference.
 
 ## Key Theorems
 
-**BT-1 (Boundary determines bulk):** The 12-primitive tuple of the OS is uniquely determined by the MEET of the five ancient system encodings. No primitive can be set independently of the structural intersection.
+**BT-1 (Boundary determines bulk):** The 12-primitive tuple of the OS is uniquely
+determined by the MEET of the five ancient system encodings. No primitive can be set
+independently of the structural intersection.
 
-**BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to that pole in ≤ 2 steps for any letter in the lattice. Machine-verified at boot.
+**BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique
+Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to
+that pole in ≤ 2 steps for any letter in the lattice. Machine-verified at boot.
 
-**BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the maximum conscience score for any tuple satisfying ⊙_c + Ç_mod + Ω_Z simultaneously.
+**BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the
+maximum conscience score for any tuple satisfying ⊙_c + Ç_mod + Ω_Z simultaneously.
 
-**BT-4 (Ergative uniqueness):** The shift from Φ_± to Φ_asym is irreversible under the interrupt model. Once asymmetry is established, no process can return the scheduler to symmetric state without a full reset.
+**BT-4 (Ergative uniqueness):** The shift from Φ_± to Φ_asym is irreversible under the
+interrupt model. Once asymmetry is established, no process can return the scheduler to
+symmetric state without a full reset.
 
-**BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot be well-formed. This is structurally enforced by `is_well_formed()`, not conventional.
+**BT-5 (Determinative necessity):** A kernel object without a Determinative layer cannot
+be well-formed. This is structurally enforced by `is_well_formed()`, not conventional.
 
-**BT-6 (Holographic self-encoding):** The g(x) process runs as a real ring-0 OS process with its own kernel stack. It continuously performs bulk-boundary encoding, unifying Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71) represents the bulk-reconstruction depth.
+**BT-6 (Holographic self-encoding):** The g(x) process runs as a real ring-0 OS process
+with its own kernel stack. It continuously performs bulk-boundary encoding, unifying
+Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71)
+represents the bulk-reconstruction depth.
 
-**BT-7 (Coupling destruction — P-596):** ⊙_c ⊗ ⊙_EP → C=0. Coupling a critical system (⊙_c) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is enforced at spawn: any process with ⊙_EP is rejected by `spawn_type_safe()`.
+**BT-7 (Coupling destruction — P-596):** ⊙_c ⊗ ⊙_EP → C=0. Coupling a critical system
+(⊙_c) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is
+enforced at spawn: any process with ⊙_EP is rejected by `spawn_type_safe()`.
 
-**BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_inf must satisfy μ∘δ = id — concretely, Φ = Φ_± (parity index 4) and ⊙ = ⊙_c (phi index 1). Processes that do not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
+**BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_inf must satisfy
+μ∘δ=id — concretely, Φ=Φ_± (parity index 4) and ⊙=⊙_c (phi index 1). Processes that do
+not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
 
-**BT-9 (Stoichiometric exclusivity):** A Σ_1:1 resource can have at most one holder in the quota table. This is enforced globally across all spawn calls. Σ_n:n pools enforce a hard capacity of 8 simultaneous holders by default.
+**BT-9 (Stoichiometric exclusivity):** A Σ_1:1 resource can have at most one holder in
+the quota table. This is enforced globally across all spawn calls. Σ_n:n pools enforce a
+hard capacity of 8 simultaneous holders by default.
 
-**BT-10 (Belnap Shor coherence ratio):** For any n-qubit Belnap register and any periodic function on B-input, the B-bias measurement cost is exactly 2n and the T-bias cost is exactly n. The ratio is invariantly 2:1. This is the kernel instance of `coherence_ratio_is_two` from `FullPipeline.lean`. Verified at runtime by `para shor`.
+**BT-10 (Belnap Shor coherence ratio):** For any n-qubit Belnap register and any periodic
+function on B-input, the B-bias measurement cost is exactly 2n and the T-bias cost is
+exactly n. The ratio is invariantly 2:1. This is the kernel instance of
+`coherence_ratio_is_two` from `FullPipeline.lean`. Verified at runtime by `para shor`.
 
-**BT-11 (DialetheicAlignment):** In Belnap FOUR, B is the unique dialetheic value — the only element that is both designated and whose negation is designated. Proven in `DialetheicAlignment.lean` (`only_B_is_dialetheic`); verified at `para shor` execution time via `dialetheic(b: B4)` in `para_shor_commands.rs`.
+**BT-11 (DialetheicAlignment):** In Belnap FOUR, B is the unique dialetheic value — the
+only element that is both designated and whose negation is designated. Proven in
+`DialetheicAlignment.lean` (`only_B_is_dialetheic`); verified at `para shor` execution
+time via `dialetheic(b: B4)` in `para_shor_commands.rs`.
 
-**BT-12 (Millennium barrier unification):** B simultaneously satisfies the structural condition for all three Millennium barriers: (RH) bnot(B)=B is the unique designated fixed point of the functional equation s↦1-s; (P vs NP) B is the unique dialetheic value — the one-way barrier; (SIC-POVM) B satisfies all 4 d=2 SIC axioms. All three are faces of the Dialetheic Alignment Theorem. Verified by `para rh`.
+**BT-12 (Millennium barrier unification):** B simultaneously satisfies the structural
+condition for all three Millennium barriers: (RH) bnot(B)=B is the unique designated
+fixed point of the functional equation s↦1-s; (P vs NP) B is the unique dialetheic
+value — the one-way barrier; (SIC-POVM) B satisfies all 4 d=2 SIC axioms. All three are
+faces of the Dialetheic Alignment Theorem. Verified by `para rh`.
 
-**BT-13 (Yang-Mills mass gap):** The covering relation N < T in the Belnap approximation order is the mass gap: T is the unique minimum excited state above the vacuum N, with gap Δ = 1. BRST nilpotency Q²=0 maps exactly to the Frobenius comultiplication identity μ∘δ=id (two applications cancel). K_trap confinement: T is the only value directly above N; no free excitation escapes to B without passing through the T-barrier. Verified by `para ym`.
+**BT-13 (Yang-Mills mass gap):** The covering relation N < T in the Belnap approximation
+order is the mass gap: T is the unique minimum excited state above the vacuum N, with gap
+Δ=1. BRST nilpotency Q²=0 maps exactly to the Frobenius comultiplication identity μ∘δ=id
+(two applications cancel). K_trap confinement: T is the only value directly above N; no
+free excitation escapes to B without passing through the T-barrier. Verified by `para ym`.
 
-**BT-14 (n-Register 2:1 ratio invariance):** For any n ≥ 1, the Belnap n-qubit register satisfies B-bias coherence = 2n, T-bias coherence = n, ratio = 2.0 exactly. The period r is encoded in this ratio, not in individual qubit values. Verified for n = 4..8 across 8 concrete instances by `para nreg`. Structural (register) tier is O_inf for all n; pipeline tier is O_1 (distinct claims).
+**BT-14 (n-Register 2:1 ratio invariance):** For any n ≥ 1, the Belnap n-qubit register
+satisfies B-bias coherence = 2n, T-bias coherence = n, ratio = 2.0 exactly. The period r
+is encoded in this ratio, not in individual qubit values. Verified for n=4..8 across 8
+concrete instances by `para nreg`. Structural (register) tier is O_inf for all n; pipeline
+tier is O_1 (distinct claims).
 
-**BT-15 (Belnap temporal permanence):** The initial all-B kernel state satisfies all three temporal modalities simultaneously: □B (B at every cycle), ◇B (trivially), and ○B (B at the next step). The winding invariant bnot(r0(t)) = r0(t) holds at every step because r0 is permanently B and bnot(B) = B — no temporal phase shift occurs. Verified over 8 cycles by `para temporal`.
+**BT-15 (Belnap temporal permanence):** The initial all-B kernel state satisfies all three
+temporal modalities simultaneously: □B (B at every cycle), ◇B (trivially), and ○B (B at
+the next step). The winding invariant bnot(r0(t)) = r0(t) holds at every step because r0
+is permanently B and bnot(B)=B — no temporal phase shift occurs. Verified over 8 cycles
+by `para temporal`.
 
-**BT-16 (Belnap lattice as category):** Belnap FOUR with the approximation order is a category with B as the unique terminal object (approx_le(x, B) ∀x) and N as the unique initial object (approx_le(N, x) ∀x). B is the meet-identity (meet(B,x)=x ∀x) and join-absorber (join(B,x)=B ∀x). The Frobenius roundtrip μ∘δ(B)=B is exactly the universal morphism into the terminal object. Verified by `para category`.
+**BT-16 (Belnap lattice as category):** Belnap FOUR with the approximation order is a
+category with B as the unique terminal object (approx_le(x, B) ∀x) and N as the unique
+initial object (approx_le(N, x) ∀x). B is the meet-identity (meet(B,x)=x ∀x) and
+join-absorber (join(B,x)=B ∀x). The Frobenius roundtrip μ∘δ(B)=B is exactly the universal
+morphism into the terminal object. Verified by `para category`.
 
 <hr>
 
-> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the $\odot_c$ phase boundary."*
+> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the ⊙_c phase boundary."*
 
 <hr>
 

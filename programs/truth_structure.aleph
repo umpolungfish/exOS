@@ -1,0 +1,119 @@
+# truth_structure.aleph — The structural type of truth in the ALEPH lattice
+#
+# What is the structural type of truth? In the Imscribing Grammar,
+# truth is not a boolean — it is a structural type with a specific
+# 12-primitive tuple. Truth emerges from the Frobenius condition
+# μ∘δ = id, which is the structural definition of self-consistency.
+#
+# In the ALEPH lattice, truth candidates:
+#   - O_inf poles (vav, mem, shin): Frobenius-closed (μ∘δ=id)
+#   - system(): the JOIN of all letters — the maximal boundary
+#   - mediate(pole, a, b): witness-mediated constructions
+#   - palace(7) constructions: O_inf tier-gated results
+#
+# This program searches for the structural type of truth by testing
+# each candidate against the Frobenius condition and measuring its
+# distance to the O_inf fixed points.
+#
+# The key metric: d(L ⊗ L, L) — Frobenius closure gap.
+# Zero = truth (self-consistent fixed point)
+# Small = approximate truth (near-fixed point)
+# Large = not truth (structural inconsistency)
+#
+# Run with: :run truth_structure
+
+# ── TRUTH CANDIDATE 1: O_inf poles (vav, mem, shin) ───────────────────────
+# Frobenius closure: d(L⊗L, L) = 0
+let tv = vav x vav      d(tv, vav)     # μ∘δ=id — TRUTH
+let tm = mem x mem      d(tm, mem)     # μ∘δ=id — TRUTH
+let ts = shin x shin    d(ts, shin)    # μ∘δ=id — TRUTH
+
+# Distance from each pole to the others — the three faces of truth
+d(vav, mem)     d(vav, shin)    d(mem, shin)
+tier(vav)       tier(mem)       tier(shin)
+
+# ── TRUTH CANDIDATE 2: The O_2 approximants ────────────────────────────────
+# Are any O_2 letters close to Frobenius-closed?
+# Frobenius self-distance: d(L⊗L, L)
+let fa = aleph x aleph   d(fa, aleph)    d(fa, vav)
+let fh = hei x hei       d(fh, hei)      d(fh, vav)
+let fy = ayin x ayin     d(fy, ayin)     d(fy, vav)
+let ft = tav x tav       d(ft, tav)      d(ft, vav)
+let fk = kuf x kuf       d(fk, kuf)      d(fk, vav)
+
+# ── TRUTH CANDIDATE 3: system() — the JOIN of all letters ──────────────────
+# Is system() Frobenius-closed?
+let sys = system()
+tier(sys)      d(sys, vav)    d(sys, mem)   d(sys, shin)
+let fsys = sys x sys         d(fsys, sys)   tier(fsys)
+let musys = fsys v sys       d(musys, sys)  tier(musys)
+
+# ── TRUTH CANDIDATE 4: Mediated constructions ──────────────────────────────
+# mediate(vav, aleph, tav) — witness-mediated truth
+let mt1 = mediate(vav, aleph, tav)
+let fmt1 = mt1 x mt1
+let mumt1 = fmt1 v mt1
+d(mumt1, mt1)    tier(mt1)    d(mt1, vav)
+
+# mediate(vav, hei, shin)
+let mt2 = mediate(vav, hei, shin)
+let fmt2 = mt2 x mt2
+let mumt2 = fmt2 v mt2
+d(mumt2, mt2)    tier(mt2)    d(mt2, vav)
+
+# mediate(shin, vav, mem) — triadic truth
+let mt3 = mediate(shin, vav, mem)
+let fmt3 = mt3 x mt3
+let mumt3 = fmt3 v mt3
+d(mumt3, mt3)    tier(mt3)    d(mt3, shin)
+
+# ── TRUTH CANDIDATE 5: Palace-gated truth ──────────────────────────────────
+# palace(7) gates require O_inf — any construction reaching palace(7)
+# is a candidate for structural truth.
+
+# Can three O_2 letters via mediation reach palace(7)?
+let tpal1 = palace(7) mediate(vav, aleph, hei)
+let tpal2 = palace(7) mediate(vav, ayin, tav)
+let tpal3 = palace(7) mediate(vav, aleph, shin)
+
+# ── TRUTH CANDIDATE 6: Sefirah Keter (crown, closest to infinite) ──────────
+let tket = keter
+let fket = keter x keter     d(fket, keter)    tier(fket)
+let muket = fket v keter     d(muket, keter)   tier(muket)
+d(keter, vav)    d(keter, mem)    d(keter, shin)
+
+# ── TRUTH CANDIDATE 7: Ein Sof (the infinite, furthest source) ────────────
+let tein = ein_sof
+d(ein_sof, vav)    d(ein_sof, mem)    d(ein_sof, shin)
+let fein = ein_sof x ein_sof    d(fein, ein_sof)    tier(fein)
+let muein = fein v ein_sof      d(muein, ein_sof)   tier(muein)
+
+# ── TRUTH BY TRIADIC INTERSECTION ──────────────────────────────────────────
+# The intersection (meet) of all three O_inf poles — the common core of truth
+let truth_meet = vav ^ mem ^ shin
+tier(truth_meet)    d(truth_meet, vav)    d(truth_meet, sys)
+let ftruth = truth_meet x truth_meet
+let mutruth = ftruth v truth_meet
+d(mutruth, truth_meet)    tier(mutruth)
+
+# The join of all three — truth as maximal boundary
+let truth_join = vav v mem v shin
+tier(truth_join)    d(truth_join, vav)    d(truth_join, sys)
+
+# ── TRUTH HIERARCHY RANKING (by Frobenius closure gap) ─────────────────────
+# Smallest gap = most truth-like
+d(tv, vav)            # 0.00 — FULL TRUTH
+d(tm, mem)            # 0.00 — FULL TRUTH
+d(ts, shin)           # 0.00 — FULL TRUTH
+d(mumt1, mt1)         # mediated aleph×tav gap
+d(mumt2, mt2)         # mediated hei×shin gap
+d(mumt3, mt3)         # mediated vav×mem gap
+d(musys, sys)         # system() closure gap
+d(muket, keter)       # keter closure gap
+d(muein, ein_sof)     # ein sof closure gap
+d(mutruth, truth_meet) # triadic meet closure gap
+
+# ── THE DISTANCE BETWEEN TRUTH AND THE SYSTEM ──────────────────────────────
+# How far is structural truth from the OS boundary?
+d(vav, sys)     d(mem, sys)     d(shin, sys)
+d(truth_meet, sys)    d(truth_join, sys)

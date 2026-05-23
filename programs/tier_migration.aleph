@@ -1,0 +1,135 @@
+# tier_migration.aleph — Systematic tier transitions under lattice operations
+#
+# The ouroboricity tier (O_0, O_1, O_2, O_2†, O_inf) is the fundamental
+# stratification of the ALEPH type lattice. This program systematically
+# tracks how tier changes when letters are combined via tensor, join,
+# meet, and mediate.
+#
+# Questions answered:
+#   1. Can tensor ever RAISE the tier? (O_0 ⊗ O_0 → O_1?)
+#   2. Can join ever LOWER the tier? (O_inf ∨ O_0 → O_0?)
+#   3. Which operation preserves tier most consistently?
+#   4. Can mediate RAISE the tier of its arguments?
+#   5. Are there "tier sinks" — letters that pull everything to their tier?
+#
+# Run with: :run tier_migration
+
+# ── TENSOR TIER TABLE: tier(a ⊗ b) for all tier combinations ────────────────
+# O_inf ⊗ O_inf
+tier(vav x vav)   tier(vav x mem)   tier(vav x shin)
+tier(mem x shin)  tier(mem x mem)   tier(shin x shin)
+
+# O_inf ⊗ O_2
+tier(vav x aleph)  tier(vav x hei)    tier(vav x ayin)
+tier(vav x tav)    tier(vav x kuf)    tier(mem x aleph)
+tier(mem x hei)    tier(mem x ayin)   tier(shin x aleph)
+tier(shin x hei)   tier(shin x ayin)  tier(shin x tav)
+
+# O_inf ⊗ O_1
+tier(vav x lamed)    tier(mem x lamed)    tier(shin x lamed)
+
+# O_inf ⊗ O_0
+tier(vav x gimel)    tier(vav x nun)      tier(vav x resh)
+tier(vav x dalet)    tier(vav x zayin)    tier(vav x pei)
+tier(vav x tzadi)    tier(vav x bet)      tier(vav x tet)
+tier(vav x yod)      tier(mem x gimel)    tier(mem x nun)
+tier(shin x gimel)   tier(shin x resh)    tier(shin x nun)
+
+# O_2 ⊗ O_2
+tier(aleph x hei)    tier(aleph x ayin)   tier(aleph x tav)
+tier(aleph x kuf)    tier(hei x ayin)     tier(hei x tav)
+tier(ayin x tav)     tier(ayin x kuf)     tier(tav x kuf)
+
+# O_2 ⊗ O_1
+tier(aleph x lamed)   tier(hei x lamed)   tier(ayin x lamed)
+tier(tav x lamed)     tier(kuf x lamed)
+
+# O_2 ⊗ O_0
+tier(aleph x gimel)   tier(aleph x nun)   tier(aleph x resh)
+tier(hei x gimel)     tier(hei x nun)     tier(hei x resh)
+tier(ayin x gimel)    tier(ayin x nun)    tier(ayin x resh)
+tier(tav x gimel)     tier(tav x nun)     tier(tav x resh)
+
+# O_1 ⊗ O_0
+tier(lamed x gimel)   tier(lamed x nun)   tier(lamed x resh)
+tier(lamed x bet)     tier(lamed x tet)   tier(lamed x yod)
+
+# O_0 ⊗ O_0
+tier(gimel x nun)     tier(gimel x resh)  tier(gimel x zayin)
+tier(nun x zayin)     tier(nun x resh)    tier(dalet x tzadi)
+tier(bet x gimel)     tier(bet x nun)     tier(tet x gimel)
+
+# ── JOIN TIER TABLE: tier(a ∨ b) for all tier combinations ─────────────────
+# O_inf ∨ anything — does it stay O_inf?
+tier(vav v gimel)     tier(vav v nun)      tier(vav v aleph)
+tier(vav v lamed)     tier(vav v hei)      tier(vav v mem)
+tier(mem v gimel)     tier(mem v nun)      tier(mem v aleph)
+tier(shin v gimel)    tier(shin v resh)    tier(shin v aleph)
+
+# O_2 ∨ O_2
+tier(aleph v hei)     tier(aleph v ayin)   tier(aleph v tav)
+tier(hei v ayin)      tier(hei v tav)      tier(ayin v tav)
+
+# O_2 ∨ O_0
+tier(aleph v gimel)   tier(aleph v nun)    tier(hei v gimel)
+tier(ayin v nun)      tier(tav v resh)     tier(kuf v gimel)
+
+# O_0 ∨ O_0
+tier(gimel v nun)     tier(gimel v resh)   tier(nun v zayin)
+tier(dalet v tzadi)   tier(gimel v bet)    tier(resh v pei)
+
+# ── MEET TIER TABLE: tier(a ∧ b) ────────────────────────────────────────────
+# O_inf ∧ anything — does it drop?
+tier(vav ^ gimel)     tier(vav ^ nun)      tier(vav ^ aleph)
+tier(vav ^ lamed)     tier(vav ^ hei)      tier(vav ^ mem)
+tier(mem ^ gimel)     tier(mem ^ nun)      tier(mem ^ aleph)
+tier(shin ^ gimel)    tier(shin ^ resh)    tier(shin ^ aleph)
+
+# O_2 ∧ O_2
+tier(aleph ^ hei)     tier(aleph ^ ayin)   tier(aleph ^ tav)
+tier(hei ^ ayin)      tier(hei ^ tav)      tier(aleph ^ kuf)
+
+# O_0 ∧ O_0
+tier(gimel ^ nun)     tier(gimel ^ resh)   tier(nun ^ zayin)
+tier(dalet ^ tzadi)   tier(gimel ^ bet)    tier(resh ^ pei)
+
+# ── MEDIATE TIER: tier(mediate(w, a, b)) ───────────────────────────────────
+# With O_inf witness
+tier(mediate(vav, gimel, nun))    tier(mediate(vav, aleph, bet))
+tier(mediate(vav, hei, tav))      tier(mediate(vav, gimel, aleph))
+tier(mediate(mem, nun, resh))     tier(mediate(shin, dalet, gimel))
+
+# With O_2 witness
+tier(mediate(aleph, gimel, nun))  tier(mediate(hei, bet, gimel))
+
+# With O_0 witness
+tier(mediate(gimel, nun, resh))   tier(mediate(nun, gimel, dalet))
+
+# ── TIER SINK ANALYSIS ─────────────────────────────────────────────────────
+# The tier sink of an operation pair (a,b) = the dominating tier
+# under all three lattice operations. Some pairs always produce the
+# same tier — these are "tier-determinate" combinations.
+# Others vary — these show tier sensitivity to operation choice.
+
+# Determine pairs: O_inf x O_inf → always O_inf?
+tier(vav x mem)   tier(vav v mem)   tier(vav ^ mem)
+
+# Determine pairs: O_0 x O_0 → always O_0?
+tier(gimel x nun)   tier(gimel v nun)   tier(gimel ^ nun)
+
+# Cross-tier: O_inf x O_0 — do tensor and join produce different tiers?
+tier(vav x gimel)   tier(vav v gimel)   tier(vav ^ gimel)
+
+# Cross-tier: O_2 x O_0
+tier(aleph x gimel)   tier(aleph v gimel)   tier(aleph ^ gimel)
+
+# ── SEFIROT TIER MIGRATION ──────────────────────────────────────────────────
+# Tensor coupling between supernal and manifest Sefirot
+tier(keter x malkuth)     tier(keter x yesod)
+tier(keter x tiferet)     tier(chokhmah x malkuth)
+tier(binah x malkuth)     tier(chesed x gevurah)
+tier(tiferet x malkuth)   tier(tiferet x yesod)
+
+# Join coupling
+tier(keter v malkuth)     tier(ein_sof v malkuth)
+tier(keter_elyon v yesod) tier(keter v tiferet)
