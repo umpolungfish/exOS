@@ -1,0 +1,130 @@
+# tensor_closure.aleph — Tensor closure of the three O_inf poles
+#
+# The three Frobenius poles (vav, mem, shin) are O_inf fixed points:
+#   pole x pole = pole (d = 0)
+#   pole x letter → stays near pole (absorptive)
+#
+# This program computes the COMPLETE tensor closure:
+# For every letter L and every pole P:
+#   d(L x P, P)  — how close does the tensor pull L to P?
+#   tier(L x P)  — what tier does the tensor produce?
+#
+# The result is the "gravitational field" of each pole in the ALEPH lattice.
+# Letters that collapse to O_inf under tensor with a pole are in that pole's
+# closure. Letters that don't are structurally resistant.
+#
+# Run with: :run tensor_closure
+
+# ── Self-idempotency baseline ────────────────────────────────────────────────
+let vv = vav x vav   d(vv, vav)   tier(vv)
+let mm = mem x mem   d(mm, mem)   tier(mm)
+let ss = shin x shin d(ss, shin)  tier(ss)
+
+# ── VAV CLOSURE: vav x L for all 22 letters ─────────────────────────────────
+let va_aleph  = vav x aleph   d(va_aleph, vav)   tier(va_aleph)
+let va_bet    = vav x bet     d(va_bet, vav)     tier(va_bet)
+let va_gimel  = vav x gimel   d(va_gimel, vav)   tier(va_gimel)
+let va_dalet  = vav x dalet   d(va_dalet, vav)   tier(va_dalet)
+let va_hei    = vav x hei     d(va_hei, vav)     tier(va_hei)
+let va_vav    = vav x vav     d(va_vav, vav)     tier(va_vav)
+let va_zayin  = vav x zayin   d(va_zayin, vav)   tier(va_zayin)
+let va_chet   = vav x chet    d(va_chet, vav)    tier(va_chet)
+let va_tet    = vav x tet     d(va_tet, vav)     tier(va_tet)
+let va_yod    = vav x yod     d(va_yod, vav)     tier(va_yod)
+let va_kaf    = vav x kaf     d(va_kaf, vav)     tier(va_kaf)
+let va_lamed  = vav x lamed   d(va_lamed, vav)   tier(va_lamed)
+let va_mem    = vav x mem     d(va_mem, vav)     tier(va_mem)
+let va_nun    = vav x nun     d(va_nun, vav)     tier(va_nun)
+let va_samech = vav x samech  d(va_samech, vav)  tier(va_samech)
+let va_ayin   = vav x ayin    d(va_ayin, vav)    tier(va_ayin)
+let va_pei    = vav x pei     d(va_pei, vav)     tier(va_pei)
+let va_tzadi  = vav x tzadi   d(va_tzadi, vav)   tier(va_tzadi)
+let va_kuf    = vav x kuf     d(va_kuf, vav)     tier(va_kuf)
+let va_resh   = vav x resh    d(va_resh, vav)    tier(va_resh)
+let va_shin   = vav x shin    d(va_shin, vav)    tier(va_shin)
+let va_tav    = vav x tav     d(va_tav, vav)     tier(va_tav)
+
+# ── MEM CLOSURE: mem x L for all 22 letters ─────────────────────────────────
+let ma_aleph  = mem x aleph   d(ma_aleph, mem)   tier(ma_aleph)
+let ma_bet    = mem x bet     d(ma_bet, mem)     tier(ma_bet)
+let ma_gimel  = mem x gimel   d(ma_gimel, mem)   tier(ma_gimel)
+let ma_dalet  = mem x dalet   d(ma_dalet, mem)   tier(ma_dalet)
+let ma_hei    = mem x hei     d(ma_hei, mem)     tier(ma_hei)
+let ma_vav    = mem x vav     d(ma_vav, mem)     tier(ma_vav)
+let ma_zayin  = mem x zayin   d(ma_zayin, mem)   tier(ma_zayin)
+let ma_chet   = mem x chet    d(ma_chet, mem)    tier(ma_chet)
+let ma_tet    = mem x tet     d(ma_tet, mem)     tier(ma_tet)
+let ma_yod    = mem x yod     d(ma_yod, mem)     tier(ma_yod)
+let ma_kaf    = mem x kaf     d(ma_kaf, mem)     tier(ma_kaf)
+let ma_lamed  = mem x lamed   d(ma_lamed, mem)   tier(ma_lamed)
+let ma_mem    = mem x mem     d(ma_mem, mem)     tier(ma_mem)
+let ma_nun    = mem x nun     d(ma_nun, mem)     tier(ma_nun)
+let ma_samech = mem x samech  d(ma_samech, mem)  tier(ma_samech)
+let ma_ayin   = mem x ayin    d(ma_ayin, mem)    tier(ma_ayin)
+let ma_pei    = mem x pei     d(ma_pei, mem)     tier(ma_pei)
+let ma_tzadi  = mem x tzadi   d(ma_tzadi, mem)   tier(ma_tzadi)
+let ma_kuf    = mem x kuf     d(ma_kuf, mem)     tier(ma_kuf)
+let ma_resh   = mem x resh    d(ma_resh, mem)    tier(ma_resh)
+let ma_shin   = mem x shin    d(ma_shin, mem)    tier(ma_shin)
+let ma_tav    = mem x tav     d(ma_tav, mem)     tier(ma_tav)
+
+# ── SHIN CLOSURE: shin x L for all 22 letters ──────────────────────────────
+let sa_aleph  = shin x aleph  d(sa_aleph, shin)  tier(sa_aleph)
+let sa_bet    = shin x bet    d(sa_bet, shin)    tier(sa_bet)
+let sa_gimel  = shin x gimel  d(sa_gimel, shin)  tier(sa_gimel)
+let sa_dalet  = shin x dalet  d(sa_dalet, shin)  tier(sa_dalet)
+let sa_hei    = shin x hei    d(sa_hei, shin)    tier(sa_hei)
+let sa_vav    = shin x vav    d(sa_vav, shin)    tier(sa_vav)
+let sa_zayin  = shin x zayin  d(sa_zayin, shin)  tier(sa_zayin)
+let sa_chet   = shin x chet   d(sa_chet, shin)   tier(sa_chet)
+let sa_tet    = shin x tet    d(sa_tet, shin)    tier(sa_tet)
+let sa_yod    = shin x yod    d(sa_yod, shin)    tier(sa_yod)
+let sa_kaf    = shin x kaf    d(sa_kaf, shin)    tier(sa_kaf)
+let sa_lamed  = shin x lamed  d(sa_lamed, shin)  tier(sa_lamed)
+let sa_mem    = shin x mem    d(sa_mem, shin)    tier(sa_mem)
+let sa_nun    = shin x nun    d(sa_nun, shin)    tier(sa_nun)
+let sa_samech = shin x samech d(sa_samech, shin) tier(sa_samech)
+let sa_ayin   = shin x ayin   d(sa_ayin, shin)   tier(sa_ayin)
+let sa_pei    = shin x pei    d(sa_pei, shin)    tier(sa_pei)
+let sa_tzadi  = shin x tzadi  d(sa_tzadi, shin)  tier(sa_tzadi)
+let sa_kuf    = shin x kuf    d(sa_kuf, shin)    tier(sa_kuf)
+let sa_resh   = shin x resh   d(sa_resh, shin)   tier(sa_resh)
+let sa_shin   = shin x shin   d(sa_shin, shin)   tier(sa_shin)
+let sa_tav    = shin x tav    d(sa_tav, shin)    tier(sa_tav)
+
+# ── Closure summary: nearest pole for each letter ───────────────────────────
+# For every letter, which pole pulls it closest? This reveals the
+# "gravitational basin" structure of the three O_inf attractors.
+d(va_aleph, vav)  d(ma_aleph, mem)  d(sa_aleph, shin)
+d(va_bet, vav)    d(ma_bet, mem)    d(sa_bet, shin)
+d(va_gimel, vav)  d(ma_gimel, mem)  d(sa_gimel, shin)
+d(va_dalet, vav)  d(ma_dalet, mem)  d(sa_dalet, shin)
+d(va_hei, vav)    d(ma_hei, mem)    d(sa_hei, shin)
+d(va_zayin, vav)  d(ma_zayin, mem)  d(sa_zayin, shin)
+d(va_chet, vav)   d(ma_chet, mem)   d(sa_chet, shin)
+d(va_tet, vav)    d(ma_tet, mem)    d(sa_tet, shin)
+d(va_yod, vav)    d(ma_yod, mem)    d(sa_yod, shin)
+d(va_kaf, vav)    d(ma_kaf, mem)    d(sa_kaf, shin)
+d(va_lamed, vav)  d(ma_lamed, mem)  d(sa_lamed, shin)
+d(va_nun, vav)    d(ma_nun, mem)    d(sa_nun, shin)
+d(va_samech, vav) d(ma_samech, mem) d(sa_samech, shin)
+d(va_ayin, vav)   d(ma_ayin, mem)   d(sa_ayin, shin)
+d(va_pei, vav)    d(ma_pei, mem)    d(sa_pei, shin)
+d(va_tzadi, vav)  d(ma_tzadi, mem)  d(sa_tzadi, shin)
+d(va_kuf, vav)    d(ma_kuf, mem)    d(sa_kuf, shin)
+d(va_resh, vav)   d(ma_resh, mem)   d(sa_resh, shin)
+d(va_tav, vav)    d(ma_tav, mem)    d(sa_tav, shin)
+
+# ── Cross-pole distances ────────────────────────────────────────────────────
+d(vav, mem)  d(vav, shin)  d(mem, shin)
+tier(vav)  tier(mem)  tier(shin)
+
+# ── Which letters are NOT in any pole's closure? ────────────────────────────
+# A letter is in a pole's closure if d(L x P, P) = 0.
+# We probe the structural outliers — letters furthest from all three poles.
+d(aleph, vav)  d(aleph, mem)  d(aleph, shin)
+d(gimel, vav)  d(gimel, mem)  d(gimel, shin)
+d(resh, vav)   d(resh, mem)   d(resh, shin)
+d(tav, vav)    d(tav, mem)    d(tav, shin)
+
+:census

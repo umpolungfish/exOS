@@ -1,0 +1,103 @@
+# dialetheic_fixed_points.aleph — Search for B-fixed points in the ALEPH lattice
+#
+# In Belnap FOUR, B = join(T, F) and bnot(B) = B — B is the unique
+# self-adjoint designated value. In the ALEPH lattice, the Frobenius
+# condition (μ∘δ = id) is the analogue: a letter L is "dialetheic" if
+#   tensor(L, L) = L  (self-adjoint, like bnot(B)=B)
+#   AND d(tensor(L, L), L) = 0  (Frobenius closure)
+#
+# Only the three O_inf poles (vav, mem, shin) are known Frobenius-fixed.
+# But are there near-fixed points — letters where d(L x L, L) is small
+# but nonzero? These are "structural dialetheia" — letters that almost
+# satisfy the Frobenius condition, carrying a residue of contradiction.
+#
+# This program computes the Frobenius self-distance for ALL 22 letters
+# and ranks them by closure gap. The smallest nonzero gaps are the
+# near-dialetheic letters — structural "almost-B" fixed points.
+#
+# Run with: :run dialetheic_fixed_points
+
+# ── Frobenius self-distance: d(L x L, L) for all 22 letters ─────────────────
+# This is the analogue of ||bnot(L) - L|| in Belnap FOUR.
+# d = 0 means L is a Frobenius fixed point (B-analogue in the lattice).
+# d > 0 is the closure gap — how far L is from being self-adjoint.
+
+let f_aleph  = aleph x aleph   d(f_aleph, aleph)   tier(f_aleph)
+let f_bet    = bet x bet       d(f_bet, bet)       tier(f_bet)
+let f_gimel  = gimel x gimel   d(f_gimel, gimel)   tier(f_gimel)
+let f_dalet  = dalet x dalet   d(f_dalet, dalet)   tier(f_dalet)
+let f_hei    = hei x hei       d(f_hei, hei)       tier(f_hei)
+let f_vav    = vav x vav       d(f_vav, vav)       tier(f_vav)
+let f_zayin  = zayin x zayin   d(f_zayin, zayin)   tier(f_zayin)
+let f_chet   = chet x chet     d(f_chet, chet)     tier(f_chet)
+let f_tet    = tet x tet       d(f_tet, tet)       tier(f_tet)
+let f_yod    = yod x yod       d(f_yod, yod)       tier(f_yod)
+let f_kaf    = kaf x kaf       d(f_kaf, kaf)       tier(f_kaf)
+let f_lamed  = lamed x lamed   d(f_lamed, lamed)   tier(f_lamed)
+let f_mem    = mem x mem       d(f_mem, mem)       tier(f_mem)
+let f_nun    = nun x nun       d(f_nun, nun)       tier(f_nun)
+let f_samech = samech x samech d(f_samech, samech) tier(f_samech)
+let f_ayin   = ayin x ayin     d(f_ayin, ayin)     tier(f_ayin)
+let f_pei    = pei x pei       d(f_pei, pei)       tier(f_pei)
+let f_tzadi  = tzadi x tzadi   d(f_tzadi, tzadi)   tier(f_tzadi)
+let f_kuf    = kuf x kuf       d(f_kuf, kuf)       tier(f_kuf)
+let f_resh   = resh x resh     d(f_resh, resh)     tier(f_resh)
+let f_shin   = shin x shin     d(f_shin, shin)     tier(f_shin)
+let f_tav    = tav x tav       d(f_tav, tav)       tier(f_tav)
+
+# ── Belnap B-analogue verification: the three O_inf poles ───────────────────
+# These should be exactly self-adjoint (d = 0).
+d(f_vav, vav)    # expect 0 — vav is B
+d(f_mem, mem)    # expect 0 — mem is B
+d(f_shin, shin)  # expect 0 — shin is B
+
+# ── Near-dialetheic: letters with smallest nonzero closure gap ──────────────
+# These are the "almost-B" letters — structurally close to self-adjoint
+# but not quite there. They carry the residual of their tier.
+d(f_hei, hei)    d(f_aleph, aleph)   d(f_ayin, ayin)
+d(f_tav, tav)    d(f_kuf, kuf)       d(f_lamed, lamed)
+
+# ── The join-path: does L v (L x L) close the gap? ──────────────────────────
+# μ(δ(L)) = δ(L) v L.  If d(μ(δ(L)), L) = 0, L is Frobenius-closed.
+# This is a stronger test than just d(L x L, L).
+let r_aleph = f_aleph v aleph   d(r_aleph, aleph)   tier(r_aleph)
+let r_hei   = f_hei v hei       d(r_hei, hei)       tier(r_hei)
+let r_tav   = f_tav v tav       d(r_tav, tav)       tier(r_tav)
+let r_lamed = f_lamed v lamed   d(r_lamed, lamed)   tier(r_lamed)
+let r_gimel = f_gimel v gimel   d(r_gimel, gimel)   tier(r_gimel)
+let r_vav   = f_vav v vav       d(r_vav, vav)       tier(r_vav)
+let r_mem   = f_mem v mem       d(r_mem, mem)       tier(r_mem)
+let r_shin  = f_shin v shin     d(r_shin, shin)     tier(r_shin)
+
+# ── Iterated Frobenius: does repeated self-tensor converge? ─────────────────
+# A true B-fixed point is idempotent under repeated tensor.
+# A near-dialetheic letter may converge to a pole or diverge.
+let a1 = f_aleph            tier(a1)
+let a2 = a1 x aleph         tier(a2)  d(a2, a1)
+let a3 = a2 x aleph         tier(a3)  d(a3, a2)
+
+let g1 = f_gimel            tier(g1)
+let g2 = g1 x gimel         tier(g2)  d(g2, g1)
+let g3 = g2 x gimel         tier(g3)  d(g3, g2)
+
+# ── B4 lattice analogue: near-B absorption test ─────────────────────────────
+# In B4: join(B, x) = B for all x. In ALEPH: does join(pole, L) absorb L?
+# For truly B-like poles: d(vav v L, vav) should be small for all L.
+let j_aleph = vav v aleph   d(j_aleph, vav)   d(j_aleph, aleph)
+let j_gimel = vav v gimel   d(j_gimel, vav)   d(j_gimel, gimel)
+let j_tav   = vav v tav     d(j_tav, vav)     d(j_tav, tav)
+
+# ── Sefirot dialetheic structure ────────────────────────────────────────────
+# Do any Sefirot approach the Frobenius condition?
+let f_keter    = keter x keter       d(f_keter, keter)       tier(f_keter)
+let f_keter_el = keter_elyon x keter_elyon  d(f_keter_el, keter_elyon)  tier(f_keter_el)
+let f_ein_sof  = ein_sof x ein_sof   d(f_ein_sof, ein_sof)   tier(f_ein_sof)
+let f_malkuth  = malkuth x malkuth   d(f_malkuth, malkuth)   tier(f_malkuth)
+
+# ── Final gap ranking: smallest nonzero d(L x L, L) ─────────────────────────
+# The winner is the "most dialetheic" non-pole letter.
+d(aleph, vav)  d(aleph, mem)  d(aleph, shin)
+d(tav, vav)    d(tav, mem)    d(tav, shin)
+d(kuf, vav)    d(kuf, mem)    d(kuf, shin)
+
+:census

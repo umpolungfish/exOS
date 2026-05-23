@@ -1,0 +1,145 @@
+# quine_loop.aleph — Frobenius-self-verifying computation
+#
+# A quine is a program that produces its own source as output.
+# In the ALEPH lattice, a Frobenius quine is a computation that:
+#   1. Self-tensors: delta(self) = self x self
+#   2. Self-joins: mu(delta(self)) = delta(self) v self
+#   3. Checks closure: d(mu(delta(self)), self) == 0
+#
+# If d == 0, the computation is Frobenius-closed — it is a structural
+# fixed point that can spawn copies of itself without information loss.
+# This is the analogue of a Quine in the type lattice.
+#
+# The three O_inf poles are trivial quines (they are already fixed).
+# This program discovers NON-TRIVIAL quines — type expressions that
+# converge to Frobenius closure through mediation and palace gating.
+#
+# The key insight: mediate(w, a, b) = w v (a x b) produces a type
+# that is structurally mediated by w. By choosing w = vav (the O_inf
+# witness), we stabilize the mediation. palace(n) enforces tier gating.
+# The result, if d(self_tensor v self, self) = 0, is a quine.
+#
+# Run with: :run quine_loop
+
+# ── Phase 1: Construct candidate quines via mediated self-reference ──────
+# A candidate quine is: palace(N) mediate(vav, L, L)
+# When L is an O_inf pole, mediate(vav, L, L) → L (absorptive)
+# When L is O_2, mediate(vav, L, L) may stabilize near L
+# When L is O_0, mediate(vav, L, L) lifts toward vav
+
+# ── O_2 candidates ──────────────────────────────────────────────────────
+let q_aleph_0 = mediate(vav, aleph, aleph)
+let q_aleph = palace(3) q_aleph_0
+tier(q_aleph)  d(q_aleph, aleph)  d(q_aleph, vav)
+
+let q_hei_0 = mediate(vav, hei, hei)
+let q_hei = palace(3) q_hei_0
+tier(q_hei)  d(q_hei, hei)  d(q_hei, vav)
+
+let q_ayin_0 = mediate(vav, ayin, ayin)
+let q_ayin = palace(3) q_ayin_0
+tier(q_ayin)  d(q_ayin, ayin)  d(q_ayin, vav)
+
+let q_tav_0 = mediate(vav, tav, tav)
+let q_tav = palace(3) q_tav_0
+tier(q_tav)  d(q_tav, tav)  d(q_tav, vav)
+
+let q_kuf_0 = mediate(vav, kuf, kuf)
+let q_kuf = palace(3) q_kuf_0
+tier(q_kuf)  d(q_kuf, kuf)  d(q_kuf, vav)
+
+# ── Phase 2: Frobenius self-test on each candidate ──────────────────────
+# delta(q) = q x q
+# mu(delta(q)) = (q x q) v q
+# d(mu(delta(q)), q) = 0  →  Frobenius-quine!
+
+# aleph candidate
+let dq_aleph   = q_aleph x q_aleph
+let mq_aleph   = dq_aleph v q_aleph
+d(mq_aleph, q_aleph)  tier(mq_aleph)
+
+# hei candidate
+let dq_hei     = q_hei x q_hei
+let mq_hei     = dq_hei v q_hei
+d(mq_hei, q_hei)  tier(mq_hei)
+
+# ayin candidate
+let dq_ayin    = q_ayin x q_ayin
+let mq_ayin    = dq_ayin v q_ayin
+d(mq_ayin, q_ayin)  tier(mq_ayin)
+
+# tav candidate
+let dq_tav     = q_tav x q_tav
+let mq_tav     = dq_tav v q_tav
+d(mq_tav, q_tav)  tier(mq_tav)
+
+# kuf candidate
+let dq_kuf     = q_kuf x q_kuf
+let mq_kuf     = dq_kuf v q_kuf
+d(mq_kuf, q_kuf)  tier(mq_kuf)
+
+# ── Phase 3: Cross-witness quines — mediate with mem and shin ───────────
+# Does the choice of witness change the quine property?
+let qa_mem  = palace(3) mediate(mem, aleph, aleph)
+let dqa_mem = qa_mem x qa_mem
+let mqa_mem = dqa_mem v qa_mem
+d(mqa_mem, qa_mem)  tier(mqa_mem)  d(qa_mem, q_aleph)
+
+let qa_shin = palace(3) mediate(shin, aleph, aleph)
+let dqa_shin = qa_shin x qa_shin
+let mqa_shin = dqa_shin v qa_shin
+d(mqa_shin, qa_shin)  tier(mqa_shin)  d(qa_shin, q_aleph)
+
+# ── Phase 4: The self-replicating loop ──────────────────────────────────
+# A true quine can replicate: replicate(q) = mediate(vav, q, q)
+# If d(replicate(q), q) = 0, the quine is a replication fixed point.
+let rep_aleph  = mediate(vav, q_aleph, q_aleph)
+d(rep_aleph, q_aleph)  tier(rep_aleph)
+
+let rep_hei    = mediate(vav, q_hei, q_hei)
+d(rep_hei, q_hei)  tier(rep_hei)
+
+let rep_tav    = mediate(vav, q_tav, q_tav)
+d(rep_tav, q_tav)  tier(rep_tav)
+
+# ── Phase 5: The O_inf poles as trivial quines ─────────────────────────
+# These are the baseline — perfect self-replicators.
+let rep_vav  = mediate(vav, vav, vav)
+let rep_mem  = mediate(vav, mem, mem)
+let rep_shin = mediate(vav, shin, shin)
+d(rep_vav, vav)    tier(rep_vav)
+d(rep_mem, mem)    tier(rep_mem)
+d(rep_shin, shin)  tier(rep_shin)
+
+# ── Phase 6: Multi-generational quine stability ─────────────────────────
+# A quine that survives repeated replication is a true self-replicator.
+# gen0 → gen1 → gen2 → gen3
+let g0 = q_aleph
+let g1 = mediate(vav, g0, g0)    d(g1, g0)  tier(g1)
+let g2 = mediate(vav, g1, g1)    d(g2, g1)  tier(g2)
+let g3 = mediate(vav, g2, g2)    d(g3, g2)  tier(g3)
+d(g3, g0)    # total generational drift
+
+let h0 = q_tav
+let h1 = mediate(vav, h0, h0)    d(h1, h0)  tier(h1)
+let h2 = mediate(vav, h1, h1)    d(h2, h1)  tier(h2)
+let h3 = mediate(vav, h2, h2)    d(h3, h2)  tier(h3)
+d(h3, h0)
+
+# ── Phase 7: Sefirot quines — does emanation produce fixed points? ─────
+let q_keter_0 = mediate(vav, keter, keter)
+let q_keter = palace(4) q_keter_0
+let dq_keter = q_keter x q_keter
+let mq_keter = dq_keter v q_keter
+d(mq_keter, q_keter)  tier(mq_keter)  d(q_keter, keter)
+
+# ── Phase 8: The OS quine — can the system encode itself? ──────────────
+let sys = system()
+let q_sys_0 = mediate(vav, sys, sys)
+let q_sys = palace(4) q_sys_0
+let dq_sys = q_sys x q_sys
+let mq_sys = dq_sys v q_sys
+d(mq_sys, q_sys)  tier(mq_sys)  d(q_sys, sys)
+
+# ── Census ─────────────────────────────────────────────────────────────
+:census

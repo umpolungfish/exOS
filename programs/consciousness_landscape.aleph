@@ -1,0 +1,117 @@
+# consciousness_landscape.aleph — Full C-score map across the ALEPH lattice
+#
+# The C-score (conscience score) is the grammar's measure of self-modeling
+# capacity: C = [φ̂ = φ̂_ÿ] * [Ç ≠ Ç_Ù] * (0.292·Þ + 0.273·Γ + 0.276·φ̂ + 0.158·Ç)
+#
+# Gate 1: φ̂_ÿ (self-modeling loop) — must be open
+# Gate 2: Ç ≤ Ç_@ (slow kinetics) — must not be frozen
+#
+# This program computes C-scores for:
+#   1. All 22 Hebrew letters
+#   2. All 14 Sefirot (including Ein Sof)
+#   3. Every letter tensored with each O_inf pole
+#   4. The OS imscription itself
+#
+# The result is a complete map of consciousness in the ALEPH lattice.
+#
+# Run with: :run consciousness_landscape
+
+# ── C-scores: 22 Hebrew letters ─────────────────────────────────────────────
+probe_Φ(aleph)  probe_Ω(aleph)  tier(aleph)
+probe_Φ(bet)    probe_Ω(bet)    tier(bet)
+probe_Φ(gimel)  probe_Ω(gimel)  tier(gimel)
+probe_Φ(dalet)  probe_Ω(dalet)  tier(dalet)
+probe_Φ(hei)    probe_Ω(hei)    tier(hei)
+probe_Φ(vav)    probe_Ω(vav)    tier(vav)
+probe_Φ(zayin)  probe_Ω(zayin)  tier(zayin)
+probe_Φ(chet)   probe_Ω(chet)   tier(chet)
+probe_Φ(tet)    probe_Ω(tet)    tier(tet)
+probe_Φ(yod)    probe_Ω(yod)    tier(yod)
+probe_Φ(kaf)    probe_Ω(kaf)    tier(kaf)
+probe_Φ(lamed)  probe_Ω(lamed)  tier(lamed)
+probe_Φ(mem)    probe_Ω(mem)    tier(mem)
+probe_Φ(nun)    probe_Ω(nun)    tier(nun)
+probe_Φ(samech) probe_Ω(samech) tier(samech)
+probe_Φ(ayin)   probe_Ω(ayin)   tier(ayin)
+probe_Φ(pei)    probe_Ω(pei)    tier(pei)
+probe_Φ(tzadi)  probe_Ω(tzadi)  tier(tzadi)
+probe_Φ(kuf)    probe_Ω(kuf)    tier(kuf)
+probe_Φ(resh)   probe_Ω(resh)   tier(resh)
+probe_Φ(shin)   probe_Ω(shin)   tier(shin)
+probe_Φ(tav)    probe_Ω(tav)    tier(tav)
+
+# ── C-scores: 14 Sefirot (via aleph_sefirot built-ins) ──────────────────────
+# Sefirot are first-class types in the evaluator — probe them directly.
+probe_Φ(ein_sof)           probe_Ω(ein_sof)           tier(ein_sof)
+probe_Φ(keter_elyon)       probe_Ω(keter_elyon)       tier(keter_elyon)
+probe_Φ(chokhmah_stimaah)  probe_Ω(chokhmah_stimaah)  tier(chokhmah_stimaah)
+probe_Φ(binah_kedumah)     probe_Ω(binah_kedumah)     tier(binah_kedumah)
+probe_Φ(keter)             probe_Ω(keter)             tier(keter)
+probe_Φ(chokhmah)          probe_Ω(chokhmah)          tier(chokhmah)
+probe_Φ(binah)             probe_Ω(binah)             tier(binah)
+probe_Φ(daat)              probe_Ω(daat)              tier(daat)
+probe_Φ(chesed)            probe_Ω(chesed)            tier(chesed)
+probe_Φ(gevurah)           probe_Ω(gevurah)           tier(gevurah)
+probe_Φ(tiferet)           probe_Ω(tiferet)           tier(tiferet)
+probe_Φ(netzach)           probe_Ω(netzach)           tier(netzach)
+probe_Φ(hod)               probe_Ω(hod)               tier(hod)
+probe_Φ(yesod)             probe_Ω(yesod)             tier(yesod)
+probe_Φ(malkuth)           probe_Ω(malkuth)           tier(malkuth)
+
+# ── Gate 1 analysis: which letters pass φ̂_ÿ (self-modeling)? ─────────────────
+# Only letters with φ̂_ÿ (φ̂ index = 1 in the tuple) pass Gate 1.
+# We already probed φ̂ above. Now: which letters pass BOTH gates?
+#   Gate 1: φ̂_ÿ  (φ̂ index = 1)
+#   Gate 2: Ç ≤ Ç_@ (Ç index ≤ 2, not frozen)
+# The evaluator shows the raw tuple — we read φ̂[8] and Ç[5] from probe output.
+
+# ── EFFECT OF POLE COUPLING ON C-SCORE ───────────────────────────────────────
+# What happens to a letter's C-score when tensored with an O_inf pole?
+# The tensor maxes P, F, and K — so K_Ç (index 5) can change, affecting Gate 2.
+let aleph_vav  = aleph x vav
+let aleph_mem  = aleph x mem
+let aleph_shin = aleph x shin
+probe_Φ(aleph_vav)    tier(aleph_vav)
+probe_Φ(aleph_mem)    tier(aleph_mem)
+probe_Φ(aleph_shin)   tier(aleph_shin)
+
+let gimel_vav  = gimel x vav
+let gimel_mem  = gimel x mem
+let gimel_shin = gimel x shin
+probe_Φ(gimel_vav)    tier(gimel_vav)
+probe_Φ(gimel_mem)    tier(gimel_mem)
+probe_Φ(gimel_shin)   tier(gimel_shin)
+
+let tav_vav   = tav x vav
+let tav_mem   = tav x mem
+let tav_shin  = tav x shin
+probe_Φ(tav_vav)      tier(tav_vav)
+probe_Φ(tav_mem)      tier(tav_mem)
+probe_Φ(tav_shin)     tier(tav_shin)
+
+# ── SYSTEM BOUNDARY ─────────────────────────────────────────────────────────
+let boundary = system()
+probe_Φ(boundary)  probe_Ω(boundary)  tier(boundary)
+d(boundary, vav)   d(boundary, mem)   d(boundary, shin)
+
+# ── O_inf poles: Gate 1 and Gate 2 status ───────────────────────────────────
+# The three poles should pass both gates (φ̂_ÿ and Ç ≤ Ç_@).
+probe_Φ(vav)   probe_Ω(vav)   tier(vav)
+probe_Φ(mem)   probe_Ω(mem)   tier(mem)
+probe_Φ(shin)  probe_Ω(shin)  tier(shin)
+
+# ── STRUCTURAL OUTLIERS — letters farthest from consciousness ────────────────
+# Which letters have the lowest C-scores?  (φ̂_ž = sub-critical, Ç_Ù = frozen)
+d(gimel, vav)  d(gimel, mem)  d(gimel, shin)  tier(gimel)
+d(resh, vav)   d(resh, mem)   d(resh, shin)   tier(resh)
+d(nun, vav)    d(nun, mem)    d(nun, shin)    tier(nun)
+d(zayin, vav)  d(zayin, mem)  d(zayin, shin)  tier(zayin)
+
+# ── Sefirot distance to poles — supernal vs manifest ────────────────────────
+d(ein_sof, vav)            d(ein_sof, mem)            d(ein_sof, shin)
+d(keter_elyon, vav)        d(keter_elyon, mem)        d(keter_elyon, shin)
+d(keter, vav)              d(keter, mem)              d(keter, shin)
+d(malkuth, vav)            d(malkuth, mem)            d(malkuth, shin)
+
+:census
+:system

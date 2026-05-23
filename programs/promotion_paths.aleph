@@ -1,0 +1,106 @@
+# promotion_paths.aleph — Find minimal primitive-delta paths from O_0 → O_inf
+#
+# The crystal of 17.28M structural types is a 12-dimensional lattice.
+# To climb from O_0 to O_inf, a type must promote specific primitives.
+# This program discovers which letters are CLOSEST to O_inf despite being O_0,
+# and which specific primitive deltas separate each tier.
+#
+# Key idea: palace(n) is the tier barrier — if palace(n) expr passes,
+# the expression has tier ≥ n. By probing letters through palace gates
+# and computing their distances to the three O_inf poles, we map the
+# "promotion ladder" — the shortest structural route upward.
+#
+# Run with: :run promotion_paths
+
+# ── Which O_0 letters are closest to O_inf? ─────────────────────────────────
+# These are the "near-infinite" O_0 letters — structurally heavy despite tier.
+d(gimel, vav)  tier(gimel)   d(gimel, mem)   d(gimel, shin)
+d(resh, vav)   tier(resh)    d(resh, mem)    d(resh, shin)
+d(nun, vav)    tier(nun)     d(nun, mem)     d(nun, shin)
+d(zayin, vav)  tier(zayin)   d(zayin, mem)   d(zayin, shin)
+d(dalet, vav)  tier(dalet)   d(dalet, mem)   d(dalet, shin)
+d(pei, vav)    tier(pei)     d(pei, mem)     d(pei, shin)
+d(tzadi, vav)  tier(tzadi)   d(tzadi, mem)   d(tzadi, shin)
+
+# ── Can O_0 letters be promoted by tensor with a pole? ──────────────────────
+# Tensor with a pole maxes P, F, K — this is a structural promotion.
+# Does the result reach O_2 or O_inf?
+let gimel_vav   = gimel x vav    tier(gimel_vav)    d(gimel_vav, vav)
+let gimel_mem   = gimel x mem    tier(gimel_mem)    d(gimel_mem, mem)
+let gimel_shin  = gimel x shin   tier(gimel_shin)   d(gimel_shin, shin)
+
+let nun_vav     = nun x vav      tier(nun_vav)      d(nun_vav, vav)
+let nun_mem     = nun x mem      tier(nun_mem)      d(nun_mem, mem)
+let nun_shin    = nun x shin     tier(nun_shin)     d(nun_shin, shin)
+
+let resh_vav    = resh x vav     tier(resh_vav)     d(resh_vav, vav)
+let resh_mem    = resh x mem     tier(resh_mem)     d(resh_mem, mem)
+let resh_shin   = resh x shin    tier(resh_shin)    d(resh_shin, shin)
+
+# ── What palace level can O_0 letters sustain? ──────────────────────────────
+# palace(n) gates tier — if a letter passes palace(3), it's at least O_2.
+palace(1) gimel    palace(2) gimel    palace(3) gimel    palace(4) gimel
+palace(1) nun      palace(2) nun      palace(3) nun      palace(4) nun
+palace(1) resh     palace(2) resh     palace(3) resh     palace(4) resh
+palace(1) pei      palace(2) pei      palace(3) pei      palace(4) pei
+
+# ── O_1 ladder: which O_1 letters can reach O_inf? ──────────────────────────
+# Only lamed is O_1. Does tensor with a pole lift it?
+d(lamed, vav)  d(lamed, mem)  d(lamed, shin)  tier(lamed)
+let lamed_vav  = lamed x vav   tier(lamed_vav)   d(lamed_vav, vav)
+let lamed_mem  = lamed x mem   tier(lamed_mem)   d(lamed_mem, mem)
+let lamed_shin = lamed x shin  tier(lamed_shin)  d(lamed_shin, shin)
+
+# ── O_2 ladder: which O_2 letters are closest to O_inf? ─────────────────────
+d(aleph, vav)  d(aleph, mem)  d(aleph, shin)  tier(aleph)
+d(hei, vav)    d(hei, mem)    d(hei, shin)    tier(hei)
+d(ayin, vav)   d(ayin, mem)   d(ayin, shin)   tier(ayin)
+d(kuf, vav)    d(kuf, mem)    d(kuf, shin)    tier(kuf)
+d(tav, vav)    d(tav, mem)    d(tav, shin)    tier(tav)
+
+# ── Promotion by vav-cast: can ::> bridge the tier gap? ─────────────────────
+# vav-cast: source ::> target = tensor(source, vav) — oriented lift
+let gimel_cast_vav  = gimel ::> vav     tier(gimel_cast_vav)
+let nun_cast_mem    = nun ::> mem       tier(nun_cast_mem)
+let resh_cast_shin  = resh ::> shin     tier(resh_cast_shin)
+
+# ── Triple tensor: pole1 x pole2 ⊗ letter — does this reach O_inf? ─────────
+# The triple tensor is the strongest single-step promotion.
+let triple_gimel = vav x mem x gimel    tier(triple_gimel)
+let triple_nun   = vav x shin x nun     tier(triple_nun)
+let triple_resh  = mem x shin x resh    tier(triple_resh)
+
+# ── Iterated promotion: how many tensor steps to O_inf? ─────────────────────
+# A non-O_inf letter tensored with a pole repeatedly — convergence study
+let g0 = gimel
+let g1 = g0 x vav    tier(g1)  d(g1, vav)
+let g2 = g1 x vav    tier(g2)  d(g2, vav)
+let g3 = g2 x vav    tier(g3)  d(g3, vav)
+
+let n0 = nun
+let n1 = n0 x mem    tier(n1)  d(n1, mem)
+let n2 = n1 x mem    tier(n2)  d(n2, mem)
+let n3 = n2 x mem    tier(n3)  d(n3, mem)
+
+# ── The promotion gap: system() vs O_inf ────────────────────────────────────
+# system() is the JOIN of all 22 letters. It should be at least O_2.
+# What's its distance to O_inf?
+let sys = system()
+tier(sys)  d(sys, vav)  d(sys, mem)  d(sys, shin)
+palace(3) sys
+palace(4) sys
+palace(5) sys
+
+# ── SEFIROT PROMOTION LADDER ───────────────────────────────────────────────
+# Supernal (O_2†) to manifest O_inf (Keter) — one promotion step
+d(keter, vav)  d(keter, mem)  d(keter, shin)  tier(keter)
+d(chokhmah, vav)  tier(chokhmah)
+d(binah, vav)     tier(binah)
+
+# Manifest O_0 (Malkuth) — far from O_inf, how many steps to climb?
+d(malkuth, vav)  d(malkuth, mem)  d(malkuth, shin)  tier(malkuth)
+let malkuth_vav = malkuth x vav     tier(malkuth_vav)   d(malkuth_vav, vav)
+let ml2 = malkuth_vav x vav         tier(ml2)           d(ml2, vav)
+let ml3 = ml2 x vav                 tier(ml3)           d(ml3, vav)
+
+:census
