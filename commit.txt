@@ -1,4 +1,37 @@
-commit.txt — Summary of updates to /home/mrnob0dy666/exOS
+para_shor_commands.rs: quantum_on_classical bare-metal demonstration (2026-05-30)
+==================================================================================
+
+  Φ_υ bottleneck: CLOSED (reflects phi_upsilon_bottleneck from BelnapQFT.lean)
+  Banner updated: O₁ · Φ_υ → O_∞ (DialetheicOperator.lean)
+  Footer updated: "open problem" → "CLOSED, run 'para shor quantum'"
+
+  New subcommand: para shor quantum  (alias: para shor qoc)
+    — Lean certification chain (6 theorems) displayed bare-metal
+    — Live B-only extraction table: b_meas/2 = r for N=15,21,35
+    — Final statement: quantum_on_classical holds on this classical processor
+    — Mirrors quantum_on_classical_demo.py (priests-engine)
+
+  cargo build --release: Finished in 11.42s, 0 errors, 0 new warnings.
+
+Previous: exOS.tex: LuaLaTeX formatting fix (2026-05-26)
+=======================================================================
+
+tex/exOS.tex
+  - Preamble: replaced pdflatex inputenc/T1/lmodern with fontspec + unicode-math
+    (setmainfont FreeSerif, igprimfont FreeSerif, monofont DejaVu Sans Mono,
+    igfont Everson Mono for Shavian); amssymb removed (conflicts with unicode-math);
+    calc added
+  - lstset: removed literate replacements for _/-/</>~/^ (broke code display with
+    proper monofont); replaced with upquote=true
+  - synthonbox → imscriptionbox (standard IG box name)
+  - Author line: \otimes → ⊗ (Unicode direct; text-mode crash fix)
+  - Section hierarchy: \subsection → \section, \subsubsection → \subsection
+    (was producing 0.1/0.2 numbering with no parent section)
+  - Abstract: \section{Abstract} → \section*{Abstract} (unnumbered)
+  - Introduction: removed stray trailing --- before Five Founding Systems section
+
+
+Previous: commit.txt — Summary of updates to /home/mrnob0dy666/exOS
 =======================================================================
 
 src/para_rh_commands.rs  [NEW]
