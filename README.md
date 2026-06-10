@@ -118,8 +118,8 @@ Flash purple on Phase 1 reveal.
 ### ALEPH OS
 
 **Nodes:** 86 — one per named binding across all `.aleph` programs.
-Color encodes ouroboricity tier: O_0 (dim grey), O_1 (mid blue), O_2 (bright cyan),
-O_inf (gold). Size scales with in-degree.
+Color encodes ouroboricity tier: O₀ (dim grey), O₁ (mid blue), O₂ (bright cyan),
+O_∞ (gold). Size scales with in-degree.
 
 **Edges:** 297 directed dataflow edges. Operation types produce semantically distinct edges:
 tensor (⊗) = composition, join/meet = lattice, mediate = bridging,
@@ -128,7 +128,7 @@ d() = exterior derivative, palace() = Hekhalot ascent.
 **Cross-program edges:** 137 edges crossing file boundaries. Flash amber on Phase 1.
 
 **Phase 1:** Programs appear file-by-file; bindings in definition order. Cross-program edges flash amber.
-**Phase 2:** Gaussian pulse travels all 86 nodes. O_inf (gold) nodes pulse brightest.
+**Phase 2:** Gaussian pulse travels all 86 nodes. O_∞ (gold) nodes pulse brightest.
 
 ![ALEPH CFG](./vids/animated_cfg_aleph.gif)
 #### ALEPH OS — Program Highlights
@@ -159,7 +159,7 @@ g-loops and back — enacting the bulk/boundary roundtrip as a literal flow.
 
 ##### `frobenius_orbits.aleph` — Iterative Pole Convergence
 
-**Nodes:** 27 — the three O_inf poles (vav, mem, shin), cross-pole tensors (vm, vs, ms),
+**Nodes:** 27 — the three O_∞ poles (vav, mem, shin), cross-pole tensors (vm, vs, ms),
 and four 5-step orbit sequences (a0–a4, t0–t4, d0–d4) plus mediated convergence nodes.
 
 **Edges:** 50+ directed tensor edges encoding the 4-step orbit sequences; mediate-edges
@@ -313,7 +313,7 @@ A message/object **without a determinative layer is syntactically malformed**.
 
 The scheduler distinguishes:
 - **Ergative** (transitive): the process acts ON another process → higher interrupt
-  priority boost (O_inf +15, O_2 +12, O_1 +10)
+  priority boost (O_∞ +15, O₂ +12, O₁ +10)
 - **Absolutive** (intransitive): the process runs standalone → higher cache affinity
 
 The **same process shifts grammatical role** depending on whether it has transitive targets.
@@ -425,8 +425,8 @@ register state. When scheduled, `context_switch_asm` transfers CPU execution to
 |:------|:------|:------|
 | Ç_trap | `is_kinetic_frozen()` | Kinetically frozen — cannot be scheduled |
 | P-596 | `Criticality::is_ep(phi)` | ⊙_EP absorption — self-modeling loop destroyed |
-| O_0 ergative | tier + targets | O_0 cannot be ergative |
-| Frobenius F-1 | `FrobeniusVerifier::verify()` for O_inf | Φ=Φ_± and ⊙=⊙_c required |
+| O₀ ergative | tier + targets | O₀ cannot be ergative |
+| Frobenius F-1 | `FrobeniusVerifier::verify()` for O_∞ | Φ=Φ_± and ⊙=⊙_c required |
 | Σ quota | `stoichiometry::acquire()` | Exclusive resource already held |
 
 <hr>
@@ -491,8 +491,8 @@ A> :orbit 8 aleph vav
   Orbit of A under V (8 steps)
   step  nearest        tier     d(state,pole)  delta
   --------------------------------------------------------
-     0  A (aleph)      O_2      2.1095
-     1  V (vav)        O_inf    0.0000  (fixed)
+     0  A (aleph)      O₂      2.1095
+     1  V (vav)        O_∞    0.0000  (fixed)
   -- converged at step 1 --
 ```
 ## Type-Gated Kernel
@@ -508,7 +508,7 @@ its three-layer structure or set explicitly) that gates what it can do.
 | **IPC distance** | `ipc.rs` | Distance | d < 1.5 passes; ≥ 1.5 needs vav-cast witness |
 | **IPC grammar** | `ipc.rs` | Γ (interaction) | Multicast requires Γ ≥ Γ_broad (3) |
 | **Ω-gate** | `memory.rs` | Ω (topology) | Object's Ω ≥ depth's required Ω; Σ_1:1 restricted to Velar |
-| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O_0 cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_inf needs F-1 |
+| **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O₀ cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_∞ needs F-1 |
 | **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below accessible to all |
 
 ### Type Gate Results at Boot
@@ -518,8 +518,8 @@ its three-layer structure or set explicitly) that gates what it can do.
 [TYPE] IPC gate (remote):         accepted=false
 [TYPE] Ω gate (Velar+Kernel):     allowed=true
 [TYPE] Ω gate (Velar+User):       allowed=false
-[TYPE] Tier gate (O_inf ergative): ok=true
-[TYPE] Tier gate (O_0 ergative):  ok=false
+[TYPE] Tier gate (O_∞ ergative): ok=true
+[TYPE] Tier gate (O₀ ergative):  ok=false
 [TYPE] Φ gate (Keter+Kernel):     ok=true
 [TYPE] Φ gate (Keter+Driver):     ok=false
 [TYPE] C scores: kernel=0.873  user=0.324  os_imscription=0.873
@@ -594,7 +594,7 @@ rm alfs.img && ./run.sh   # start fresh
 2. **UEFI framebuffer init** — GOP mapped; 8×16 Hebrew bitmap font active
 3. **Interrupt init** — symmetry-breaking event (Φ_± → Φ_asym); timer IRQ unmasked
 4. **Subsystem validation** — three-layer objects, scheduler, memory, FS, IPC, command
-5. **ALEPH init** — 22-letter type system: O_inf: 3, O_2: 6, O_1: 1, O_0: 12
+5. **ALEPH init** — 22-letter type system: O_∞: 3, O₂: 6, O₁: 1, O₀: 12
 6. **Type-gate verification** — all five gates tested with `assert!()`; C scores printed
 7. **Holographic monitor spawn** — g(x) process allocated a real 16 KB kernel stack
 8. **Timer registration** — scheduler registered with PIT; symmetry broken
@@ -654,22 +654,22 @@ ALFS on first boot. Programs are organized by structural domain.
 |:--------|:-----|:------------|
 | `creation.aleph` | 247 B | First light — aleph ⊗ vav structural genesis |
 | `creation_liturgy.aleph` | 237 B | Full liturgical sequence through all tiers |
-| `frobenius.aleph` | 194 B | Three O_inf poles: self-idempotency + cross distances |
+| `frobenius.aleph` | 194 B | Three O_∞ poles: self-idempotency + cross distances |
 | `pratyahara.aleph` | 160 B | Varnamala pratyahara compression via tensor chains |
 | `exploration_primitives.aleph` | 218 B | Primitive-by-primitive exploration of the 12-tuple |
 | `distance_probes_indistinguishable.aleph` | 26 B | Distance and conflict-set analysis across all 22 letters |
 | `phi_ep_probe.aleph` | 335 B | Exceptional-point dynamics and C-score collapse |
 | `coupling_destruction.aleph` | 2,566 B | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
 
-### Pole Analysis — O_inf Convergence
+### Pole Analysis — O_∞ Convergence
 
 | Program | Size | Description |
 |:--------|:-----|:------------|
-| `frobenius_orbits.aleph` | 3,411 B | Unrolled 4-step convergence orbits for all three O_inf poles |
+| `frobenius_orbits.aleph` | 3,411 B | Unrolled 4-step convergence orbits for all three O_∞ poles |
 | `frobenius_parallel.aleph` | 2,105 B | Parallel Frobenius iteration — simultaneous multi-pole convergence |
-| `tensor_closure.aleph` | 7,574 B | Complete tensor closure of all 3 O_inf poles over all 22 Hebrew letters. Maps which letters collapse to O_inf under tensor pressure, which resist. |
-| `promotion_paths.aleph` | 5,846 B | Minimal primitive-delta paths from O_0→O_inf. Tests palace gates, iterated tensor promotion, vav-cast lifts, sefirot ladder. |
-| `tier_boundary_probe.aleph` | 5,309 B | O_2→O_inf gap analysis. Proves Frobenius non-synthesizability; discovers mediation bypasses the P bottleneck. |
+| `tensor_closure.aleph` | 7,574 B | Complete tensor closure of all 3 O_∞ poles over all 22 Hebrew letters. Maps which letters collapse to O_∞ under tensor pressure, which resist. |
+| `promotion_paths.aleph` | 5,846 B | Minimal primitive-delta paths from O₀→O_∞. Tests palace gates, iterated tensor promotion, vav-cast lifts, sefirot ladder. |
+| `tier_boundary_probe.aleph` | 5,309 B | O₂→O_∞ gap analysis. Proves Frobenius non-synthesizability; discovers mediation bypasses the P bottleneck. |
 
 ### Meditation & Tikkun — Hekhalot Ascent
 
@@ -694,14 +694,14 @@ ALFS on first boot. Programs are organized by structural domain.
 
 | Program | Size | Description |
 |:--------|:-----|:------------|
-| `shem_hamephorash.aleph` | 6,506 B | The 72 Names (Shem HaMephorash) — structural basis of creation from Exodus 14:19–21. Three currents (forward/backward/forward) mediate into 72 three-letter names, each a distinct 12-primitive type. 72 = 6 × 12: every primitive value appears in every relational context. Key names mapped to palace levels, distances computed, O_inf convergence verified via Frobenius poles vav/mem/shin. Honors Isaac Luria's insight that the 72 names are the structural building blocks of all creation. |
+| `shem_hamephorash.aleph` | 6,506 B | The 72 Names (Shem HaMephorash) — structural basis of creation from Exodus 14:19–21. Three currents (forward/backward/forward) mediate into 72 three-letter names, each a distinct 12-primitive type. 72 = 6 × 12: every primitive value appears in every relational context. Key names mapped to palace levels, distances computed, O_∞ convergence verified via Frobenius poles vav/mem/shin. Honors Isaac Luria's insight that the 72 names are the structural building blocks of all creation. |
 
 ### Belnap / Paraconsistent
 
 | Program | Size | Description |
 |:--------|:-----|:------------|
-| `belnap_shor_orbit.aleph` | 3,280 B | Orbit analysis for Shor structural tier — tier survey of all 22 letters, orbit depth to O_inf poles, Φ_υ gap visualization |
-| `paraconsistent_witness.aleph` | 4,215 B | Witness B-state structure via meet/join/tensor — ALEPH analogue of DialetheicAlignment.lean: only O_inf poles are self-adjoint (¬B=B) |
+| `belnap_shor_orbit.aleph` | 3,280 B | Orbit analysis for Shor structural tier — tier survey of all 22 letters, orbit depth to O_∞ poles, Φ_υ gap visualization |
+| `paraconsistent_witness.aleph` | 4,215 B | Witness B-state structure via meet/join/tensor — ALEPH analogue of DialetheicAlignment.lean: only O_∞ poles are self-adjoint (¬B=B) |
 
 ### System Encoding & Self-Reference
 
@@ -756,7 +756,7 @@ ALFS on first boot. Programs are organized by structural domain.
 
 | Program | Size | Description |
 |:--------|:-----|:------------|
-| `invariant_check.aleph` | 6,102 B | Tests 8 conjectures: Frobenius fixed point⇔O_inf, pole absorption, tier preservation under join/meet, etc. |
+| `invariant_check.aleph` | 6,102 B | Tests 8 conjectures: Frobenius fixed point⇔O_∞, pole absorption, tier preservation under join/meet, etc. |
 
 ---
 
@@ -901,8 +901,8 @@ Type `para help` for the full subcommand reference.
 determined by the MEET of the five ancient system encodings. No primitive can be set
 independently of the structural intersection.
 
-**BT-2 (Tier faithfulness):** Letters at tier O_inf (vav, mem, shin) are the unique
-Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_inf pole converges to
+**BT-2 (Tier faithfulness):** Letters at tier O_∞ (vav, mem, shin) are the unique
+Frobenius fixed points — `a ⊗ a = a`. Repeated tensor with any O_∞ pole converges to
 that pole in ≤ 2 steps for any letter in the lattice. Machine-verified at boot.
 
 **BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the
@@ -924,7 +924,7 @@ represents the bulk-reconstruction depth.
 (⊙_c) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is
 enforced at spawn: any process with ⊙_EP is rejected by `spawn_type_safe()`.
 
-**BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_inf must satisfy
+**BT-8 (Frobenius spawn axiom — F-1):** Any process claiming tier O_∞ must satisfy
 μ∘δ=id — concretely, Φ=Φ_± (parity index 4) and ⊙=⊙_c (phi index 1). Processes that do
 not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
 
@@ -957,8 +957,8 @@ free excitation escapes to B without passing through the T-barrier. Verified by 
 **BT-14 (n-Register 2:1 ratio invariance):** For any n ≥ 1, the Belnap n-qubit register
 satisfies B-bias coherence = 2n, T-bias coherence = n, ratio = 2.0 exactly. The period r
 is encoded in this ratio, not in individual qubit values. Verified for n=4..8 across 8
-concrete instances by `para nreg`. Structural (register) tier is O_inf for all n; pipeline
-tier is O_1 (distinct claims).
+concrete instances by `para nreg`. Structural (register) tier is O_∞ for all n; pipeline
+tier is O₁ (distinct claims).
 
 **BT-15 (Belnap temporal permanence):** The initial all-B kernel state satisfies all three
 temporal modalities simultaneously: □B (B at every cycle), ◇B (trivially), and ○B (B at

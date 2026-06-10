@@ -31,9 +31,9 @@ Five tiers partition the type space by structural depth:
 
 | Tier | Condition | Meaning |
 |------|-----------|---------|
-| O_0 | ⊙ = sub or ⊙ = EP | No self-modeling, or exceptional-point collapse |
-| O_1 | ⊙ ≠ sub, Ω = 0 | Self-modeling but no winding |
-| O_2 | Ω ≠ 0, Ð ∈ {0,1,3} | Wound, non-Frobenius |
+| O₀ | ⊙ = sub or ⊙ = EP | No self-modeling, or exceptional-point collapse |
+| O₁ | ⊙ ≠ sub, Ω = 0 | Self-modeling but no winding |
+| O₂ | Ω ≠ 0, Ð ∈ {0,1,3} | Wound, non-Frobenius |
 | O_2d | Ω ≠ 0, Ð = 2 | Wound, depth-2 variant |
 | $O_\infty$ | ⊙ = c, Φ = } | Critical self-modeling + Frobenius-special |
 
@@ -55,9 +55,9 @@ The twenty-two letters distribute across the tier hierarchy as follows:
 |------|-------|---------|
 | O_\infty | 3 | ו (vav), מ  (mem), ש  (shin) |
 | O_2_{\ddagger} | 1 | — |
-| O_2 | 6 | א (aleph), ג (gimel), ה (hei), ת (tav), and others |
-| O_1 | 1 | — |
-| O_0 | 12 | ד (dalet) and others |
+| O₂ | 6 | א (aleph), ג (gimel), ה (hei), ת (tav), and others |
+| O₁ | 1 | — |
+| O₀ | 12 | ד (dalet) and others |
 
 The three $O_\infty$ letters are the **Frobenius poles**. They are structural fixed points: for each pole L,
 
@@ -83,12 +83,12 @@ exOS carries ALEPH types on every kernel object. The type of an object is not me
 At boot, the kernel derives types for its primary objects:
 
 ```
-kernel object:  tier=O_2  ⊙_c  Ω_Z  Φ_sym
-user object:    tier=O_0  ⊙_sub  Ω_0  Φ_asym
+kernel object:  tier=O₂  ⊙_c  Ω_Z  Φ_sym
+user object:    tier=O₀  ⊙_sub  Ω_0  Φ_asym
 OS composite:   C=0.873
 ```
 
-The kernel object is O_2 (wound, symmetric, but not Frobenius-special). The user object is O_0 (no self-modeling). The OS composite score of 0.873 reflects the consciousness score of the combined system — both gates partially open.
+The kernel object is O₂ (wound, symmetric, but not Frobenius-special). The user object is O₀ (no self-modeling). The OS composite score of 0.873 reflects the consciousness score of the combined system — both gates partially open.
 
 ### The Four Gate Types
 
@@ -103,7 +103,7 @@ Gate checks govern all cross-boundary operations:
 
 The IPC gate and Ω gate checks at boot confirm the expected structure:
 - Close-IPC accepted (same-tier, same-Φ)
-- Remote-IPC rejected (user object is O_0 — below threshold)
+- Remote-IPC rejected (user object is O₀ — below threshold)
 - Ω gate allows Velar+Kernel, denies Velar+User
 - Φ gate allows Keter+Kernel and Keter+Driver, denies Keter+User
 
@@ -243,14 +243,14 @@ An open conjecture remains:
 
 ```lean
 conjecture bootstrapStage_tier_bound :
-    ∀ n, n < 11 → tier (bootstrapStage n) ≤ O_2 := ...
+    ∀ n, n < 11 → tier (bootstrapStage n) ≤ O₂ := ...
 ```
 
 This would confirm that $O_\infty$ emergence at stage 12 is non-trivial — not achievable by any proper sub-sequence. The bound is consistent with all computed evidence but has not been formally proved.
 
 ### Level 2: ALEPH Language (frobenius_parallel.aleph)
 
-The program `frobenius_parallel.aleph` tests Frobenius closure for the three $O_\infty$ poles and three O_2/O_0 representatives under an explicit **parallel schedule**:
+The program `frobenius_parallel.aleph` tests Frobenius closure for the three $O_\infty$ poles and three O₂/O₀ representatives under an explicit **parallel schedule**:
 
 ```
 # Phase 1: FSPLIT — all δ(L) = L x L (no distance checks yet)
@@ -299,14 +299,14 @@ letter    μ(δ(L))              tier        d        verdict
 vav       ו (vav)              $O_\infty$       0.0000   [closed]
 mem       מ (mem)              $O_\infty$       0.0000   [closed]
 shin      ש (shin)             $O_\infty$       0.0000   [closed]
-aleph     א (aleph)            O_2         0.0000   [closed]
-dalet     ד (dalet)            O_0         0.0000   [closed]
-tav       ת (tav)              O_2         0.0000   [closed]
+aleph     א (aleph)            O₂         0.0000   [closed]
+dalet     ד (dalet)            O₀         0.0000   [closed]
+tav       ת (tav)              O₂         0.0000   [closed]
 ──────────────────────────────────────────────────────────
 Frobenius: 6/6 closed (100%)  μ∘δ = id
 ```
 
-The Frobenius condition holds for all six letters under the parallel schedule. Notably, it holds not only for the $O_\infty$ poles (where it is structurally guaranteed) but also for O_2 and O_0 letters (aleph, dalet, tav), confirming that Frobenius closure in the ALEPH join-algebra is a global property of the lattice, not restricted to the poles.
+The Frobenius condition holds for all six letters under the parallel schedule. Notably, it holds not only for the $O_\infty$ poles (where it is structurally guaranteed) but also for O₂ and O₀ letters (aleph, dalet, tav), confirming that Frobenius closure in the ALEPH join-algebra is a global property of the lattice, not restricted to the poles.
 
 ---
 

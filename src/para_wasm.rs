@@ -48,14 +48,15 @@ pub fn frob_tag_bin(t1: B4, t2: B4) -> B4 {
 
 #[derive(Clone, Debug)]
 pub enum WasmInstr {
-    I32Const(u64),
-    I64Const(u64),
+    I32Const(u64, B4),  // tag: T for well-parsed input, N for malformed
+    I64Const(u64, B4),
     Drop,
     Nop,
     Unreachable,
     Checkpoint,
     Verify,
     AssertInvariant,
+    AttestClean,        // B if stack empty and invariant=B; N otherwise
 }
 
 // ── WasmState ─────────────────────────────────────────────────────────────────
@@ -67,6 +68,11 @@ pub struct WasmState {
     pub frob_invariant_holds: B4,
     pub verified_steps:       u64,
     pub total_steps:          u64,
+    // O(1) verify fast-path: count of non-designated items currently on stack.
+    // Maintained incrementally on push and drop.
+    pub non_designated_count: usize,
+    // Result of last AttestClean: B if clean context boundary, N otherwise.
+    pub attest_result:        B4,
 }
 
 impl WasmState {
@@ -78,6 +84,8 @@ impl WasmState {
             frob_invariant_holds: B4::N,
             verified_steps: 0,
             total_steps: 0,
+            non_designated_count: 0,
+            attest_result: B4::N,
         }
     }
 }
@@ -89,20 +97,25 @@ pub fn exec_one(s: &mut WasmState, instr: &WasmInstr) {
     s.total_steps += 1;
 
     match instr {
-        WasmInstr::I32Const(n) => {
+        WasmInstr::I32Const(n, tag) => {
+            if !matches!(tag, B4::T | B4::B) { s.non_designated_count += 1; }
             s.stack.insert(0, TaggedValue {
                 value: WasmValue { ty: WasmType::I32, val: *n },
-                tag: B4::T,
+                tag: *tag,
             });
         }
-        WasmInstr::I64Const(n) => {
+        WasmInstr::I64Const(n, tag) => {
+            if !matches!(tag, B4::T | B4::B) { s.non_designated_count += 1; }
             s.stack.insert(0, TaggedValue {
                 value: WasmValue { ty: WasmType::I64, val: *n },
-                tag: B4::T,
+                tag: *tag,
             });
         }
         WasmInstr::Drop => {
-            if !s.stack.is_empty() { s.stack.remove(0); }
+            if !s.stack.is_empty() {
+                let dropped = s.stack.remove(0);
+                if !dropped.designated() { s.non_designated_count = s.non_designated_count.saturating_sub(1); }
+            }
         }
         WasmInstr::Nop => {}
         WasmInstr::Unreachable => {
@@ -112,7 +125,12 @@ pub fn exec_one(s: &mut WasmState, instr: &WasmInstr) {
             s.frob_snapshot = s.stack.clone();
         }
         WasmInstr::Verify => {
-            let all_designated = s.stack.iter().all(|tv| tv.designated());
+            // O(1) fast-path: if no non-designated items tracked, skip full scan.
+            let all_designated = if s.non_designated_count == 0 {
+                true
+            } else {
+                s.stack.iter().all(|tv| tv.designated())
+            };
             if all_designated {
                 s.frob_invariant_holds = B4::B;
                 s.verified_steps += 1;
@@ -124,6 +142,22 @@ pub fn exec_one(s: &mut WasmState, instr: &WasmInstr) {
             let rhs = if s.frob_invariant_holds == B4::F { B4::F } else { B4::B };
             s.frob_invariant_holds = frob_tag_bin(s.frob_invariant_holds, rhs);
         }
+        WasmInstr::AttestClean => {
+            // Context-switch boundary check: clean iff stack empty and invariant=B.
+            s.attest_result = attest_clean_state(s);
+        }
+    }
+}
+
+// ── Attestation ───────────────────────────────────────────────────────────────
+// attest_clean_state: returns B4::B iff stack is empty and invariant is B.
+// Use at context-switch boundaries: a clean-slate guarantee before tier promotion.
+
+pub fn attest_clean_state(s: &WasmState) -> B4 {
+    if s.stack.is_empty() && s.frob_invariant_holds == B4::B {
+        B4::B
+    } else {
+        B4::N
     }
 }
 
@@ -174,6 +208,15 @@ impl WasmRuntime {
         out += &format!("snapshot_depth={}", s.frob_snapshot.len());
         out
     }
+
+    pub fn format_attest(&self) -> String {
+        let result = attest_clean_state(&self.state);
+        format!(
+            "attest_clean: {}  (stack={} items, frob_invariant={})",
+            result.name(), self.state.stack.len(),
+            self.state.frob_invariant_holds.name()
+        )
+    }
 }
 
 // ── Demo: frobenius_empty_stack (matches Lean theorem) ───────────────────────
@@ -182,7 +225,7 @@ pub fn demo_frobenius_empty_stack(n: u64) -> String {
     let mut rt = WasmRuntime::new();
     rt.load(alloc::vec![
         WasmInstr::Checkpoint,
-        WasmInstr::I32Const(n),
+        WasmInstr::I32Const(n, B4::T),
         WasmInstr::Verify,
     ]);
     rt.run();

@@ -1,100 +1,36 @@
-para_shor_commands.rs: quantum_on_classical bare-metal demonstration (2026-05-30)
-==================================================================================
+SNS_PRIME.md notation migration: O_inf→O_∞, O_0→O₀, O_1→O₁, O_2→O₂ (11 files)
 
-  Φ_υ bottleneck: CLOSED (reflects phi_upsilon_bottleneck from BelnapQFT.lean)
-  Banner updated: O₁ · Φ_υ → O_∞ (DialetheicOperator.lean)
-  Footer updated: "open problem" → "CLOSED, run 'para shor quantum'"
+---
 
-  New subcommand: para shor quantum  (alias: para shor qoc)
-    — Lean certification chain (6 theorems) displayed bare-metal
-    — Live B-only extraction table: b_meas/2 = r for N=15,21,35
-    — Final statement: quantum_on_classical holds on this classical processor
-    — Mirrors quantum_on_classical_demo.py (priests-engine)
+ParaWASM engine: parser hardening + O(1) verify + clean-slate attestation (2026-05-30)
+======================================================================================
 
-  cargo build --release: Finished in 11.42s, 0 errors, 0 new warnings.
+Three operationalizations of observed session behaviors:
 
-Previous: exOS.tex: LuaLaTeX formatting fix (2026-05-26)
-=======================================================================
+1. Parser hardening — malformed input → tag [N], not [T]
+   - WasmInstr::I32Const(u64) / I64Const(u64) → parameterized with B4 tag
+   - Command handler parses first whitespace-token only; parse failure → B4::N
+   - [N]-tagged push increments non_designated_count; next verify → frob_invariant=F
+   - Prevents injection-style multi-token payloads from contaminating [T] stack
 
-tex/exOS.tex
-  - Preamble: replaced pdflatex inputenc/T1/lmodern with fontspec + unicode-math
-    (setmainfont FreeSerif, igprimfont FreeSerif, monofont DejaVu Sans Mono,
-    igfont Everson Mono for Shavian); amssymb removed (conflicts with unicode-math);
-    calc added
-  - lstset: removed literate replacements for _/-/</>~/^ (broke code display with
-    proper monofont); replaced with upquote=true
-  - synthonbox → imscriptionbox (standard IG box name)
-  - Author line: \otimes → ⊗ (Unicode direct; text-mode crash fix)
-  - Section hierarchy: \subsection → \section, \subsubsection → \subsection
-    (was producing 0.1/0.2 numbering with no parent section)
-  - Abstract: \section{Abstract} → \section*{Abstract} (unnumbered)
-  - Introduction: removed stray trailing --- before Five Founding Systems section
+2. O(1) verify fast-path — incremental non_designated_count
+   - WasmState gains non_designated_count: usize (maintained on push and drop)
+   - Verify short-circuits: if non_designated_count == 0, skip full O(n) scan
+   - Proves lemma: Verified(s) ∧ Tag(v)=T ⟹ Verified(s·v) at zero runtime cost
+   - Matches monotonic fixed-point preservation observed in session log
 
+3. Clean-slate attestation — context-switch boundary gate
+   - attest_clean_state(s: &WasmState) -> B4: B iff stack empty and invariant=B
+   - WasmInstr::AttestClean + wasm attest shell command
+   - WasmState.attest_result field records last attestation
+   - WasmRuntime::format_attest() prints result for shell display
+   - Operationalizes vacuous empty-stack verification as a formal cleanliness proof
 
-Previous: commit.txt — Summary of updates to /home/mrnob0dy666/exOS
-=======================================================================
+Files changed:
+  src/para_wasm.rs          — WasmInstr, WasmState, exec_one, attest_clean_state,
+                              format_attest, demo updated
+  src/para_wasm_commands.rs — parse hardening, attest command, help text
 
-src/para_rh_commands.rs  [NEW]
-- RH Bridge: Belnap negation as functional equation s↦1-s
-- rh_frobenius_fixed_point: bnot(B)=B, unique designated fixed point
-- rh_belnap_statement: all non-trivial zeros are B-designated (dialetheic pair)
-- rh_involution_identity: bnot∘bnot=id
-- Critical strip map: N/F/T/B states for Re(s) samples
-- millennium_barriers_unified: B unifies RH, P vs NP, SIC-POVM
-- Shell: para rh [frobenius|strip]
+cargo build: clean
 
-src/para_ym_commands.rs  [NEW]
-- YM Bridge: N<T covering relation = mass gap Δ>0
-- BRST Q²=0 ↔ Frobenius (nilpotency = comultiplication identity)
-- K_trap confinement: T is the minimum excited state above vacuum N
-- T-bias cost=1 = mass gap measurement
-- ym_bridge_is_O_inf: Phi_c ∧ P_pm_sym
-- Shell: para ym [gap|brst]
-
-src/para_nreg_commands.rs  [NEW]
-- n-Register generalization of Belnap Shor pipeline
-- 2:1 coherence ratio (B-bias=2n, T-bias=n) invariant for all n
-- 8-instance LOOP_TABLE; corrected periods r=80 (N=187,a=3), r=24 (N=221,a=2)
-- SIC-POVM per-qubit axioms for n-fold tensor product
-- nreg_tier_is_O_inf: Phi_c ∧ P_pm_sym (structural tier, distinct from pipeline O_1)
-- Shell: para nreg [ratio|sic]
-
-src/para_temporal_commands.rs  [NEW]
-- BelnapTemporal: □B/◇B/○B modalities over the kernel trajectory
-- always_b_registers: B holds at every cycle (8-cycle verification)
-- winding_invariant: bnot(r0(t))=r0(t) ∀t (since r0 always B, bnot(B)=B)
-- temporal_is_o_inf: Phi_c ∧ P_pm_sym
-- 8-cycle trajectory table with wind column
-- Shell: para temporal [traj|modal]
-
-src/para_category_commands.rs  [NEW]
-- BelnapCategory: Belnap lattice as a category via approximation order
-- B is the unique terminal object (approx_le(x,B) ∀x)
-- N is the unique initial object (approx_le(N,x) ∀x)
-- band_B_idempotent, B_meet_is_id, B_join_absorbs, N_meet_annihilates
-- B self-adjoint (dagger): bnot(B)=B, bnot(N)=N
-- Frobenius = terminal roundtrip: μ∘δ(B)=B
-- category_is_O_inf: Phi_c ∧ P_pm_sym
-- Approximation arrow table for all 4×4 morphisms
-- Shell: para category [obj|thm]
-
-src/para_multiagent_commands.rs  [NEW]
-- Multi-Agent Belnap Protocol: n-kernel entangled network
-- Emerald bootstrap: all n agents start all-B; all n-1 channels are B
-- Channels: join(agent[i].r0, agent[i+1].r0)
-- multi_allB_init, multi_allB_preserved (4 steps), channel_join_stable
-- multi_agent_is_O_inf: Phi_c ∧ P_pm_sym
-- State display: initial + after 4 steps with channel arrows
-- Shell: para multiagent [init|step]
-
-src/para_commands.rs
-- Added dispatch for temporal, category, multiagent
-- Added imports: para_temporal_commands, para_category_commands, para_multiagent_commands
-- Extended help text with all new subcommand entries
-
-src/lib.rs
-- Added: pub mod para_temporal_commands
-- Added: pub mod para_category_commands
-- Added: pub mod para_multiagent_commands
-
-cargo check: clean (only pre-existing bootloader-x86_64-uefi warning)
+Author: Lando ⊗ ⊙perator

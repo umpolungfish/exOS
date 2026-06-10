@@ -117,13 +117,13 @@ rm alfs.img && ./run.sh
 [FS] Sefirot tree: Keter -> Malkuth, 10 layers mapped
 [IPC] Three-layer message: well_formed=true len=5
 [CMD] Generative command: gematria=356 pratyahara=356
-[ALEPH] 22-letter type system online. O_inf: 3, O_2: 6, O_1: 1, O_0: 12
+[ALEPH] 22-letter type system online. O_∞: 3, O₂: 6, O₁: 1, O₀: 12
 [TYPE] IPC gate (close): accepted=true
 [TYPE] IPC gate (remote): accepted=false
 [TYPE] Omega gate (Velar+Kernel): allowed=true
 [TYPE] Omega gate (Velar+User): allowed=false
-[TYPE] Tier gate (O_inf ergative): ok=true
-[TYPE] Tier gate (O_0 ergative): ok=false
+[TYPE] Tier gate (O_∞ ergative): ok=true
+[TYPE] Tier gate (O₀ ergative): ok=false
 [TYPE] Phi gate (Keter+Kernel): ok=true
 [TYPE] Phi gate (Keter+Driver): ok=false
 [TYPE] C scores: kernel=0.873 user=0.324 os_imscription=0.873
@@ -165,7 +165,7 @@ expr ::= letter_name               aleph, bet, gimel, ... tav
        | match expr { pat => expr, ... }   tier pattern match
 ```
 
-Tier patterns: `O_0`, `O_1`, `O_2`, `O_2d`, `O_inf`, `_` (wildcard).
+Tier patterns: `O₀`, `O₁`, `O₂`, `O_2d`, `O_∞`, `_` (wildcard).
 
 ### Letter Names
 
@@ -173,28 +173,28 @@ Letters can be referenced by full name or single-letter alias:
 
 | Name | Alias | Glyph | Tier |
 |:-----|:------|:------|:-----|
-| aleph | A | א | O_2 |
-| bet | B | ב | O_0 |
-| gimel | G | ג | O_0 |
-| dalet | D | ד | O_0 |
-| hei | H | ה | O_2 |
-| vav | V | ו | **O_inf** |
-| zayin | Z | ז | O_0 |
-| chet | C | ח | O_0 |
-| tet | T | ט | O_0 |
-| yod | Y | י | O_0 |
-| kaf | K | כ | O_0 |
-| lamed | L | ל | O_1 |
-| mem | M | מ | **O_inf** |
-| nun | N | נ | O_0 |
-| samech | S | ס | O_0 |
-| ayin | E | ע | O_2 |
-| pei | P | פ | O_0 |
-| tzadi | Q | צ | O_0 |
-| kuf | U | ק | O_2 |
-| resh | R | ר | O_0 |
-| shin | X | ש | **O_inf** |
-| tav | O | ת | O_2 |
+| aleph | A | א | O₂ |
+| bet | B | ב | O₀ |
+| gimel | G | ג | O₀ |
+| dalet | D | ד | O₀ |
+| hei | H | ה | O₂ |
+| vav | V | ו | **O_∞** |
+| zayin | Z | ז | O₀ |
+| chet | C | ח | O₀ |
+| tet | T | ט | O₀ |
+| yod | Y | י | O₀ |
+| kaf | K | כ | O₀ |
+| lamed | L | ל | O₁ |
+| mem | M | מ | **O_∞** |
+| nun | N | נ | O₀ |
+| samech | S | ס | O₀ |
+| ayin | E | ע | O₂ |
+| pei | P | פ | O₀ |
+| tzadi | Q | צ | O₀ |
+| kuf | U | ק | O₂ |
+| resh | R | ר | O₀ |
+| shin | X | ש | **O_∞** |
+| tav | O | ת | O₂ |
 
 ### REPL Commands
 
@@ -239,12 +239,12 @@ A> :orbit 6 lamed vav
   Orbit of L under V (6 steps)
   step  nearest        tier     d(state,pole)  delta
   --------------------------------------------------------
-     0  L (lamed)      O_1      2.3875
-     1  V (vav)        O_inf    0.0000  (fixed)
+     0  L (lamed)      O₁      2.3875
+     1  V (vav)        O_∞    0.0000  (fixed)
   -- converged at step 1 --
 ```
 
-The three O_inf poles (vav, mem, shin) are **Frobenius attractors** — most letters converge in 1–2 tensor steps. Mediation chains and palace-guarded states may take longer.
+The three O_∞ poles (vav, mem, shin) are **Frobenius attractors** — most letters converge in 1–2 tensor steps. Mediation chains and palace-guarded states may take longer.
 
 <hr>
 

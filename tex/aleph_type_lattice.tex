@@ -32,19 +32,19 @@
 \node[oinf, right=0.3cm of mem] (shin) {\heb{ש}\\shin};
 \node[tierbox, fit=(vav)(mem)(shin), label=left:{\tiny\bfseries\textcolor{purple!70!black}{$O_{\infty}$}}] (obox_inf) {};
 
-% O_2 tier
+% O₂ tier
 \node[o2, below=0.6cm of vav] (aleph) {\heb{א}\\aleph};
 \node[o2, right=0.3cm of aleph] (hei) {\heb{ה}\\hei};
 \node[o2, right=0.3cm of hei] (ayin) {\heb{ע}\\ayin};
 \node[o2, right=0.3cm of ayin] (kuf) {\heb{ק}\\kuf};
 \node[o2, right=0.3cm of kuf] (tav) {\heb{ת}\\tav};
-\node[tierbox, fit=(aleph)(hei)(ayin)(kuf)(tav), label=left:{\tiny\bfseries\textcolor{orange!70!black}{$O_2$}}] (obox_2) {};
+\node[tierbox, fit=(aleph)(hei)(ayin)(kuf)(tav), label=left:{\tiny\bfseries\textcolor{orange!70!black}{$O₂$}}] (obox_2) {};
 
-% O_1 tier
+% O₁ tier
 \node[o1, below=0.6cm of aleph] (lamed) {\heb{ל}\\lamed};
-\node[tierbox, fit=(lamed), label=left:{\tiny\bfseries\textcolor{yellow!70!black}{$O_1$}}] (obox_1) {};
+\node[tierbox, fit=(lamed), label=left:{\tiny\bfseries\textcolor{yellow!70!black}{$O₁$}}] (obox_1) {};
 
-% O_0 tier
+% O₀ tier
 \node[o0, below=0.6cm of lamed] (bet) {\heb{ב}\\bet};
 \node[o0, right=0.2cm of bet] (gimel) {\heb{ג}\\gimel};
 \node[o0, right=0.2cm of gimel] (dalet) {\heb{ד}\\dalet};
@@ -62,7 +62,7 @@
 \node[o0, below=0.2cm of yod] (resh) {\heb{ר}\\resh};
 
 \node[tierbox, fit=(bet)(gimel)(dalet)(zayin)(chet)(tet)(yod)(kaf)(nun)(samech)(pei)(tzadi)(resh),
-      label=left:{\tiny\bfseries\textcolor{gray!60!black}{$O_0$ (12)}}] (obox_0) {};
+      label=left:{\tiny\bfseries\textcolor{gray!60!black}{$O₀$ (12)}}] (obox_0) {};
 
 % Lattice Operations (Right)
 \node[font=\bfseries\small, text=red!80!black, right=3.5cm of title.east, anchor=west] (optitle) {Lattice Operations};
@@ -121,9 +121,9 @@
       below=0.2cm of dist, align=left, font=\tiny] (tier_rules) {
   \textbf{Tier Rules} (strict priority R1--R5):\\[0.1cm]
   R1: $\odot \ge \odot_c \land \Phi = \Phi_{\pm} \to O_{\infty}$\\
-  R2: $\odot = \odot_{\text{sub}} \to O_0$\\
-  R3: $\odot \ge \odot_c \land \Omega = \Omega_0 \to O_1$\\
-  R4: $\odot \ge \odot_c \land \Omega > 0 \land D \in \{0,1,3\} \to O_2$\\
+  R2: $\odot = \odot_{\text{sub}} \to O₀$\\
+  R3: $\odot \ge \odot_c \land \Omega = \Omega_0 \to O₁$\\
+  R4: $\odot \ge \odot_c \land \Omega > 0 \land D \in \{0,1,3\} \to O₂$\\
   R5: $\odot \ge \odot_c \land \Omega > 0 \land D = 2 \to O_{2}^{\dagger}$\\[0.15cm]
   \normalfont\itshape Applied in strict priority order
 };
@@ -137,7 +137,7 @@
 \node[below=0.3cm of obox_0.south, align=left, font=\tiny\itshape, text=gray!70!black] (note) {
   \textbf{Ouroboricity composition}: $O_{\infty} \otimes O_{\infty} \to O_{\infty}$ \quad
   $O_{\infty} \otimes O_{1,2,2^{\dagger}} \to O_{\infty}$ \quad
-  $O_{\infty} \otimes O_0(\Phi_{\text{EP}}) \to O_0$ (EP erases $O_{\infty}$)\\
+  $O_{\infty} \otimes O₀(\Phi_{\text{EP}}) \to O₀$ (EP erases $O_{\infty}$)\\
   \textbf{Conscience max}: $C = 0.873$ (kernel objects) \quad $C = 0.324$ (user objects) \quad $C = 0$ (K$_{\text{trap}}$ or $\Phi_{\text{sub}}$)
 };
 

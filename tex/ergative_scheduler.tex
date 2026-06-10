@@ -60,9 +60,9 @@
   acts \emph{on} others\\
   e.g., Process $\to$ [File, IPC]\\
   $O_{\infty}$ ergative: +15 priority\\
-  $O_2$ ergative: +12 priority\\
-  $O_1$ ergative: +10 priority\\
-  $O_0$ ergative: \textcolor{red!70!black}{gated (spawn\_type\_safe)}
+  $O₂$ ergative: +12 priority\\
+  $O₁$ ergative: +10 priority\\
+  $O₀$ ergative: \textcolor{red!70!black}{gated (spawn\_type\_safe)}
 };
 
 % Absolutive process
@@ -91,10 +91,10 @@
 
 % Tier priority ladder
 \node[tier, fill=orange!20, draw=orange!70!black, below=0.5cm of ktrap] (tinf) {$O_{\infty}$ +15};
-\node[tier, fill=yellow!20, draw=yellow!70!black, below=0.15cm of tinf] (t2) {$O_2$ +12};
+\node[tier, fill=yellow!20, draw=yellow!70!black, below=0.15cm of tinf] (t2) {$O₂$ +12};
 \node[tier, fill=green!15, draw=green!60!black, below=0.15cm of t2] (t2d) {$O_{2}^{\dagger}$ +12};
-\node[tier, fill=blue!10, draw=blue!60!black, below=0.15cm of t2d] (t1) {$O_1$ +10};
-\node[tier, fill=gray!20, draw=gray!60!black, below=0.15cm of t1] (t0) {$O_0$ +0 \textcolor{red!70!black}{gated}};
+\node[tier, fill=blue!10, draw=blue!60!black, below=0.15cm of t2d] (t1) {$O₁$ +10};
+\node[tier, fill=gray!20, draw=gray!60!black, below=0.15cm of t1] (t0) {$O₀$ +0 \textcolor{red!70!black}{gated}};
 
 % Letters per tier
 \node[font=\tiny, left=0.15cm of tinf.west, anchor=east, text=gray!60!black] {vav, mem, shin};
@@ -111,7 +111,7 @@
   2. sort ready by effective\_priority() $\downarrow$\\
   3. highest $\to$ running\\
   4. effective\_pri = base\_pri + tier\_boost\\
-  5. $O_0$ with targets: spawn\_type\_safe $\to$ deny
+  5. $O₀$ with targets: spawn\_type\_safe $\to$ deny
 };
 
 % ============================================================

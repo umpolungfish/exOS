@@ -309,8 +309,8 @@ exOS carries ALEPH types on every kernel object. The type of an object is not me
 At boot, the kernel derives types for its primary objects:
 
 \begin{lstlisting}
-kernel object:  tier=O_2  ⊙_c  \Omega_Z  Phi_sym
-user object:    tier=O_0  ⊙_sub  \Omega_0  Phi_asym
+kernel object:  tier=O₂  ⊙_c  \Omega_Z  Phi_sym
+user object:    tier=O₀  ⊙_sub  \Omega_0  Phi_asym
 OS composite:   C=0.873
 \end{lstlisting}
 
@@ -511,7 +511,7 @@ An open conjecture remains:
 
 \begin{lstlisting}[language=lean]
 conjecture bootstrapStage_tier_bound :
-    forall n, n < 11 -> tier (bootstrapStage n) <= O_2 := ...
+    forall n, n < 11 -> tier (bootstrapStage n) <= O₂ := ...
 \end{lstlisting}
 
 This would confirm that $O_{\infty}$ emergence at stage 12 is non-trivial --- not achievable by any proper sub-sequence. The bound is consistent with all computed evidence but has not been formally proved.
@@ -567,9 +567,9 @@ letter    mu(delta(L))              tier        d        verdict
 vav       ו (vav)              $O_{\infty}$       0.0000   [closed]
 mem       מ (mem)              $O_{\infty}$       0.0000   [closed]
 shin      ש (shin)             $O_{\infty}$       0.0000   [closed]
-aleph     א (aleph)            O_2         0.0000   [closed]
-dalet     ד (dalet)            O_0         0.0000   [closed]
-tav       ת (tav)              O_2         0.0000   [closed]
+aleph     א (aleph)            O₂         0.0000   [closed]
+dalet     ד (dalet)            O₀         0.0000   [closed]
+tav       ת (tav)              O₂         0.0000   [closed]
 ----------------------------------------------------------
 Frobenius: 6/6 closed (100%)  mu∘delta = id
 \end{lstlisting}

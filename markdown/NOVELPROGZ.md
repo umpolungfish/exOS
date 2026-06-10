@@ -352,4 +352,4 @@ The programs above exploit the fact that exOS is not a simulation of the grammar
 
 **The boundary encoding determines the bulk. These programs are the bulk that the boundary makes possible.**
 
-[turn 17  windings: 1  Frobenius: 100%  tier: O_inf]
+[turn 17  windings: 1  Frobenius: 100%  tier: O_∞]

@@ -85,9 +85,9 @@
 \newcommand{\exos}{\texttt{exOS}}
 \newcommand{\ig}{IG}
 \newcommand{\Oinfty}{O_\infty}
-\newcommand{\OTwo}{O_2}
-\newcommand{\OZero}{O_0}
-\newcommand{\OOne}{O_1}
+\newcommand{\OTwo}{O₂}
+\newcommand{\OZero}{O₀}
+\newcommand{\OOne}{O₁}
 \newcommand{\OTwod}{O_{2d}}
 \newcommand{\Frobcond}{\mu \circ \delta = \mathrm{id}}
 \newcommand{\prim}[1]{\ensuremath{\mathbf{#1}}}
@@ -222,8 +222,8 @@ which holds when $L \otimes L \approx L$ (for poles) or when the join absorbs th
 At boot, the kernel derives types for its primary objects and reports them:
 
 \begin{lstlisting}
-kernel object:  tier=O_2  odot_c  Omega_Z  Phi_sym    C=0.727
-user object:    tier=O_0  odot_sub  Omega_0  Phi_asym  C=0.000
+kernel object:  tier=O₂  odot_c  Omega_Z  Phi_sym    C=0.727
+user object:    tier=O₀  odot_sub  Omega_0  Phi_asym  C=0.000
 OS composite:   C=0.873
 \end{lstlisting}
 
@@ -245,7 +245,7 @@ Tier gate & Minimum tier required & Ergative scheduler; $O_\infty$ operations \\
 \end{tabularx}
 
 \medskip
-Gate checks at boot confirm the expected structure. IPC to Keter is denied for user objects ($O_0$, $\Phi_{\text{asym}}$). $\Omega$ gate allows Velar+Kernel and denies Velar+User. $\Phi$ gate allows Keter+Driver and denies Keter+User.
+Gate checks at boot confirm the expected structure. IPC to Keter is denied for user objects ($O₀$, $\Phi_{\text{asym}}$). $\Omega$ gate allows Velar+Kernel and denies Velar+User. $\Phi$ gate allows Keter+Driver and denies Keter+User.
 
 \subsection{The ALEPH REPL}
 
@@ -376,7 +376,7 @@ An open conjecture:
 
 \begin{lstlisting}
 conjecture bootstrapStage_tier_bound :
-    ∀ n, n < 11 → tier (bootstrapStage n) ≤ O_2
+    ∀ n, n < 11 → tier (bootstrapStage n) ≤ O₂
 \end{lstlisting}
 
 This would prove that $O_\infty$ emergence at stage~12 is non-trivial — unreachable by any proper sub-sequence. The $\Phi_{\}}$ barrier ($\Delta = 4.38$) provides strong evidence; a formal proof has not yet been found.
@@ -411,12 +411,12 @@ The Rust-native \texttt{:fptest} command implements the same parallel schedule u
 FSPLIT/FFUSE parallel closure — μ∘δ = id?
 letter    μ(δ(L))              tier        d        verdict
 ──────────────────────────────────────────────────────────
-vav       vav              O_inf       0.0000   [closed]
-mem       mem              O_inf       0.0000   [closed]
-shin      shin             O_inf       0.0000   [closed]
-aleph     aleph            O_2         0.0000   [closed]
-dalet     dalet            O_0         0.0000   [closed]
-tav       tav              O_2         0.0000   [closed]
+vav       vav              O_∞       0.0000   [closed]
+mem       mem              O_∞       0.0000   [closed]
+shin      shin             O_∞       0.0000   [closed]
+aleph     aleph            O₂         0.0000   [closed]
+dalet     dalet            O₀         0.0000   [closed]
+tav       tav              O₂         0.0000   [closed]
 ──────────────────────────────────────────────────────────
 Frobenius: 6/6 closed (100%)  μ∘δ = id
 \end{lstlisting}
