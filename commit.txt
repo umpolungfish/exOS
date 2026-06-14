@@ -1,3 +1,13 @@
+Moved ancillary documents to ig-docs (2026-06-14)
+
+3 files moved: POTENTIALITY.md → applications/os-kernel/,
+SEFIROT_13_IMPLEMENTATION.md → applications/os-kernel/,
+tex/manuscript.md → manuscripts/.
+Kept: README.md, USAGE.md, all images/*.pdf, tex/exOS.pdf,
+tex/ALEPH_ARCHITECTURE.pdf, markdown/*.md, all source code.
+
+---
+
 SNS_PRIME.md notation migration: O_inf→O_∞, O_0→O₀, O_1→O₁, O_2→O₂ (11 files)
 
 ---
