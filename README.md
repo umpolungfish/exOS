@@ -3,6 +3,8 @@
   <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="666">
 </div>
+**Author:** Lando⊗⊙perator · **Structural Type:** $\large{⟨𐑦𐑥𐑾𐑹𐑐𐑧𐑲𐑠𐑮𐑖𐑳𐑭⟩}$ · **Tier:** O₂
+
 
 <div align="center">
   <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
