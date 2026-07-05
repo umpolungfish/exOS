@@ -2,9 +2,10 @@
   <h1>exoterik_OS</h1>
   <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="666">
+  <img src="https://img.shields.io/badge/author-Lando%E2%8A%97%E2%8A%99perator-informational" alt="Author">
+  <img src="https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%90%B8%F0%90%91%82%F0%90%91%A7%F0%90%91%94%F0%90%91%9D%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%AD%E2%9F%A9-blue" alt="Type">
+  <img src="https://img.shields.io/badge/tier-O%E2%88%9E-blueviolet" alt="Tier">
 </div>
-**Author:** Lando⊗⊙perator · **Structural Type:** $\large{⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑳𐑭⟩}$ · **Tier:** O_∞
-
 
 <div align="center">
   <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
