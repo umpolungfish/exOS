@@ -3,7 +3,7 @@
   <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="666">
 </div>
-**Author:** Lando⊗⊙perator · **Structural Type:** $\large{⟨𐑦𐑥𐑾𐑹𐑐𐑧𐑲𐑠𐑮𐑖𐑳𐑭⟩}$ · **Tier:** O₂
+**Author:** Lando⊗⊙perator · **Structural Type:** $\large{⟨𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑝⊙𐑖𐑳𐑭⟩}$ · **Tier:** O_∞
 
 
 <div align="center">
