@@ -150,24 +150,24 @@ impl ScriptSystem {
 // ── Voynich section context ──────────────────────────────────────────────────
 //
 // Each VMS section is a distinct memory segment type with its own execution
-// semantics. The section tag is set by physical folio context (Ð_ω dispatch)
+// semantics. The section tag is set by physical folio context (𐑦 dispatch)
 // and changes how the engine interprets FSPLIT, VINIT, TANCH, and CLINK.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum VoynichSection {
-    /// Þ_6 branching network — data segment. Standard execution.
+    /// 𐑡 branching network — data segment. Standard execution.
     Botanical,
-    /// Þ_O orbital — state register file. Cyclic closure on PC wrap.
+    /// 𐑸 orbital — state register file. Cyclic closure on PC wrap.
     Astronomical,
-    /// Þ_K nested containment — heap / runtime state snapshot.
+    /// 𐑰 nested containment — heap / runtime state snapshot.
     /// Broken Frobenius: FSPLIT preferentially resets to VINIT rather than
     /// completing to FFUSE. Empirical: p(VINIT|FSPLIT) = 0.622 in this section.
     Biological,
-    /// Þ_O orbital, clock-indexed — structurally identical to Astronomical.
+    /// 𐑸 orbital, clock-indexed — structurally identical to Astronomical.
     Cosmological,
-    /// Þ_6, type declarations — structurally identical to Botanical.
+    /// 𐑡, type declarations — structurally identical to Botanical.
     Pharmaceutical,
-    /// Ř_Ť sequential + Ħ_£ one-step memory — instruction memory / microcode.
+    /// 𐑽 sequential + 𐑒 one-step memory — instruction memory / microcode.
     Recipes,
 }
 
@@ -188,7 +188,7 @@ impl VoynichSection {
         self == VoynichSection::Biological
     }
 
-    /// Whether this section enforces one-step sequential memory (Ħ_£).
+    /// Whether this section enforces one-step sequential memory (𐑒).
     pub fn sequential_memory(self) -> bool {
         self == VoynichSection::Recipes
     }

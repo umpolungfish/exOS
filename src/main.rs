@@ -629,12 +629,12 @@ fn run_command(cmd: &str) {
                     println!();
                     println!("Script engines:");
                     println!("  voynich         <EVA-tokens>   unsectioned");
-                    println!("  voynich-bot     <EVA-tokens>   botanical    (Þ_6)");
-                    println!("  voynich-astro   <EVA-tokens>   astronomical (Þ_O cyclic)");
-                    println!("  voynich-bio     <EVA-tokens>   biological   (Þ_K broken Frobenius)");
-                    println!("  voynich-cosmo   <EVA-tokens>   cosmological (Þ_O clock-indexed)");
-                    println!("  voynich-pharm   <EVA-tokens>   pharmaceutical (Þ_6)");
-                    println!("  voynich-recipe  <EVA-tokens>   recipes      (Ř_Ť + Ħ_£)");
+                    println!("  voynich-bot     <EVA-tokens>   botanical    (𐑡)");
+                    println!("  voynich-astro   <EVA-tokens>   astronomical (𐑸 cyclic)");
+                    println!("  voynich-bio     <EVA-tokens>   biological   (𐑰 broken Frobenius)");
+                    println!("  voynich-cosmo   <EVA-tokens>   cosmological (𐑸 clock-indexed)");
+                    println!("  voynich-pharm   <EVA-tokens>   pharmaceutical (𐑡)");
+                    println!("  voynich-recipe  <EVA-tokens>   recipes      (𐑽 + 𐑒)");
                     println!("  rohonc          <RTFF-tokens>  Rohonc codec VM");
                     println!("  linear-a        <LATFF-tokens> Linear A VM  [C=0.0, OS MEET]");
                     println!("  emerald-tablet  <ETFF-tokens>  Emerald Tablet [C=1.0, both gates]");
@@ -803,7 +803,7 @@ fn run_command(cmd: &str) {
             let census = aleph::tier_census();
             println!("⊙_c - critical manifold primitives:");
             println!("  Tuple : ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩");
-            println!("  Ð_ω   Þ_O   Ř_=   Φ_±");
+            println!("  𐑦   𐑸   𐑾   Φ_±");
             println!("  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq");
             println!("  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z");
             println!("  O_∞  : ⊙_c + Φ_± (Frobenius)");

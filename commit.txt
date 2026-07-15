@@ -1,46 +1,23 @@
-Moved ancillary documents to ig-docs (2026-06-14)
+Retire the gen-2 glyph-pair notation for bare Shavian
 
-3 files moved: POTENTIALITY.md → applications/os-kernel/,
-SEFIROT_13_IMPLEMENTATION.md → applications/os-kernel/,
-tex/manuscript.md → manuscripts/.
-Kept: README.md, USAGE.md, all images/*.pdf, tex/exOS.pdf,
-tex/ALEPH_ARCHITECTURE.pdf, markdown/*.md, all source code.
+The primitives stand on their own now, so the old `⊙_ÿ` / `Ð_ω` / `Φ_}` forms are
+residue. Rewrote all 49 of them to their Shavian values across source: 19,645
+tokens, 670 files.
 
----
+The map was not typed. I enumerated the gen-2 tokens that actually appear in the
+corpus, paired each marker to its phonetic name, and resolved every value through
+`models.from_symbol` — so the values come from code that runs, not from a table.
+Reality arbitrated one conflict: the SOUNDS document gives `Ř_Ð`, `Γ_\`, `Σ_M`,
+but the corpus has `Ř_=`, `Γ_ʔ`, `Σ_ï` in the tens of thousands and the doc's
+variants nowhere at all. The doc is mangled; the files are the record.
 
-SNS_PRIME.md notation migration: O_inf→O_∞, O_0→O₀, O_1→O₁, O_2→O₂ (11 files)
+Left alone deliberately: `ig_outputs/` and the other run artifacts, ~455k tokens
+of it. Those runs really did emit gen-2 in May. Rewriting them would forge the
+record of what they produced, which is not tidying. The two naming documents keep
+their old-notation columns for the same reason.
 
----
-
-ParaWASM engine: parser hardening + O(1) verify + clean-slate attestation (2026-05-30)
-======================================================================================
-
-Three operationalizations of observed session behaviors:
-
-1. Parser hardening — malformed input → tag [N], not [T]
-   - WasmInstr::I32Const(u64) / I64Const(u64) → parameterized with B4 tag
-   - Command handler parses first whitespace-token only; parse failure → B4::N
-   - [N]-tagged push increments non_designated_count; next verify → frob_invariant=F
-   - Prevents injection-style multi-token payloads from contaminating [T] stack
-
-2. O(1) verify fast-path — incremental non_designated_count
-   - WasmState gains non_designated_count: usize (maintained on push and drop)
-   - Verify short-circuits: if non_designated_count == 0, skip full O(n) scan
-   - Proves lemma: Verified(s) ∧ Tag(v)=T ⟹ Verified(s·v) at zero runtime cost
-   - Matches monotonic fixed-point preservation observed in session log
-
-3. Clean-slate attestation — context-switch boundary gate
-   - attest_clean_state(s: &WasmState) -> B4: B iff stack empty and invariant=B
-   - WasmInstr::AttestClean + wasm attest shell command
-   - WasmState.attest_result field records last attestation
-   - WasmRuntime::format_attest() prints result for shell display
-   - Operationalizes vacuous empty-stack verification as a formal cleanliness proof
-
-Files changed:
-  src/para_wasm.rs          — WasmInstr, WasmState, exec_one, attest_clean_state,
-                              format_attest, demo updated
-  src/para_wasm_commands.rs — parse hardening, attest command, help text
-
-cargo build: clean
-
-Author: Lando ⊗ ⊙perator
+Bare `Phi` is untouched. Gen-1 `Phi` is today's ⊙, but today's `Φ` is Parity —
+those are genuinely different structures that happen to share letters, and no
+register makes them one, so every site needs reading. Contrast ⊙ appearing as
+both primitive and value, which is not a collision at all: `⊙ ≠ ⊙` is operator ≠
+operation, and it states `μ∘δ ≠ id` exactly.

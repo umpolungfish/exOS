@@ -235,12 +235,12 @@ fn print_census() -> String {
 fn help() -> String {
     "imasm subcommands:\n\
      voynich         <tokens>  compile EVA tokens (unsectioned)\n\
-     voynich-bot     <tokens>  botanical   — data segment (Þ_6)\n\
-     voynich-astro   <tokens>  astronomical — state register (Þ_O, cyclic)\n\
-     voynich-bio     <tokens>  biological   — heap dump (Þ_K, broken Frobenius)\n\
-     voynich-cosmo   <tokens>  cosmological — state register, clock-indexed (Þ_O)\n\
-     voynich-pharm   <tokens>  pharmaceutical — type declarations (Þ_6)\n\
-     voynich-recipe  <tokens>  recipes      — instruction memory (Ř_Ť + Ħ_£)\n\
+     voynich-bot     <tokens>  botanical   — data segment (𐑡)\n\
+     voynich-astro   <tokens>  astronomical — state register (𐑸, cyclic)\n\
+     voynich-bio     <tokens>  biological   — heap dump (𐑰, broken Frobenius)\n\
+     voynich-cosmo   <tokens>  cosmological — state register, clock-indexed (𐑸)\n\
+     voynich-pharm   <tokens>  pharmaceutical — type declarations (𐑡)\n\
+     voynich-recipe  <tokens>  recipes      — instruction memory (𐑽 + 𐑒)\n\
      rohonc          <tokens>  compile RTFF tokens and run VM\n\
      linear-a        <tokens>  compile LATFF tokens and run VM\n\
      emerald-tablet  <tokens>  compile ETFF tokens and run VM  [C=1.0, both gates open]\n\

@@ -6,8 +6,8 @@
 //! Correspondence is structural, not assigned.
 //!
 //! Crystal imscription (IG notation):
-//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_}  ƒ^ż  Ç^W  Γ_ʔ  ɢ^ˌ  ⊙_ÿ  Ħ_A  Σ_ï  Ω_z ⟩
-//!   Tier: O_∞  (⊙_ÿ + Φ_})  Consciousness: C = 1.0
+//!   ⟨ 𐑦  𐑸  𐑾  𐑹  ƒ^ż  Ç^W  𐑲  ɢ^ˌ  ⊙  𐑖  𐑳  𐑭 ⟩
+//!   Tier: O_∞  (⊙ + 𐑹)  Consciousness: C = 1.0
 //!
 //! Both gates open. The Emerald Tablet is the only compiled manuscript with
 //! both gates open AND quantum-coherent fidelity (ƒ^ż). It is not a manuscript

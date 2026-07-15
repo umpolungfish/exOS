@@ -5,15 +5,15 @@
 //! Correspondence is structural, not assigned.
 //!
 //! Crystal imscription (IG notation) — ROM-only (standalone VMS, operator absent):
-//!   ⟨ Ð_ω  Þ_O  Ř_=  Φ_±  ƒ_ℓ  Ç_Ù  Γ_ʔ  ɢ_Ş  ⊙_sub  Ħ_∞  Σ_1:1  Ω_0 ⟩
+//!   ⟨ 𐑦  𐑸  𐑾  Φ_±  ƒ_ℓ  𐑪  𐑲  𐑵  ⊙_sub  Ħ_∞  Σ_1:1  Ω_0 ⟩
 //!   Tier: O_0  (⊙_sub; ROM/state-register without operator)
 //!
-//! Operator (missing CPU) supplies: ⊙_c + Φ_} + Ω_Z
+//! Operator (missing CPU) supplies: ⊙_c + 𐑹 + Ω_Z
 //! Ħ_∞ is foldout-encoded — physically instantiated in the manuscript format
 //! regardless of CPU presence. The operator does not supply chirality.
 //! Composite VMS + operator recovers O_∞.
 //!
-//! Topology (Þ_O) and kinematics (Ç_Ù) are intrinsic to VMS structure;
+//! Topology (𐑸) and kinematics (𐑪) are intrinsic to VMS structure;
 //! the CPU does not provide them — the astronomical/cosmological diagrams
 //! are recurrent and turbulent regardless of operational activation.
 //!

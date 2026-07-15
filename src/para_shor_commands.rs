@@ -225,7 +225,7 @@ fn full_suite() -> String {
     s += &shor_table_footer();
 
     s += "\n";
-    s += "  Φ_υ → Φ_} bottleneck: CLOSED (phi_upsilon_bottleneck, BelnapQFT.lean)\n";
+    s += "  𐑿 → 𐑹 bottleneck: CLOSED (phi_upsilon_bottleneck, BelnapQFT.lean)\n";
     s += "  B-only extraction: r = b_meas / 2 — no T-collapse required.\n";
     s += "  quantum_on_classical: O_inf ∧ b_meas/2 = period  [DialetheicOperator.lean]\n";
     s += "  Run 'para shor quantum' for the full Lean certification chain.\n";

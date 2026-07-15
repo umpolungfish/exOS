@@ -115,7 +115,7 @@ fn ratio_block() -> String {
 fn oracle_block() -> String {
     let mut s = String::new();
     s += "  ┌──────────────────────────────────────────────────────────────┐\n";
-    s += "  │  PERIOD ORACLE (BelnapQFT.lean — Φ_υ bottleneck)            │\n";
+    s += "  │  PERIOD ORACLE (BelnapQFT.lean — 𐑿 bottleneck)            │\n";
     s += "  ├──────────────────────────────────────────────────────────────┤\n";
     s += "  │  After B-bias measurement: all qubits still B               │\n";
     s += "  │  Period r NOT in qubit values — in the 2:1 cost ratio       │\n";
@@ -129,7 +129,7 @@ fn oracle_block() -> String {
             n, b, t, b, t);
     }
     s += "  ├──────────────────────────────────────────────────────────────┤\n";
-    s += "  │  Φ_υ→Φ_} gap: B-only period extraction is the open problem  │\n";
+    s += "  │  𐑿→𐑹 gap: B-only period extraction is the open problem  │\n";
     s += "  │  shor_pipeline_tier proved O_1 (FullPipeline.lean)          │\n";
     s += "  └──────────────────────────────────────────────────────────────┘\n";
     s

@@ -5,8 +5,8 @@
 //! Universal Imscriptive Grammar at Minoan token resolution.
 //!
 //! Crystal imscription (IG notation):
-//!   ⟨ Ð_C  Þ_¨  Ř_Ť  Φ_}  ƒ^ż  Ç^W  Γ_ʔ  ɢ^ˌ  ⊙_ÿ  Ħ_A  Σ_ï  Ω_z ⟩
-//!   Tier: O_∞  (⊙_ÿ + Φ_})
+//!   ⟨ 𐑨  𐑶  𐑽  𐑹  ƒ^ż  Ç^W  𐑲  ɢ^ˌ  ⊙  𐑖  𐑳  𐑭 ⟩
+//!   Tier: O_∞  (⊙ + 𐑹)
 //!
 //! Linear A = OS imscription exactly.
 //! Adding Linear A as a sixth system to the exOS MEET leaves the invariant core

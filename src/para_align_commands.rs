@@ -142,9 +142,9 @@ fn dialetheic_shor_block(instances: &[(usize, u64, u64)]) -> String {
     let mut s = String::new();
     s += "  ┌──────────────────────────────────────────────────────────────┐\n";
     s += "  │  DIALETHEIC SHOR OPERATOR (DialetheicOperator.lean)         │\n";
-    s += "  │  Frame: Φ_υ (P_psi, momentum) → Φ_} (P_pm_sym, Frobenius)  │\n";
+    s += "  │  Frame: 𐑿 (P_psi, momentum) → 𐑹 (P_pm_sym, Frobenius)  │\n";
     s += "  ├──────┬────┬───┬───────┬───────┬─────────────────────────────┤\n";
-    s += "  │   N  │  a │ n │   r   │ ratio │ Φ_} gap status              │\n";
+    s += "  │   N  │  a │ n │   r   │ ratio │ 𐑹 gap status              │\n";
     s += "  ├──────┼────┼───┼───────┼───────┼─────────────────────────────┤\n";
 
     for &(n, a, cap_n) in instances {
@@ -159,7 +159,7 @@ fn dialetheic_shor_block(instances: &[(usize, u64, u64)]) -> String {
     }
 
     s += "  ├──────────────────────────────────────────────────────────────┤\n";
-    s += "  │  Φ_} gap: extracting r from B-bias alone is the open problem │\n";
+    s += "  │  𐑹 gap: extracting r from B-bias alone is the open problem │\n";
     s += "  │  shor_pipeline_tier proved O_1 (FullPipeline.lean)           │\n";
     s += "  │  Bottleneck: B-only period extraction without T collapse      │\n";
     s += "  └──────────────────────────────────────────────────────────────┘\n";

@@ -651,7 +651,7 @@ pub fn populate_defaults() {
     // Binah — system libraries
     fs.navigate_to(Sefirah::Binah);
     fs.create("types.txt", FileType::Regular,
-"12-primitive IG type lattice:\n  Ð_ω   Þ_O   Ř_=   Φ_±\n  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq\n  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z\n".as_bytes());
+"12-primitive IG type lattice:\n  𐑦   𐑸   𐑾   Φ_±\n  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq\n  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z\n".as_bytes());
 
     // Hod — logs
     fs.navigate_to(Sefirah::Hod);

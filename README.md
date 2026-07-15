@@ -553,9 +553,9 @@ The Kernel scores C=0.873, the maximum for the inferred configuration.
 The OS crystal imscription ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩:
 
 ```
-Ð_ω     · Basque ergative three-way relations, Hebrew triangular paths
-Þ_O     · Hieroglyphic contained system with three internal layers
-Ř_=     · Hebrew letter-transformative relations, reversible across contexts
+𐑦     · Basque ergative three-way relations, Hebrew triangular paths
+𐑸     · Hieroglyphic contained system with three internal layers
+𐑾     · Hebrew letter-transformative relations, reversible across contexts
 Φ_±     · Ogdoad's exact Z₂ symmetry before creation, Frobenius condition μ∘δ=id
 ƒ_ℏ     · Cuneiform's maximum fidelity wedge depths, full precision preserved
 Ç_mod   · Basque's middle aspect, Varnamala's living phonetic vibration
@@ -713,7 +713,7 @@ ALFS on first boot. Programs are organized by structural domain.
 
 | Program | Size | Description |
 |:--------|:-----|:------------|
-| `belnap_shor_orbit.aleph` | 3,280 B | Orbit analysis for Shor structural tier, tier survey of all 22 letters, orbit depth to O_∞ poles, Φ_υ gap visualization |
+| `belnap_shor_orbit.aleph` | 3,280 B | Orbit analysis for Shor structural tier, tier survey of all 22 letters, orbit depth to O_∞ poles, 𐑿 gap visualization |
 | `paraconsistent_witness.aleph` | 4,215 B | Witness B-state structure via meet/join/tensor, ALEPH analogue of DialetheicAlignment.lean: only O_∞ poles are self-adjoint (¬B=B) |
 
 ### System Encoding & Self-Reference
@@ -808,9 +808,9 @@ Shor coherence invariants (H=n, ModExp=0, B-bias=2n, T-bias=n):
   N=21 a=5 [PASS]  r=6, H=5, B-meas=10, T-meas=5, ratio=2:1
   N=35 a=2 [PASS]  r=12, H=6, B-meas=12, T-meas=6, ratio=2:1
 
-Φ_υ bottleneck: B is the only superposition value.
+𐑿 bottleneck: B is the only superposition value.
   Period r is in the 2:1 coherence ratio, not in bit values.
-  Φ_υ → Φ_± gap (B-only extraction) is the structural open problem.
+  𐑿 → Φ_± gap (B-only extraction) is the structural open problem.
 ```
 
 Single instance:
@@ -847,7 +847,7 @@ exOS> para shor loop 20
 
 The 2:1 B-bias:T-bias ratio is the structural invariant, provably constant for all n
 and any periodic function on B-input. The period r is encoded in this ratio, not in the
-bit values themselves (Φ_υ bottleneck).
+bit values themselves (𐑿 bottleneck).
 
 **WH2 bijection and DialetheicAlignment** verified at every `para shor` call:
 - `belnapToWH2_bijective`: N→(0,0)=I, T→(0,1)=Z, F→(1,0)=X, B→(1,1)=XZ

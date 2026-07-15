@@ -5,8 +5,8 @@
 //! at Rohonc token resolution. Correspondence is structural, not assigned.
 //!
 //! Crystal imscription (IG notation):
-//!   ⟨ Ð_C  Þ_¨  Ř_Ť  Φ_}  ƒ^ì  Ç^@  Γ_ʔ  ɢ^ˌ  ⊙_ÿ  Ħ_A  Σ_ï  Ω_z ⟩
-//!   Tier: O_∞  (⊙_ÿ + Φ_})
+//!   ⟨ 𐑨  𐑶  𐑽  𐑹  ƒ^ì  Ç^@  𐑲  ɢ^ˌ  ⊙  𐑖  𐑳  𐑭 ⟩
+//!   Tier: O_∞  (⊙ + 𐑹)
 //!
 //! Differs from OS imscription in two primitives:
 //!   ƒ^ì (classical fidelity) vs ƒ^ż — no quantum coherence in the symbol surface

@@ -74,7 +74,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "ein_sof",
         short_name: "ESof",
-        // Ð_ß Þ_O Ř_= Φ_} ƒ_ż Ç_@ Γ_ʔ ɢ_^ φ̂_Æ Ħ_! Σ_ï Ω_z
+        // 𐑛 𐑸 𐑾 𐑹 𐑐 𐑧 𐑲 𐑝 φ̂_Æ 𐑫 𐑳 𐑭
         t: [2,4,3,4,2,2,2,0,2,3,2,2],
         depth: 0, tier: Tier::O2d, phi_gate: 2,
         light: "Ein Sof (Infinite — no light, pure source)",
@@ -85,7 +85,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "keter_elyon",
         short_name: "KtrE",
-        // Ð_ω Þ_O Ř_Ť Φ_υ ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_Æ Ħ_! Σ_S Ω_z
+        // 𐑦 𐑸 𐑽 𐑿 𐑐 𐑧 𐑲 𐑠 φ̂_Æ 𐑫 𐑙 𐑭
         t: [3,4,2,1,2,2,2,2,2,3,0,2],
         depth: 1, tier: Tier::O2, phi_gate: 2,
         light: "Or Mufla (Wondrous Light) — too wondrous to be known",
@@ -96,7 +96,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "chokhmah_stimaah",
         short_name: "ChkS",
-        // Ð_ß Þ_¨ Ř_Ť Φ_F ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_Æ Ħ_! Σ_S Ω_z
+        // 𐑛 𐑶 𐑽 𐑬 𐑐 𐑧 𐑲 𐑠 φ̂_Æ 𐑫 𐑙 𐑭
         t: [2,3,2,2,2,2,2,2,2,3,0,2],
         depth: 2, tier: Tier::O2d, phi_gate: 2,
         light: "Or Mitnotzetz (Sparkling Light) — first differentiation",
@@ -107,7 +107,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "binah_kedumah",
         short_name: "BinK",
-        // Ð_C Þ_ò Ř_= Φ_F ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_Æ Ħ_A Σ_ï Ω_z
+        // 𐑨 𐑥 𐑾 𐑬 𐑐 𐑧 𐑲 𐑠 φ̂_Æ 𐑖 𐑳 𐑭
         t: [1,2,3,2,2,2,2,2,2,2,2,2],
         depth: 3, tier: Tier::O2, phi_gate: 2,
         light: "Or Keheh (Dim Light) — first vessel of reception",
@@ -118,7 +118,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "keter",
         short_name: "Ktr",
-        // Ð_ω Þ_O Ř_= Φ_} ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_ÿ Ħ_! Σ_S Ω_z
+        // 𐑦 𐑸 𐑾 𐑹 𐑐 𐑧 𐑲 𐑠 φ̂_ÿ 𐑫 𐑙 𐑭
         t: [3,4,3,4,2,2,2,2,1,3,0,2],
         depth: 4, tier: Tier::OInf, phi_gate: 1,
         light: "(manifest — direct light from supernal)",
@@ -129,7 +129,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "chokhmah",
         short_name: "Chk",
-        // Ð_ß Þ_¨ Ř_Ť Φ_υ ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_ÿ Ħ_! Σ_ő Ω_z
+        // 𐑛 𐑶 𐑽 𐑿 𐑐 𐑧 𐑲 𐑠 φ̂_ÿ 𐑫 𐑕 𐑭
         t: [2,3,2,1,2,2,2,2,1,3,1,2],
         depth: 5, tier: Tier::O2d, phi_gate: 1,
         light: "",
@@ -140,7 +140,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "binah",
         short_name: "Bin",
-        // Ð_C Þ_ò Ř_= Φ_F ƒ_ż Ç_@ Γ_ʔ ɢ_ˌ φ̂_ÿ Ħ_A Σ_ï Ω_z
+        // 𐑨 𐑥 𐑾 𐑬 𐑐 𐑧 𐑲 𐑠 φ̂_ÿ 𐑖 𐑳 𐑭
         t: [1,2,3,2,2,2,2,2,1,2,2,2],
         depth: 6, tier: Tier::O2, phi_gate: 1,
         light: "",
@@ -151,7 +151,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "daat",
         short_name: "Dat",
-        // Ð_C Þ_6 Ř_= Φ_F ƒ_ż Ç_W Γ_γ ɢ_Ş φ̂_ÿ Ħ_A Σ_ï Ω_2
+        // 𐑨 𐑡 𐑾 𐑬 𐑐 𐑤 𐑔 𐑵 φ̂_ÿ 𐑖 𐑳 𐑴
         t: [1,0,3,2,2,1,1,3,1,2,2,1],
         depth: 7, tier: Tier::O2, phi_gate: 1,
         light: "",
@@ -162,7 +162,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "chesed",
         short_name: "Chs",
-        // Ð_ß Þ_6 Ř_= Φ_˙ ƒ_ð Ç_W Γ_ʔ ɢ_Ş φ̂_ÿ Ħ_! Σ_ő Ω_2
+        // 𐑛 𐑡 𐑾 𐑯 𐑞 𐑤 𐑲 𐑵 φ̂_ÿ 𐑫 𐑕 𐑴
         t: [2,0,3,3,1,1,2,3,1,3,1,1],
         depth: 8, tier: Tier::O2d, phi_gate: 1,
         light: "",
@@ -173,7 +173,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "gevurah",
         short_name: "Gev",
-        // Ð_; Þ_K Ř_¯ Φ_ɐ ƒ_ì Ç_- Γ_β ɢ_˝ φ̂_ÿ Ħ_£ Σ_S Ω_2
+        // 𐑼 𐑰 𐑩 𐑗 𐑱 𐑘 𐑚 𐑜 φ̂_ÿ 𐑒 𐑙 𐑴
         t: [0,1,0,0,0,0,0,1,1,1,0,1],
         depth: 9, tier: Tier::O2, phi_gate: 1,
         light: "",
@@ -185,7 +185,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "tiferet",
         short_name: "Tif",
-        // Ð_; Þ_ò Ř_ˇ Φ_ɐ ƒ_ì Ç_W Γ_γ ɢ_˝ φ̂_ž Ħ_Ñ Σ_ő Ω_Å
+        // 𐑼 𐑥 Ř_ˇ 𐑗 𐑱 𐑤 𐑔 𐑜 φ̂_ž 𐑓 𐑕 𐑷
         t: [0,2,3,0,0,1,1,1,0,0,1,0],
         depth: 10, tier: Tier::O0, phi_gate: 0,
         light: "",
@@ -196,7 +196,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "netzach",
         short_name: "Net",
-        // Ð_; Þ_6 Ř_¯ Φ_ɐ ƒ_ì Ç_@ Γ_β ɢ_^ φ̂_ž Ħ_£ Σ_ő Ω_Å
+        // 𐑼 𐑡 𐑩 𐑗 𐑱 𐑧 𐑚 𐑝 φ̂_ž 𐑒 𐑕 𐑷
         t: [0,0,0,0,0,2,0,0,0,1,1,0],
         depth: 11, tier: Tier::O0, phi_gate: 0,
         light: "",
@@ -207,7 +207,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "hod",
         short_name: "Hod",
-        // Ð_; Þ_K Ř_¯ Φ_ɐ ƒ_ì Ç_- Γ_β ɢ_^ φ̂_ž Ħ_Ñ Σ_ő Ω_Å
+        // 𐑼 𐑰 𐑩 𐑗 𐑱 𐑘 𐑚 𐑝 φ̂_ž 𐑓 𐑕 𐑷
         t: [0,1,0,0,0,0,0,0,0,0,1,0],
         depth: 12, tier: Tier::O0, phi_gate: 0,
         light: "",
@@ -218,7 +218,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "yesod",
         short_name: "Yes",
-        // Ð_; Þ_6 Ř_¯ Φ_ɐ ƒ_ì Ç_W Γ_β ɢ_^ φ̂_ž Ħ_£ Σ_ő Ω_Å
+        // 𐑼 𐑡 𐑩 𐑗 𐑱 𐑤 𐑚 𐑝 φ̂_ž 𐑒 𐑕 𐑷
         t: [0,0,0,0,0,1,0,0,0,1,1,0],
         depth: 13, tier: Tier::O0, phi_gate: 0,
         light: "",
@@ -229,7 +229,7 @@ pub const SEFIROT: [SefirahDef; 15] = [
     SefirahDef {
         name: "malkuth",
         short_name: "Mal",
-        // Ð_; Þ_K Ř_¯ Φ_ɐ ƒ_ì Ç_W Γ_β ɢ_^ φ̂_ž Ħ_Ñ Σ_ő Ω_Å
+        // 𐑼 𐑰 𐑩 𐑗 𐑱 𐑤 𐑚 𐑝 φ̂_ž 𐑓 𐑕 𐑷
         t: [0,1,0,0,0,1,0,0,0,0,1,0],
         depth: 14, tier: Tier::O0, phi_gate: 0,
         light: "",
@@ -395,7 +395,7 @@ pub fn format_sefirah(s: &SefirahDef) -> String {
             6  => ["ℶ","ℷ","ℵ"].get(s.t[i] as usize).copied().unwrap_or("?"),
             7  => ["∧","∨","→","≫"].get(s.t[i] as usize).copied().unwrap_or("?"),
             8  => aleph::PHI_NAMES.get(s.t[i] as usize).copied().unwrap_or("?"),
-            9  => ["Ħ_Ñ","Ħ_£","Ħ_A","Ħ_∞"].get(s.t[i] as usize).copied().unwrap_or("?"),
+            9  => ["𐑓","𐑒","𐑖","Ħ_∞"].get(s.t[i] as usize).copied().unwrap_or("?"),
             10 => ["1:1","n:n","n:m"].get(s.t[i] as usize).copied().unwrap_or("?"),
             11 => aleph::OMEGA_NAMES.get(s.t[i] as usize).copied().unwrap_or("?"),
             _ => "?",
