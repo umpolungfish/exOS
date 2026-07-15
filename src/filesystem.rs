@@ -238,14 +238,14 @@ impl SefirotFs {
     ///
     /// | Sefirot          | Depth | Required Φ | Rationale                        |
     /// |------------------|-------|------------|----------------------------------|
-    /// | Keter, Chokhmah, Binah | 0-2 | Φ_c (1)     | Supernal triad — self-modeling loop required |
-    /// | Daat, Chesed, Gevurah  | 3-5 | Φ_c (1)     | Middle pillars — self-modeling loop required |
-    /// | Tiferet → Malkuth      | 6-10| Φ_sub (0)   | Manifest layers — accessible to all |
+    /// | Keter, Chokhmah, Binah | 0-2 | ⊙ (1)     | Supernal triad — self-modeling loop required |
+    /// | Daat, Chesed, Gevurah  | 3-5 | ⊙ (1)     | Middle pillars — self-modeling loop required |
+    /// | Tiferet → Malkuth      | 6-10| 𐑢 (0)   | Manifest layers — accessible to all |
     ///
-    /// Note: Φ_c (ordinal 1) is the highest criticality value instantiated
+    /// Note: ⊙ (ordinal 1) is the highest criticality value instantiated
     /// in the canonical 22-letter system. Φ_c_complex (2) is a meta-critical
     /// state in the type theory but is not used by any canonical Hebrew letter.
-    /// Therefore, the supernal triad gates on Φ_c, not Φ_c_complex.
+    /// Therefore, the supernal triad gates on ⊙, not Φ_c_complex.
     pub fn navigate_to_type_safe(
         &mut self,
         target: Sefirah,
@@ -255,7 +255,7 @@ impl SefirotFs {
         let target_depth = target as u8;
 
         let required_phi = match target_depth {
-            0..=5 => 1,  // Keter through Gevurah — Φ_c minimum
+            0..=5 => 1,  // Keter through Gevurah — ⊙ minimum
             _ => 0,      // Tiferet through Malkuth — any Φ
         };
 
@@ -651,7 +651,7 @@ pub fn populate_defaults() {
     // Binah — system libraries
     fs.navigate_to(Sefirah::Binah);
     fs.create("types.txt", FileType::Regular,
-"12-primitive IG type lattice:\n  𐑦   𐑸   𐑾   Φ_±\n  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq\n  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z\n".as_bytes());
+"12-primitive IG type lattice:\n  𐑦   𐑸   𐑾   Φ_±\n  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq\n  ⊙   Ħ_∞   Σ_1:1 Ω_Z\n".as_bytes());
 
     // Hod — logs
     fs.navigate_to(Sefirah::Hod);

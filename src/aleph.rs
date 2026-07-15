@@ -104,10 +104,10 @@ fn tensor_s(a: u8, b: u8) -> u8 {
 }
 
 /// P-596: Coupling Destruction Rule
-/// ⊙_c ⊗ ⊙_EP → ⊙_EP
+/// ⊙ ⊗ ⊙_EP → ⊙_EP
 fn tensor_phi(a: u8, b: u8) -> u8 {
     if (a == 1 && b == 3) || (a == 3 && b == 1) {
-        3 // ⊙_EP absorbs ⊙_c
+        3 // ⊙_EP absorbs ⊙
     } else {
         a.max(b)
     }

@@ -411,7 +411,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("[TYPE] Tier gate (O_0 ergative): ok={}", o0_result.is_err());
     assert!(o0_result.is_err(), "O_0 process should fail tier gate as ergative");
 
-    // Verify Φ-gated filesystem: kernel object to Keter should pass (Φ_c ≥ 1)
+    // Verify Φ-gated filesystem: kernel object to Keter should pass (⊙ ≥ 1)
     let mut fs_test = filesystem::SefirotFs::new();
     let keter_result = fs_test.navigate_to_type_safe(
         filesystem::Sefirah::Keter,
@@ -420,15 +420,15 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!("[TYPE] Φ gate (Keter+Kernel): ok={}", keter_result.is_ok());
     assert!(keter_result.is_ok(), "Kernel object should pass Φ gate to Keter");
 
-    // Verify Φ-gated filesystem: user object (Φ_sub) should fail Keter
+    // Verify Φ-gated filesystem: user object (𐑢) should fail Keter
     let user_keter_result = fs_test.navigate_to_type_safe(
         filesystem::Sefirah::Keter,
         &user_obj,
     );
     println!("[TYPE] Φ gate (Keter+User): ok={}", user_keter_result.is_ok());
-    assert!(!user_keter_result.is_ok(), "User object (Φ_sub) should fail Φ gate to Keter");
+    assert!(!user_keter_result.is_ok(), "User object (𐑢) should fail Φ gate to Keter");
 
-    // Verify Φ-gated filesystem: Driver (Φ_c, Compute) should pass Keter
+    // Verify Φ-gated filesystem: Driver (⊙, Compute) should pass Keter
     let driver_obj = kernel_object::KernelObject::new(
         kernel_object::StructuralType::Process,
         kernel_object::OperationalMode::Compute,
@@ -440,7 +440,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         &driver_obj,
     );
     println!("[TYPE] Φ gate (Keter+Driver): ok={}", driver_keter_result.is_ok());
-    assert!(driver_keter_result.is_ok(), "Driver object (Φ_c, Compute) should pass Φ gate to Keter");
+    assert!(driver_keter_result.is_ok(), "Driver object (⊙, Compute) should pass Φ gate to Keter");
 
     // Verify Ω gate in isolation: user object at Velar should fail
     let user_velar_check = palloc.can_allocate_for(&user_obj);
@@ -669,21 +669,21 @@ fn run_command(cmd: &str) {
                     println!("Usage: cd <sefirah>");
                     println!();
                     println!("Layer tokens:");
-                    println!("  0  Keter      /boot          kernel root     [Phi_c required]");
-                    println!("  1  Chokhmah   /bin           system binaries [Phi_c required]");
-                    println!("  2  Binah      /lib           system libs     [Phi_c required]");
-                    println!("  3  Daat       /dev           device nodes    [Phi_c required]");
-                    println!("  4  Chesed     /home          user home dirs  [Phi_c required]");
-                    println!("  5  Gevurah    /etc/security  access control  [Phi_c required]");
+                    println!("  0  Keter      /boot          kernel root     [⊙ required]");
+                    println!("  1  Chokhmah   /bin           system binaries [⊙ required]");
+                    println!("  2  Binah      /lib           system libs     [⊙ required]");
+                    println!("  3  Daat       /dev           device nodes    [⊙ required]");
+                    println!("  4  Chesed     /home          user home dirs  [⊙ required]");
+                    println!("  5  Gevurah    /etc/security  access control  [⊙ required]");
                     println!("  6  Tiferet    /ipc           shared mem/IPC  [open]");
                     println!("  7  Netzach    /net           network mounts  [open]");
                     println!("  8  Hod        /var/log       logs/audit      [open]");
                     println!("  9  Yesod      /tmp           temp/caches     [open]");
                     println!(" 10  Malkuth    /data          user-facing     [open]");
                     println!();
-                    println!("Phi gate: layers 0-5 require Phi_c (phi>=1); 6-10 are open.");
-                    println!("Kernel objects (Phi_c) pass all layers.");
-                    println!("User objects (Phi_sub) restricted to Tiferet and below.");
+                    println!("Phi gate: layers 0-5 require ⊙ (phi>=1); 6-10 are open.");
+                    println!("Kernel objects (⊙) pass all layers.");
+                    println!("User objects (𐑢) restricted to Tiferet and below.");
                     println!();
                     println!("Examples:  cd Keter   cd Malkuth   cd Tiferet");
                 }
@@ -801,13 +801,13 @@ fn run_command(cmd: &str) {
         }
         "phi" => {
             let census = aleph::tier_census();
-            println!("⊙_c - critical manifold primitives:");
+            println!("⊙ - critical manifold primitives:");
             println!("  Tuple : ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩");
             println!("  𐑦   𐑸   𐑾   Φ_±");
             println!("  ƒ_ℏ   Ç_mod Γ_aleph ɢ_seq");
-            println!("  ⊙_c   Ħ_∞   Σ_1:1 Ω_Z");
-            println!("  O_∞  : ⊙_c + Φ_± (Frobenius)");
-            println!("  C score: [⊙=⊙_c]*[Ç≠Ç_trap]*(0.292Þ+0.273Γ+0.276⊙+0.158Ç)");
+            println!("  ⊙   Ħ_∞   Σ_1:1 Ω_Z");
+            println!("  O_∞  : ⊙ + Φ_± (Frobenius)");
+            println!("  C score: [⊙=⊙]*[Ç≠Ç_trap]*(0.292Þ+0.273Γ+0.276⊙+0.158Ç)");
             println!();
             println!("  ALEPH system: 22 Hebrew letters, 12 primitives each");
             println!("  Tiers: O_inf({}) O_2({}) O_1({}) O_0({})",
@@ -1118,7 +1118,7 @@ fn run_command(cmd: &str) {
             println!();
 
             // Φ gates
-            println!("  Φ gate (requires Φ_c for Keter→Gevurah):");
+            println!("  Φ gate (requires ⊙ for Keter→Gevurah):");
             for (name, sef) in &[
                 ("Keter", filesystem::Sefirah::Keter),
                 ("Chesed", filesystem::Sefirah::Chesed),

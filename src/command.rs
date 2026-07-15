@@ -17,7 +17,7 @@ use alloc::vec::Vec;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CommandPrimitive {
     /// Aleph (א): The silent opener — creates a new context/scope
-    /// Ω_Z protected, Φ_c critical
+    /// Ω_Z protected, ⊙ critical
     Aleph,
     /// Mem (מ): The water — flows, connects, propagates
     /// O_inf, recursive

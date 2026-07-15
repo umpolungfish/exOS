@@ -107,7 +107,7 @@ fn checks_block(n: usize, steps: usize) -> String {
         mark(multi_allb_preserved(n, steps)), steps);
     s += &format!("  │  {}  channel_join_stable: join(B,B)=B always              │\n",
         mark(channel_join_stable(n)));
-    s += &format!("  │  {}  multi_agent_is_O_inf: Phi_c ∧ P_pm_sym               │\n",
+    s += &format!("  │  {}  multi_agent_is_O_inf: ⊙ ∧ P_pm_sym               │\n",
         mark(multi_agent_is_o_inf()));
     s += "  ├──────────────────────────────────────────────────────────────┤\n";
     s += &format!("  │  Network: {} agents · {} channels · all Belnap FOUR          │\n",

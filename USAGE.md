@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>USAGE — exoterik_OS ⊙_c Kernel</h1>
+  <h1>USAGE — exoterik_OS ⊙ Kernel</h1>
   <p><b>Build, run, REPL reference, ALFS, programs, subsystem API, and extension guide</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="400">
 </div>
@@ -109,7 +109,7 @@ rm alfs.img && ./run.sh
 ```
 [BOOT] Heap: initialized (4MB)
 [BOOT] UEFI GOP Framebuffer: 1024x768 @ 32bpp
-[exoterikOS] ⊙_c Kernel booting...
+[exoterikOS] ⊙ Kernel booting...
 Φ_± -> Φ_asym symmetry break initiated.
 [INIT] Three-layer objects: all structural/operational/determinative variants exercised
 [SCHED] Ergative scheduler online, symmetry broken
@@ -128,7 +128,7 @@ rm alfs.img && ./run.sh
 [TYPE] Phi gate (Keter+Driver): ok=false
 [TYPE] C scores: kernel=0.873 user=0.324 os_imscription=0.873
 [FS] ALFS v1: 14 files, 0 used / 1024 free sectors - files: 14
-[exoterikOS] ⊙_c Kernel fully online. Type 'help' for commands.
+[exoterikOS] ⊙ Kernel fully online. Type 'help' for commands.
 exOS>
 ```
 
@@ -298,9 +298,9 @@ Run any of these with `:run name` (omit `.aleph`):
 | `distance_probes_indistinguishable.aleph` | Distance + conflict-set across all 22 letters |
 | `pratyahara.aleph` | Varnamala compression via tensor chains |
 | `holographic_monitor.aleph` | Holographic self-encoding monitor (g(x) function) |
-| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (Φ_c ⊗ Φ_EP → C=0) |
+| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (⊙ ⊗ 𐑻 → C=0) |
 | `holographic_monitor.aleph` | Holographic self-encoding monitor (g(x) function) |
-| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (Φ_c ⊗ Φ_EP → C=0) |
+| `coupling_destruction.aleph` | Demonstration of the coupling destruction axiom (⊙ ⊗ 𐑻 → C=0) |
 
 <hr>
 

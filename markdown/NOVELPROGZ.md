@@ -140,7 +140,7 @@ The compression ratio is the ratio of data size to tuple size (12 primitives ≈
 | Keter (crown) | $\Phi_{\text{}}$ (Frobenius-special) | Only $\text{O}_{\text{inf}}$ processes with $\mu \circ \delta = \text{id}$ |
 | Ayin (nothingness) | — | No process can "read" Ayin; only the Ayin-Yesh Bridge can translate |
 
-The gate is enforced by the filesystem's existing Φ-check (filesystem.rs line: Keter→Gevurah requires Φ_c). This extends it to all nodes.
+The gate is enforced by the filesystem's existing Φ-check (filesystem.rs line: Keter→Gevurah requires ⊙). This extends it to all nodes.
 
 **Why only on exOS:** The filesystem already has the Φ-gating infrastructure. No conventional OS has type-gated filesystem access.
 

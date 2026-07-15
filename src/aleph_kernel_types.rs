@@ -212,7 +212,7 @@ const FIVE_SYSTEM_MEET: Tuple = [
 ///     Idle            → minimal promotion (stay at floor)
 ///
 ///   Determinative layer → protection/criticality:
-///     Kernel/Init       → Hebrew (O_Z, ⊙_c)
+///     Kernel/Init       → Hebrew (O_Z, ⊙)
 ///     Service/Driver    → Cuneiform (moderate protection)
 ///     User              → floor level (Ω_0, ⊙_sub)
 fn infer_tuple(
@@ -236,7 +236,7 @@ fn infer_tuple(
             // Hebrew activates: Ω(protection), Φ(criticality) for Processes
             base[11] = base[11].max(HEBREW_SYSTEM[11]); // Ω → 2 (Z)
             if let StructuralType::Process = structural {
-                base[8] = base[8].max(HEBREW_SYSTEM[8]); // Φ → 1 (⊙_c)
+                base[8] = base[8].max(HEBREW_SYSTEM[8]); // Φ → 1 (⊙)
             }
         }
         StructuralType::File | StructuralType::Semaphore => {
@@ -290,9 +290,9 @@ fn infer_tuple(
     // ── Determinative-layer activation (protection & criticality) ──
     match determinative {
         Determinative::Kernel | Determinative::Init => {
-            // Hebrew: full Ω_Z protection, ⊙_c criticality
+            // Hebrew: full Ω_Z protection, ⊙ criticality
             base[11] = HEBREW_SYSTEM[11]; // Ω → 2 (Z)
-            base[8] = HEBREW_SYSTEM[8];   // Φ → 1 (⊙_c)
+            base[8] = HEBREW_SYSTEM[8];   // Φ → 1 (⊙)
             base[4] = 2;                  // F → 2 (hbar, quantum coherence)
         }
         Determinative::Service | Determinative::Driver => {

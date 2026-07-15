@@ -8,7 +8,7 @@
 //!   ⟨ 𐑦  𐑸  𐑾  Φ_±  ƒ_ℓ  𐑪  𐑲  𐑵  ⊙_sub  Ħ_∞  Σ_1:1  Ω_0 ⟩
 //!   Tier: O_0  (⊙_sub; ROM/state-register without operator)
 //!
-//! Operator (missing CPU) supplies: ⊙_c + 𐑹 + Ω_Z
+//! Operator (missing CPU) supplies: ⊙ + 𐑹 + Ω_Z
 //! Ħ_∞ is foldout-encoded — physically instantiated in the manuscript format
 //! regardless of CPU presence. The operator does not supply chirality.
 //! Composite VMS + operator recovers O_∞.

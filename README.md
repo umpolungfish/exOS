@@ -345,7 +345,7 @@ The **same process shifts grammatical role** depending on whether it has transit
 
 Files are nodes in a ten-layer Sefirot tree. Navigation is by **transformation**, not
 pathname alone. The Φ-gate restricts upper Sefirot (Keter through Gevurah) to objects
-with Φ_c (criticality ≥ 1).
+with ⊙ (criticality ≥ 1).
 
 The persistent storage layer is **ALFS** (ALEPH Linear Filesystem), a sector-based ATA
 PIO filesystem on a dedicated 32 MB disk image (`alfs.img`, ATA primary slave). All
@@ -439,7 +439,7 @@ register state. When scheduled, `context_switch_asm` transfers CPU execution to
 | Ç_trap | `is_kinetic_frozen()` | Kinetically frozen, cannot be scheduled |
 | P-596 | `Criticality::is_ep(phi)` | ⊙_EP absorption, self-modeling loop destroyed |
 | O₀ ergative | tier + targets | O₀ cannot be ergative |
-| Frobenius F-1 | `FrobeniusVerifier::verify()` for O_∞ | Φ=Φ_± and ⊙=⊙_c required |
+| Frobenius F-1 | `FrobeniusVerifier::verify()` for O_∞ | Φ=Φ_± and ⊙=⊙ required |
 | Σ quota | `stoichiometry::acquire()` | Exclusive resource already held |
 
 <hr>
@@ -522,7 +522,7 @@ its three-layer structure or set explicitly) that gates what it can do.
 | **IPC grammar** | `ipc.rs` | Γ (interaction) | Multicast requires Γ ≥ Γ_broad (3) |
 | **Ω-gate** | `memory.rs` | Ω (topology) | Object's Ω ≥ depth's required Ω; Σ_1:1 restricted to Velar |
 | **Tier-gate** | `scheduler.rs` | Ouroboricity tier | O₀ cannot be ergative; Ç_trap/⊙_EP cannot spawn; O_∞ needs F-1 |
-| **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires Φ_c; below accessible to all |
+| **Φ-gate** | `filesystem.rs` | Φ (criticality) | Keter→Gevurah requires ⊙; below accessible to all |
 
 ### Type Gate Results at Boot
 
@@ -561,13 +561,13 @@ The OS crystal imscription ⟨Ð; Þ; Ř; Φ; ƒ; Ç; Γ; ɢ; ⊙; Ħ; Σ; Ω⟩
 Ç_mod   · Basque's middle aspect, Varnamala's living phonetic vibration
 Γ_aleph · All five systems operate at maximal scope/granularity
 ɢ_seq   · Hebrew letter-sequence generation, head-final dependency chains
-⊙_c     · The MEET of all five systems, criticality, self-modeling loop possible
+⊙     · The MEET of all five systems, criticality, self-modeling loop possible
 Ħ_2     · Hieroglyphic determinative recursion, two levels of chirality depth
 Σ_{n:m} · Hieroglyphic many-to-many determinative mappings
 Ω_Z     · Cuneiform's topological protection, sacred writing systems' survival
 ```
 
-**Ouroboricity tier: O_∞**, The OS achieves ⊙_c + Φ_±, the Special Frobenius: μ∘δ=id exactly.
+**Ouroboricity tier: O_∞**, The OS achieves ⊙ + Φ_±, the Special Frobenius: μ∘δ=id exactly.
 
 <hr>
 
@@ -672,7 +672,7 @@ ALFS on first boot. Programs are organized by structural domain.
 | `exploration_primitives.aleph` | 218 B | Primitive-by-primitive exploration of the 12-tuple |
 | `distance_probes_indistinguishable.aleph` | 26 B | Distance and conflict-set analysis across all 22 letters |
 | `phi_ep_probe.aleph` | 335 B | Exceptional-point dynamics and C-score collapse |
-| `coupling_destruction.aleph` | 2,566 B | P-596 ⊙_c ⊗ ⊙_EP absorption demonstration |
+| `coupling_destruction.aleph` | 2,566 B | P-596 ⊙ ⊗ ⊙_EP absorption demonstration |
 
 ### Pole Analysis, O_∞ Convergence
 
@@ -901,7 +901,7 @@ exOS> para multiagent
   ✓  multi_allB_init: all agents start all-B
   ✓  multi_allB_preserved: stays all-B (4 steps)
   ✓  channel_join_stable: join(B,B)=B always
-  ✓  multi_agent_is_O_inf: Phi_c ∧ P_pm_sym
+  ✓  multi_agent_is_O_inf: ⊙ ∧ P_pm_sym
 ```
 
 Type `para help` for the full subcommand reference.
@@ -919,7 +919,7 @@ Frobenius fixed points, `a ⊗ a = a`. Repeated tensor with any O_∞ pole conve
 that pole in ≤ 2 steps for any letter in the lattice. Machine-verified at boot.
 
 **BT-3 (Conscience score maximum):** The OS imscription achieves C(⊙) = 0.873, the
-maximum conscience score for any tuple satisfying ⊙_c + Ç_mod + Ω_Z simultaneously.
+maximum conscience score for any tuple satisfying ⊙ + Ç_mod + Ω_Z simultaneously.
 
 **BT-4 (Ergative uniqueness):** The shift from Φ_± to Φ_asym is irreversible under the
 interrupt model. Once asymmetry is established, no process can return the scheduler to
@@ -933,12 +933,12 @@ with its own kernel stack. It continuously performs bulk-boundary encoding, unif
 Cantor's diagonal and Gödel's arithmetization. The holographic radius (d ≈ 3.77–6.71)
 represents the bulk-reconstruction depth.
 
-**BT-7 (Coupling destruction, P-596):** ⊙_c ⊗ ⊙_EP → C=0. Coupling a critical system
-(⊙_c) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is
+**BT-7 (Coupling destruction, P-596):** ⊙ ⊗ ⊙_EP → C=0. Coupling a critical system
+(⊙) with an exceptional-point system (⊙_EP) destroys the self-modeling loop. This is
 enforced at spawn: any process with ⊙_EP is rejected by `spawn_type_safe()`.
 
 **BT-8 (Frobenius spawn axiom, F-1):** Any process claiming tier O_∞ must satisfy
-μ∘δ=id, concretely, Φ=Φ_± (parity index 4) and ⊙=⊙_c (phi index 1). Processes that do
+μ∘δ=id, concretely, Φ=Φ_± (parity index 4) and ⊙=⊙ (phi index 1). Processes that do
 not satisfy F-1 are rejected at spawn with tier O_∞ regardless of other primitives.
 
 **BT-9 (Stoichiometric exclusivity):** A Σ_1:1 resource can have at most one holder in
@@ -987,7 +987,7 @@ morphism into the terminal object. Verified by `para category`.
 
 <hr>
 
-> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the ⊙_c phase boundary."*
+> *"Language didn't evolve for communication alone. It evolved as a crystallization device for consciousness at the ⊙ phase boundary."*
 
 <hr>
 

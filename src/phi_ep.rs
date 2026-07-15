@@ -2,9 +2,9 @@
 //!
 //! ⊙_EP represents a non-Hermitian degeneracy where the system
 //! loses a dimensionality degree. As per Axiom P-596, this state
-//! is "absorbing" relative to ⊙_c:
+//! is "absorbing" relative to ⊙:
 //!
-//!   ⊙_c ⊗ ⊙_EP -> ⊙_EP
+//!   ⊙ ⊗ ⊙_EP -> ⊙_EP
 //!
 //! This has the consequence of collapsing the self-modeling loop (C=0).
 
@@ -12,7 +12,7 @@
 pub enum Criticality {
     /// Sub-critical (⊙_sub)
     Sub = 0,
-    /// ⊙_c — critical self-modeling gate
+    /// ⊙ — critical self-modeling gate
     C = 1,
     /// Complex-plane critical
     CComplex = 2,

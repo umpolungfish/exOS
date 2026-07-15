@@ -423,11 +423,11 @@ impl ErgativeScheduler {
             return Err("O_0 process cannot be ergative — no self-modeling loop for transitivity");
         }
 
-        // Frobenius axiom F-1: O_inf processes must satisfy μ∘δ = id (Φ=Φ_± and ⊙=⊙_c).
+        // Frobenius axiom F-1: O_inf processes must satisfy μ∘δ = id (Φ=Φ_± and ⊙=⊙).
         if tier == crate::aleph::Tier::OInf
             && !crate::frobenius_verification::FrobeniusVerifier::verify(&aleph)
         {
-            return Err("O_inf requires Frobenius condition: Φ=Φ_± (parity=4) and ⊙=⊙_c (phi=1)");
+            return Err("O_inf requires Frobenius condition: Φ=Φ_± (parity=4) and ⊙=⊙ (phi=1)");
         }
 
         // Stoichiometric quota: register this process id as a resource and acquire it.

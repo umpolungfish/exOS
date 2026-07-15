@@ -39,7 +39,7 @@ fn winding_invariant(n_cycles: u64) -> bool {
     true
 }
 
-// Phi_c ∧ P_pm_sym: the temporal B-state is O_inf.
+// ⊙ ∧ P_pm_sym: the temporal B-state is O_inf.
 fn temporal_is_o_inf() -> bool {
     let phi_c = B4::B.bnot() == B4::B && B4::B.designated();
     let frobenius = ParaKernel::frobenius_invariant(B4::B);
@@ -61,7 +61,7 @@ fn modal_block() -> String {
     s += &format!("  │  {}  winding_invariant: bnot(r0(t)) = r0(t) ∀t           │\n",
         mark(winding_invariant(8)));
     s += "  │       r0 is always B; bnot(B)=B (self-negating trajectory) │\n";
-    s += &format!("  │  {}  temporal_is_O_inf: Phi_c ∧ P_pm_sym                  │\n",
+    s += &format!("  │  {}  temporal_is_O_inf: ⊙ ∧ P_pm_sym                  │\n",
         mark(temporal_is_o_inf()));
     s += "  ├──────────────────────────────────────────────────────────────┤\n";
     s += "  │  Temporal modalities (B-locus):                              │\n";

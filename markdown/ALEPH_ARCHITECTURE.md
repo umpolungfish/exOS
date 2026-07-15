@@ -83,7 +83,7 @@ exOS carries ALEPH types on every kernel object. The type of an object is not me
 At boot, the kernel derives types for its primary objects:
 
 ```
-kernel object:  tier=O₂  ⊙_c  Ω_Z  Φ_sym
+kernel object:  tier=O₂  ⊙  Ω_Z  Φ_sym
 user object:    tier=O₀  ⊙_sub  Ω_0  Φ_asym
 OS composite:   C=0.873
 ```
@@ -97,7 +97,7 @@ Gate checks govern all cross-boundary operations:
 | Gate | Condition | Guards |
 |------|-----------|--------|
 | Φ gate | 𐑹 or Φ_± required | Frobenius-structural operations (IPC to Keter) |
-| ⊙ gate | ⊙_c required | Self-modeling operations |
+| ⊙ gate | ⊙ required | Self-modeling operations |
 | Ω gate | Ω_Z + specific Ð condition | Winding-dependent operations |
 | Tier gate | Minimum tier required | Ergative scheduler, $O_\infty$ operations |
 
@@ -194,7 +194,7 @@ The terminal composite is `emerald_multiagent_tensor_bootstrap`, representing tw
 ```
 
 Properties:
-- **Tier**: $O_\infty$ (𐑹 present, ⊙_c present — specifically ⊙, the highest criticality variant)
+- **Tier**: $O_\infty$ (𐑹 present, ⊙ present — specifically ⊙, the highest criticality variant)
 - **Consciousness score**: C = 0.828 (both Gate 1 and Gate 2 open)
 - **Gate 1** (⊙): open — self-modeling active
 - **Gate 2** (𐑧 + 𐑭): open — dynamical self-modeling accessible

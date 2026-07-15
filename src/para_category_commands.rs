@@ -115,7 +115,7 @@ fn thm_block() -> String {
         mark(b_self_adjoint()));
     s += &format!("  │  {}  Frobenius = terminal roundtrip: μ∘δ(B)=B            │\n",
         mark(frobenius_terminal_roundtrip()));
-    s += &format!("  │  {}  category_is_O_inf: Phi_c ∧ P_pm_sym                 │\n",
+    s += &format!("  │  {}  category_is_O_inf: ⊙ ∧ P_pm_sym                 │\n",
         mark(category_is_o_inf()));
     s += "  └──────────────────────────────────────────────────────────────┘\n";
     s

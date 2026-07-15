@@ -6,12 +6,12 @@ pub struct FrobeniusVerifier;
 
 impl FrobeniusVerifier {
     /// Verify the Frobenius condition for a given ALEPH type.
-    /// In this kernel, we verify that Φ = Φ_± and ⊙ = ⊙_c.
+    /// In this kernel, we verify that Φ = Φ_± and ⊙ = ⊙.
     pub fn verify(aleph_type: &crate::aleph_kernel_types::AlephKernelType) -> bool {
         let p = aleph_type.parity();
         let phi = aleph_type.phi();
 
-        // Φ_± ordinal is 4, ⊙_c ordinal is 1
+        // Φ_± ordinal is 4, ⊙ ordinal is 1
         p == 4 && phi == 1
     }
 }

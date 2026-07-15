@@ -15,7 +15,7 @@ ESP_DIR="${BOOT_DIR}/esp"
 EFI_DIR="${ESP_DIR}/EFI/BOOT"
 BOOTX64="${EFI_DIR}/BOOTX64.EFI"
 
-echo "═══ Φ_c exoterikOS UEFI Bootimage Builder ═══"
+echo "═══ ⊙ exoterikOS UEFI Bootimage Builder ═══"
 echo ""
 
 # ── 1: Build kernel ELF ─────────────────────────────
