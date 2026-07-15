@@ -2,7 +2,7 @@
 # Structural orbit analysis for the Shor pipeline tier
 #
 # The Shor pipeline (FullPipeline.lean) sits at tier O_1: Frobenius-special
-# but not O_inf. The Φ_υ → Φ_} gap is the promotion that closes the bottleneck.
+# but not O_inf. The Φ_υ → ⊙ gap is the promotion that closes the bottleneck.
 # O_inf poles (vav, mem, shin) are the fixed points under tensor self-action.
 # This program maps out the tier landscape and shows orbit convergence speeds.
 #
@@ -43,7 +43,7 @@ tier(av2) tier(am2)
 d(av2, vav) d(am2, mem)
 
 # ── Cross-pole distances: the "phase space" of the gap ───────────────────────
-# The Φ_υ → Φ_} promotion is reflected in how far the Shor structural tier sits
+# The Φ_υ → ⊙ promotion is reflected in how far the Shor structural tier sits
 # from the O_inf surface in each dimension of the primitive lattice.
 
 d(aleph, vav) d(aleph, mem) d(aleph, shin)

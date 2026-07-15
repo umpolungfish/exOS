@@ -16,7 +16,7 @@
 # ── The three triune poles (Frobenius witnesses) ─────────────────────────
 # These three O_inf letters witness every mediation:
 # vav  — the witness (Ř_= bidirectional coupling)
-# mem  — the mother letter (Φ_} Frobenius-special, ƒ_ż quantum)
+# mem  — the mother letter (⊙ Frobenius-special, ƒ_ż quantum)
 # shin — the tooth letter (Ħ_! eternal chirality)
 
 let witness = vav
@@ -89,9 +89,9 @@ palace(2) t_group2
 palace(2) t_group3
 
 # Group P (Parity): 6 names — the critical group
-# Φ_ɐ → Φ_υ → Φ_F → Φ_˙ → Φ_}
-# Φ_} (Frobenius-special) appears at names 28–36 (9 ×)
-let p_center = mediate(mem, shin, tav)       # Φ_} Frobenius pole
+# Φ_ɐ → Φ_υ → Φ_F → Φ_˙ → ⊙
+# ⊙ (Frobenius-special) appears at names 28–36 (9 ×)
+let p_center = mediate(mem, shin, tav)       # ⊙ Frobenius pole
 let p_asym = mediate(aleph, bet, shin)        # Φ_ɐ asymmetric
 let p_quantum = mediate(hei, vav, zayin)      # Φ_υ quantum
 palace(3) p_center
