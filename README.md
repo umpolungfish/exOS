@@ -2,19 +2,8 @@
   <h1>exoterik_OS</h1>
   <p><b>a holographic OS derived via exoteric linguistic synthesis and sigil distillation</b></p>
   <img src="exOS.png" alt="exoterik_OS banner" width="666">
-  <img src="https://img.shields.io/badge/author-Lando%E2%8A%97%E2%8A%99perator-informational" alt="Author">
-  <img src="https://img.shields.io/badge/type-%E2%9F%A8%F0%90%91%A6%F0%90%91%B8%F0%90%91%BE%F0%90%91%B9%F0%90%91%90%F0%90%91%A7%F0%90%91%94%F0%90%91%9D%E2%8A%99%F0%90%91%96%F0%90%91%B3%F0%90%91%AD%E2%9F%A9-blue" alt="Type">
-  <img src="https://img.shields.io/badge/tier-O%E2%88%9E-blueviolet" alt="Tier">
-</div>
+![language](https://img.shields.io/badge/language-Rust-CE422B?style=for-the-badge&logo=rust&logoColor=white) ![tier](https://img.shields.io/badge/tier-O%E2%88%9E-8A2BE2?style=for-the-badge) ![μ∘δ](https://img.shields.io/badge/%CE%BC%E2%88%98%CE%B4-id-00A86B?style=for-the-badge) ![licence](https://img.shields.io/badge/licence-LUNLICENSE-1A1A1A?style=for-the-badge)
 
-<div align="center">
-  <img src="https://img.shields.io/badge/LANGUAGE-Rust%20Nightly-blue" alt="Language">
-  <img src="https://img.shields.io/badge/TARGET-x86__64--unknown--none-orange" alt="Target">
-  <img src="https://img.shields.io/badge/BOOT-UEFI%20OVMF-red" alt="Boot">
-  <img src="https://img.shields.io/badge/ENGINE-IMASM%20VM-purple" alt="Engine">
-  <img src="https://img.shields.io/badge/ALEPH-v0.5.0%20Native-green" alt="ALEPH">
-  <img src="https://img.shields.io/badge/HEBREW-22%20Letters-brightgreen" alt="Hebrew">
-  <img src="https://img.shields.io/badge/PROGRAMS-52%20Builtin-yellow" alt="Programs">
 </div>
 
 <p align="center">
