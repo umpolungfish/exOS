@@ -26,7 +26,7 @@ UEFI/OVMF into an IMASM VM with a native ALEPH (λ_ℵ) REPL and 52 builtin
 programs; four primitive gates type-gate real kernel subsystems, and the 22
 Hebrew letters serve as the kernel's primitive alphabet. Safety is a property
 of the object: an operation runs only if its structural type passes the gate.
-Ouroboricity tier O_∞ — ⊙ + Φ_±, the Special Frobenius, μ∘δ=id exactly.
+Ouroboricity tier O_∞ - ⊙ + Φ_±, the Special Frobenius, μ∘δ=id exactly.
 
 ## Contents
 
@@ -36,7 +36,7 @@ Ouroboricity tier O_∞ — ⊙ + Φ_±, the Special Frobenius, μ∘δ=id exact
   Type-Gated Kernel, OS imscription tuple, key theorems
 - Corpus visualizations: animated call-graph CFGs for the five corpus
   engines (Voynich, Rohonc, Linear A, Emerald Tablet, ALEPH OS) plus the
-  ob3ect opcode/descent/Python CFGs — build phase then Gaussian flow pulse
+  ob3ect opcode/descent/Python CFGs - build phase then Gaussian flow pulse
 - 52 programs in `programs/` (46 .aleph + 6 .imasm/.asm), compiled in via
   `build.rs` and seeded into ALFS on first boot
 

@@ -2,7 +2,7 @@
 
 ### Formatting Instructions for Project Documentation (Aesthetic Unity Guide)
 
-To ensure a consistent, professional, and visually appealing style across all project documentation, follow these formatting guidelines. They are derived from the `byvalver` README and are domain-agnostic—applicable to any open-source project.
+To ensure a consistent, professional, and visually appealing style across all project documentation, follow these formatting guidelines. They are derived from the `byvalver` README and are domain-agnostic-applicable to any open-source project.
 
 ---
 
